@@ -173,8 +173,8 @@ class SSPMapParser {
     }
 
     void ReadExact(ref byte[] bytes) {
-        for(int i = 0; i < bytes.Length; i++)
-            bytes[i] = Read8();
+        bytes = new ArraySegment<byte>(Buffer, Index, bytes.Length).ToArray();
+        Index += bytes.Length;
     }
 
     string ReadString() {
