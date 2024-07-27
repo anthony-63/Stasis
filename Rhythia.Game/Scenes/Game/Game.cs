@@ -4,6 +4,7 @@ using Rhythia.Engine;
 using Rhythia.Engine.Audio;
 using Rhythia.Engine.GFX;
 using Rhythia.Engine.Scene;
+using Rhythia.Game.Scenes.Game.HUD;
 using Rhythia.Game.Scenes.Game.NoteObject;
 using Rhythia.Game.Scenes.Game.Player;
 using Rhythia.Game.Scenes.Menu;
@@ -19,6 +20,8 @@ public class GameScene : IScene {
     public NoteObjectSpawner? Spawner = null;
     public NoteObjectRenderer? Renderer = null;
 
+    HUDRoot HUD = new();
+
     public GameScene() {
         InputManager.HideCursor();
     }
@@ -32,10 +35,12 @@ public class GameScene : IScene {
         Spawner ??= new NoteObjectSpawner(this, Player);
         Renderer ??= new NoteObjectRenderer(this);
 
+
         if(!Music.Playing) Music.Play(0f);
         else Music.Update();
         Player.Update();
         Spawner.Update(Player.Cursor);
+        HUD.Update(Music.Time);
     }
 
     public void GoToMenu(Window window) {
@@ -45,6 +50,8 @@ public class GameScene : IScene {
     }
 
     public void Render(Window window) {
+        HUD.Render();
+
         Player.StartRender();
         Renderer?.RenderNotesSingle();
         Grid.Render();

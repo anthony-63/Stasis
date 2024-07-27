@@ -7,7 +7,7 @@ namespace Rhythia.Engine.UI;
 public class UiRoot {
     public List<IUiElement> Children = new();
     
-    public void Render(int width, int height) {
+    public virtual void Render(int width, int height) {
         var parentSize = new Vector2(width, height);
         var parentPosition = Vector2.Zero;
         foreach (var element in Children) {
@@ -15,7 +15,7 @@ public class UiRoot {
             element.Render();
         }
     }
-    public void Update(double dt) {
+    public virtual void Update(double dt) {
         foreach (var element in Children) {
             element.Update(dt);
         }

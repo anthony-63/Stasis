@@ -1,12 +1,32 @@
+using System.Globalization;
+using System.Numerics;
 using Raylib_cs;
 
 namespace Rhythia.Game.Scenes.Game.HUD;
 
 public class Timer {
-    public static string Title = Global.SelectedMap?.Title ?? "----------";
+    public float EndTime = 1f;
 
-    public static float EndTime = Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0f;
+    static readonly float Height = 8;
+    static readonly float BottomPadding = 5;
+    static readonly float SidePadding = 5;
 
-    public void DrawTitle() {
+    float PerecentDone = 0f;
+
+    public void Render() {
+        Raylib.DrawRectanglePro(new Rectangle {
+            X = SidePadding, Y = Raylib.GetRenderHeight() - Height - BottomPadding,
+            Height = Height,
+            Width = Raylib.GetRenderWidth() - SidePadding * 2f,
+        }, Vector2.Zero, 0, Raylib.ColorAlpha(Color.DarkGray, 0.5f));
+        Raylib.DrawRectanglePro(new Rectangle {
+            X = SidePadding, Y = Raylib.GetRenderHeight() - Height - BottomPadding,
+            Height = Height,
+            Width = PerecentDone * (Raylib.GetRenderWidth() - SidePadding * 2f),
+        }, Vector2.Zero, 0, Color.SkyBlue);
+    }
+
+    public void Update(float currentTime) {
+        PerecentDone = (currentTime == 0 ? 1f : currentTime) / EndTime;
     }
 }
