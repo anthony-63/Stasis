@@ -31,7 +31,7 @@ public class MenuScene : IScene {
             TestUI.Children.Add(new TestMapButton() {
                 Map = map,
                 Size = new UDim2(0f, Raylib.GetRenderWidth() / 8 - padding * 8, 0f, Raylib.GetRenderWidth() / 8 - padding * 8),
-                Position = new UDim2(0f, ((Raylib.GetRenderWidth() / 8) * x) + padding, 0, ((Raylib.GetRenderWidth() / 8) * y) + padding),
+                Position = new UDim2(0f, (Raylib.GetRenderWidth() / 8 * x) + padding, 0, (Raylib.GetRenderWidth() / 8 * y) + padding),
                 Anchor = UiElementAnchor.TopLeft,
                 NormalFrame = new Frame {
                     Color = Raylib.ColorFromNormalized(new Vector4(0.1f, 0.1f, 0.1f, 1f)),

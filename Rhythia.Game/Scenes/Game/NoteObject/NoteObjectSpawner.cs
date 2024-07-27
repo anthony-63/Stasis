@@ -35,6 +35,21 @@ public class NoteObjectSpawner {
         UpdateRenderer(Game.Renderer, Game.Music);
     }
 
+    public int CalculateMaxInstanceCount() {
+        float lifetime = Global.Settings.Note.ApproachTime + NoteObject.HitWindow;
+        int max = 0;
+        for(int i = 0; i < OrderedNotes.Length; i++) {
+            int count = 0;
+            for(int j = i; j < OrderedNotes.Length; j++) {
+                if(OrderedNotes[j].Time > OrderedNotes[i].Time + lifetime) break;
+                count++;
+            }
+            if(count > max) max = count;
+        }
+        Logger.Info("Max instances to be rendered: ", max);
+        return max;
+    }
+
     public void UpdateRenderer(NoteObjectRenderer? renderer, SyncAudioPlayer? music) {
         if(renderer == null || music == null) return;
 
