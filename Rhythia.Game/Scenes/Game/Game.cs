@@ -35,7 +35,6 @@ public class GameScene : IScene {
         Spawner ??= new NoteObjectSpawner(this, Player);
         Renderer ??= new NoteObjectRenderer(this);
 
-
         if(!Music.Playing) Music.Play(0f);
         else Music.Update();
         Player.Update();

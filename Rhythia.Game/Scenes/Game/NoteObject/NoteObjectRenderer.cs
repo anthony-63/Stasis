@@ -15,7 +15,7 @@ public class NoteObjectRenderer {
 
     public NoteObjectRenderer(GameScene game) {
         Game = game;
-        MultiMesh = new MultiMesh("Assets/Game/Mesh.obj", game.Spawner?.CalculateMaxInstanceCount() ?? 0);
+        MultiMesh = new MultiMesh("Assets/Game/Mesh.obj", game.Spawner?.MaxInstanceCount ?? 0);
         ColorMaterials = new Material[Global.Colors.Length];
         for(int i = 0; i < ColorMaterials.Length; i++)
             ColorMaterials[i] = ColoredMaterialGenerator.GetColoredMaterial(Global.Colors[i]);

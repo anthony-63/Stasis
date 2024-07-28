@@ -23,9 +23,12 @@ public class NoteObjectSpawner {
     public NoteEventHandler? Hit;
     public NoteEventHandler? Miss;
 
+    public readonly int MaxInstanceCount; 
+
     public NoteObjectSpawner(GameScene game, Player.Player player) {
         Game = game;
         LoadNotes();
+        MaxInstanceCount = CalculateMaxInstanceCount();
         Hit += player.Hit;
         Miss += player.Miss;
     }
@@ -35,7 +38,7 @@ public class NoteObjectSpawner {
         UpdateRenderer(Game.Renderer, Game.Music);
     }
 
-    public int CalculateMaxInstanceCount() {
+    private int CalculateMaxInstanceCount() {
         float lifetime = Global.Settings.Note.ApproachTime + NoteObject.HitWindow;
         int max = 0;
         for(int i = 0; i < OrderedNotes.Length; i++) {
