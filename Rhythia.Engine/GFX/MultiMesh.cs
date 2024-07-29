@@ -13,19 +13,21 @@ public class MultiMesh {
     public Mesh Mesh;
 
     MeshInstance[] Instances = [];
-    int MaxInstanceCount;
+    public int InstanceCount => Instances.Length;
     int Index = 0;
 
-    public MultiMesh(string meshPath, int maxInstanceCount) {
+    public MultiMesh(string meshPath) {
         var model = Raylib.LoadModel(meshPath);
-        MaxInstanceCount = maxInstanceCount;
-        Instances = new MeshInstance[MaxInstanceCount];
+        Instances = new MeshInstance[4];
         unsafe {
             Mesh = model.Meshes[0];
         }
     }
 
     public void AddInstance(Matrix4x4 transform, Material material) {
+        if(Index + 1 >= Instances.Length) {
+            Array.Resize(ref Instances, Instances.Length * 2);
+        }
         Instances[Index++] = new MeshInstance {
             Material = material,
             Transform = transform,
@@ -35,6 +37,9 @@ public class MultiMesh {
     public void Render() {
         for(int i = 0; i < Index; i++) {
             Raylib.DrawMesh(Mesh, Instances[i].Material, Instances[i].Transform);
+        }
+        if(Instances.Length - Index > Instances.Length / 2) {
+            Array.Resize(ref Instances, Instances.Length / 3);
         }
         Array.Clear(Instances);
         Index = 0;

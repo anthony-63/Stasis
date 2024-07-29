@@ -55,6 +55,7 @@ public class GameScene : IScene {
         Renderer?.RenderNotesSingle();
         Grid.Render();
         Player.EndRender();
+        Raylib.DrawText("Allocated Instances: " + Renderer?.MultiMesh.InstanceCount, 0, 24, 24, Color.White);
         Raylib.DrawFPS(0, 0);
     }
 }

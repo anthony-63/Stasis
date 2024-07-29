@@ -9,13 +9,13 @@ public class NoteObjectRenderer {
 
     public List<NoteObject> ToRender = [];
 
-    MultiMesh MultiMesh;
+    public MultiMesh MultiMesh;
 
     public Material[] ColorMaterials;
 
     public NoteObjectRenderer(GameScene game) {
         Game = game;
-        MultiMesh = new MultiMesh("Assets/Game/Mesh.obj", game.Spawner?.MaxInstanceCount ?? 0);
+        MultiMesh = new MultiMesh("Assets/Game/Mesh.obj");
         ColorMaterials = new Material[Global.Colors.Length];
         for(int i = 0; i < ColorMaterials.Length; i++)
             ColorMaterials[i] = ColoredMaterialGenerator.GetColoredMaterial(Global.Colors[i]);
