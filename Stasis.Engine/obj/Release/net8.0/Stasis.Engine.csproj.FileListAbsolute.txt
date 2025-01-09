@@ -1,0 +1,13 @@
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\bin\Release\net8.0\Stasis.Engine.deps.json
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\bin\Release\net8.0\Stasis.Engine.dll
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\bin\Release\net8.0\Stasis.Engine.pdb
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\obj\Release\net8.0\Stasis.Engine.csproj.AssemblyReference.cache
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\obj\Release\net8.0\Stasis.Engine.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\obj\Release\net8.0\Stasis.Engine.AssemblyInfoInputs.cache
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\obj\Release\net8.0\Stasis.Engine.AssemblyInfo.cs
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\obj\Release\net8.0\Stasis.Engine.csproj.CoreCompileInputs.cache
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\obj\Release\net8.0\Stasis.Engine.sourcelink.json
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\obj\Release\net8.0\Stasis.Engine.dll
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\obj\Release\net8.0\refint\Stasis.Engine.dll
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\obj\Release\net8.0\Stasis.Engine.pdb
+C:\Users\antho\Documents\Code\CSHARP\Stasis\Stasis.Engine\obj\Release\net8.0\ref\Stasis.Engine.dll

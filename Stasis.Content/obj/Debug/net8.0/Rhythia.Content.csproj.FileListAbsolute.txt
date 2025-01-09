@@ -1,0 +1,16 @@
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\bin\Debug\net8.0\Stasis.Content.deps.json
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\bin\Debug\net8.0\Stasis.Content.dll
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\bin\Debug\net8.0\Stasis.Content.pdb
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\bin\Debug\net8.0\Stasis.Engine.dll
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\bin\Debug\net8.0\Stasis.Engine.pdb
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\Stasis.Content.csproj.AssemblyReference.cache
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\Stasis.Content.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\Stasis.Content.AssemblyInfoInputs.cache
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\Stasis.Content.AssemblyInfo.cs
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\Stasis.Content.csproj.CoreCompileInputs.cache
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\Stasis.Content.sourcelink.json
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\Stasis..66D69779.Up2Date
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\Stasis.Content.dll
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\refint\Stasis.Content.dll
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\Stasis.Content.pdb
+C:\Users\antho\Documents\Code\CSHARP\StasisGame\Stasis.Content\obj\Debug\net8.0\ref\Stasis.Content.dll

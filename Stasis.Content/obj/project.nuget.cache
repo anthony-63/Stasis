@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "v7LbYF5y7yPMomfmhnrP6O/JT6Vl+6Ht4xo7fuGGdWT+7WdEsXv39+kVfHDkRXp63FETe5/D1Q1b83IvkoROug==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Content\\Stasis.Content.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\antho\\.nuget\\packages\\raylib-cs\\6.1.1\\raylib-cs.6.1.1.nupkg.sha512",
+    "C:\\Users\\antho\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,138 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Content\\Stasis.Content.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Engine\\Stasis.Engine.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Engine\\Stasis.Engine.csproj",
+        "projectName": "Stasis.Engine",
+        "projectPath": "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Engine\\Stasis.Engine.csproj",
+        "packagesPath": "C:\\Users\\antho\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Engine\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\antho\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Raylib-cs": {
+              "target": "Package",
+              "version": "[6.1.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Content\\Stasis.Content.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Content\\Stasis.Content.csproj",
+        "projectName": "Stasis.Content",
+        "projectPath": "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Content\\Stasis.Content.csproj",
+        "packagesPath": "C:\\Users\\antho\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Content\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\antho\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Engine\\Stasis.Engine.csproj": {
+                "projectPath": "C:\\Users\\antho\\Documents\\Code\\CSHARP\\Stasis\\Stasis.Engine\\Stasis.Engine.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
