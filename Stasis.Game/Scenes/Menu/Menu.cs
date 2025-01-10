@@ -1,7 +1,7 @@
 using System.Numerics;
+using System.Runtime.Intrinsics;
 using Raylib_cs;
 using Stasis.Content.Beatmaps;
-using Stasis.Content.Settings;
 using Stasis.Engine;
 using Stasis.Engine.Scene;
 using Stasis.Engine.UI;
@@ -12,7 +12,8 @@ namespace Stasis.Game.Scenes.Menu;
 
 public class MenuScene : IScene {
     public UiRoot TestUI = new();
-    public GridContainer MapGrid = new();
+    public Frame MetaFrame = new();
+    public ScrollContainer MapGrid = new();
 
     public Label FPSLabel = new() {
         TextColor = Color.Green,
@@ -23,13 +24,25 @@ public class MenuScene : IScene {
     };
     public MenuScene() {
         Font font = Raylib.LoadFontEx("Assets/Game/font.ttf", 18, [], 0);
-        MapGrid = new GridContainer() {
-            Padding = 0.5f,
+        MapGrid = new ScrollContainer() {
             Size = new UDim2(1f, 0, 1f, 0),
         };
 
+        MetaFrame = new Frame() {
+            Color = Raylib.ColorFromNormalized(new Vector4(0.05f, 0.05f, 0.05f, 1f)),
+            Size = new UDim2(0.97f, 0, 0.05f, 0),
+            Position = new UDim2(0.03f, 0, 0, 0),
+        };
+
+        var mapList = new GridContainer() {
+            Padding = 6,
+            ItemsPerRow = 8,
+            Size = new UDim2(0.97f, 0, 0.95f, 0),
+            Position = new UDim2(0.03f, 0, 0.05f, 0),
+        };
+
         foreach(IBeatmapSet map in MapLoader.Maps) {
-            MapGrid.Children.Add(new TestMapButton() {
+            mapList.Children.Add(new TestMapButton() {
                 Map = map,
                 Size = UDim2.Zero,
                 Position = UDim2.Zero,
@@ -61,8 +74,11 @@ public class MenuScene : IScene {
                 }
             });
         }
-
+        MapGrid.Children.Add(mapList);
         TestUI.Children.Add(MapGrid);
+        MapGrid.Scroll = Global.LastScroll;
+        
+        TestUI.Children.Add(MetaFrame);
         TestUI.Children.Add(FPSLabel);
     }
 
@@ -72,6 +88,13 @@ public class MenuScene : IScene {
 
     public void Update(Window window, double dt) {
         FPSLabel.Text = $"FPS: {Raylib.GetFPS()}";
+        foreach(UiElement element in ((UiElement)MapGrid.Children.Where(t => t is GridContainer).First()).Children) {
+            if(element is TestMapButton t) {
+                t.CheckPressed(window);
+            }
+        }
         TestUI.Update(dt);
+        Global.LastScroll = MapGrid.Scroll;
+
     }
 }

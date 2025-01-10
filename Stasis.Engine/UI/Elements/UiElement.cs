@@ -1,4 +1,5 @@
 using System.Numerics;
+using Raylib_cs;
 
 namespace Stasis.Engine.UI.Elements;
 
@@ -6,10 +7,14 @@ public class UiElement : IUiElement {
     private Vector2 absoluteSize = Vector2.Zero;
     private Vector2 absolutePosition = Vector2.Zero;
 
+    private bool visible = true;
+
     public UiElementAnchor Anchor = UiElementAnchor.TopLeft;
 
     public Vector2 AbsoluteSize => absoluteSize;
     public Vector2 AbsolutePosition => absolutePosition;
+
+    public bool Visible { get => visible; set => visible = value; }
 
     public UDim2 Size = UDim2.Zero;
     public UDim2 Position = UDim2.Zero;
@@ -18,6 +23,15 @@ public class UiElement : IUiElement {
 
     public virtual void Update(double dt) {
         foreach (var element in Children) element.Update(dt);
+    }
+
+    public virtual bool IsHovering() {
+        return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle {
+            X = AbsolutePosition.X,
+            Y = AbsolutePosition.Y,
+            Width = AbsoluteSize.X,
+            Height = AbsoluteSize.Y,
+        });
     }
 
     public virtual void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
@@ -48,6 +62,7 @@ public class UiElement : IUiElement {
     }
 
     public virtual void Render() {
+        if(!visible) return;
         foreach (var element in Children) element.Render();
     }
 

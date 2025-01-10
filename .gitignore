@@ -1,2 +1,3 @@
 Stasis.Game/bin/*
 Assets/Maps/*.sspm
+*.log

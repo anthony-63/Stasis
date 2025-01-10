@@ -70,7 +70,6 @@ public unsafe static class InputManager {
     }
 
     public static void Update() {
-        Raylib.PollInputEvents();
         Vector2 mpos = Raylib.GetMousePosition();
         MousePosition = new Vector2(mpos.X, mpos.Y);
         MouseDelta = Vector2.Subtract(MousePosition, LastMousePos);

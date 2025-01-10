@@ -1,5 +1,4 @@
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Raylib_cs;
 
 namespace Stasis.Engine.UI.Elements;
@@ -13,15 +12,6 @@ public class Button : UiElement {
     public Label Label = new Label();
 
     public ButtonState State = ButtonState.Normal;
-
-    private bool IsHovering() {
-        return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle {
-            X = AbsolutePosition.X,
-            Y = AbsolutePosition.Y,
-            Width = AbsoluteSize.X,
-            Height = AbsoluteSize.Y,
-        });
-    }
 
     public override void Update(double dt) {
         if(IsHovering() && Raylib.IsMouseButtonDown(MouseButton.Left)) State = ButtonState.Pressed;

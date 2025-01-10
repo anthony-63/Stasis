@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Stasis.Game")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f6b48d3924c589c64a5f77742899f569a247ac5c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+97329cebdb1ac48991e405e1019d561edff57c19")]
 [assembly: System.Reflection.AssemblyProductAttribute("Stasis.Game")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Stasis.Game")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

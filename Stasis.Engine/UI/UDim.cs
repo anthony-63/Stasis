@@ -13,8 +13,8 @@ public struct UDim {
 }
 
 public struct UDim2 {
-    public UDim X { get; set; }
-    public UDim Y { get; set; }
+    public UDim X;
+    public UDim Y;
 
     public static UDim2 Zero => new UDim2(0, 0, 0, 0);
 

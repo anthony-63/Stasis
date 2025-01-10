@@ -10,4 +10,6 @@ public static class Global {
     public static Settings Settings = new();
 
     public static Color[] Colors = [Color.White, Color.Pink];
+
+    public static float LastScroll = 0f;
 }
