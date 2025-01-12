@@ -130,7 +130,7 @@ class SSPMapParser {
                 var y = ReadFloat();
                 notes[i] = new Note {
                     Time = time,
-                    X = -(x - 1),
+                    X = x - 1,
                     Y = -(y - 1),
                 };
             } else {
@@ -139,7 +139,7 @@ class SSPMapParser {
                 
                 notes[i] = new Note {
                     Time = time,
-                    X = -(x - 1),
+                    X = x - 1,
                     Y = -(y - 1),
                 };
             }

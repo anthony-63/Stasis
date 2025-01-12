@@ -16,6 +16,6 @@ public class LoadingScene : IScene {
         MapLoader.LoadMaps("Assets/Maps");
 
         window.SceneHandler.RemoveSceneByType<LoadingScene>();
-        window.SceneHandler.AddScene(new GameScene());
+        window.SceneHandler.AddScene(new MenuScene());
     }
 }
