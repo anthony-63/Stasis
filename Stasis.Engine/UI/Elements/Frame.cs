@@ -11,10 +11,12 @@ public class Frame : UiElement {
     public float Roundness = 0f;
 
     public override void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
+        if(!Visible) return;
         base.UpdateAbsoluteValues(parentSize, parentPosition);
     }
 
     public override void Render() {
+        if(!Visible) return;
         if(BorderWidth > 0) {
             Raylib.DrawRectangleRounded(new Rectangle {
                 X = AbsolutePosition.X - BorderWidth,

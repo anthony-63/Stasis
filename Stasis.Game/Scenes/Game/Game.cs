@@ -44,7 +44,7 @@ public class GameScene : IScene {
 
     public void GoToMenu(Window window) {
         window.SceneHandler.RemoveSceneByType<GameScene>();
-        window.SceneHandler.AddScene(new MenuScene());
+        window.SceneHandler.AddScene(Global.LoadedMenu ?? new MenuScene());
         InputManager.ShowCursor();
     }
 

@@ -10,7 +10,7 @@ public static class MapLoader {
         var map_files = Directory.EnumerateFiles(search_dir).ToArray();
         var map_dirs = Directory.EnumerateDirectories(search_dir).ToArray();
 
-        foreach(string file in map_files) {
+        Parallel.ForEach(map_files, file => {
             if(file.EndsWith(".sspm")) {
                 try {
                     Maps.Add(new SSPMap(file));
@@ -18,9 +18,9 @@ public static class MapLoader {
                     Logger.Warn("Failed to load ssp map: " + file + "\nReason: " + e.Message);
                 }
             }
-        }
+        });
 
-        foreach(string folder in map_dirs) {
+        Parallel.ForEach(map_dirs, folder => {
             if(File.Exists(folder + "/meta.json")) {
                 try {
                     Maps.Add(new BeatmapSet(folder));
@@ -28,6 +28,6 @@ public static class MapLoader {
                     Logger.Warn("Failed to load Stasis map: " + folder + "\nReason: " + e.Message);
                 }
             }
-        }
+        });
     }
 }

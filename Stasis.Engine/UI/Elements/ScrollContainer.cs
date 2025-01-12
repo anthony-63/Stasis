@@ -19,6 +19,7 @@ public class ScrollContainer : UiElement {
     }
 
     public override void Update(double dt) {
+        if(!Visible) return;
         if(IsHovering()) {
             var mdelt = Raylib.GetMouseWheelMove() * Sensitivity;
             Scroll += mdelt;
@@ -31,6 +32,9 @@ public class ScrollContainer : UiElement {
             Scroll = -Math.Max(-Scroll, 0);
             foreach(UiElement child in Children) {
                 child.Position.Y.Offset = Scroll;
+                if(child.AbsolutePosition.Y > Raylib.GetRenderHeight()) {
+                    child.Visible = false;
+                }
             }
         }
         

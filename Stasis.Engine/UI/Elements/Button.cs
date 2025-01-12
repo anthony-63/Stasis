@@ -9,6 +9,8 @@ public class Button : UiElement {
     public Frame HoveringFrame = new Frame();
     public Frame DisabledFrame = new Frame();
 
+
+    private bool ReWrap = true;
     public Label Label = new Label();
 
     public ButtonState State = ButtonState.Normal;

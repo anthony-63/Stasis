@@ -9,7 +9,6 @@ public class GridContainer : UiElement {
     public float ItemsPerRow = 16;
 
     public override void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
-        base.UpdateAbsoluteValues(parentSize, parentPosition);
         int x = 0;
         int y = 0;
         var size = AbsoluteSize.X / ItemsPerRow - Padding;
@@ -26,6 +25,7 @@ public class GridContainer : UiElement {
             child.Position.X.Offset = x * (size + Padding) + Padding / 2f;
             x++;
         }
+        base.UpdateAbsoluteValues(parentSize, parentPosition);
     }
 
     public override void Render() {

@@ -26,6 +26,7 @@ public class Label : UiElement {
     public Vector2 AbsoluteTextSize => absoluteTextSize;
 
     public override void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
+        if(!Visible) return;
         absoluteTextSize = Vector2.Zero;
         lineHeight = FontSize;
         lines.Clear();
@@ -57,6 +58,7 @@ public class Label : UiElement {
     }
 
     public override void Render() {
+        if(!Visible) return;
         var textOrigin = Vector2.Zero;
         if (AlignmentX == TextAlignX.Center) textOrigin.X = (AbsoluteSize.X - absoluteTextSize.X) / 2;
         if (AlignmentX == TextAlignX.Right) textOrigin.X = AbsoluteSize.X - absoluteTextSize.X;

@@ -1,3 +1,4 @@
-Stasis.Game/bin/*
+Stasis.*/bin/*
+Stasis.*/obj/*
 Assets/Maps/*.sspm
 *.log

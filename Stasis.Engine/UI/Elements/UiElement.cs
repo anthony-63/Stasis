@@ -26,6 +26,7 @@ public class UiElement : IUiElement {
     }
 
     public virtual bool IsHovering() {
+        if(!visible) return false;
         return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle {
             X = AbsolutePosition.X,
             Y = AbsolutePosition.Y,
@@ -35,6 +36,7 @@ public class UiElement : IUiElement {
     }
 
     public virtual void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
+        if(!visible) return;
         absoluteSize = new Vector2(
             (parentSize.X * Size.X.Scale) + Size.X.Offset,
             (parentSize.Y * Size.Y.Scale) + Size.Y.Offset

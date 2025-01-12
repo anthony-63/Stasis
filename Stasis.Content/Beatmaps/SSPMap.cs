@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Stasis.Engine;
@@ -10,14 +11,18 @@ struct DataOffsets {
     public ulong MarkerOffset;
     public ulong AudioOffset;
     public ulong AudioLength;
+    public ulong CoverOffset;
+    public ulong CoverLength;
 }
 
 enum BlockOffsets {
     Magic = 0x0,
     Version = 0x4,
     NoteCount = 0x22,
+    HasCover = 0x2e,
     Difficulty = 0x2a,
     DataOffsets = 0x30,
+    CoverOffset = 0x50,
     MarkerOffset = 0x70,
     IdOffset = 0x80,
 };
@@ -47,6 +52,10 @@ class SSPMapParser {
 
         Index = (int)BlockOffsets.MarkerOffset;
         offsets.MarkerOffset = Read64();
+
+        Index = (int)BlockOffsets.CoverOffset;
+        offsets.CoverOffset = Read64();
+        offsets.CoverLength = Read64();
 
         return offsets;
     }
@@ -153,6 +162,17 @@ class SSPMapParser {
         return audio;
     }
 
+    public byte[] GetCoverBytes(DataOffsets offsets) {
+        Index = (int)BlockOffsets.HasCover;
+        if(Read8() != 1) return [];
+        
+        byte[] cover = new byte[offsets.CoverLength];
+        Index = (int)offsets.CoverOffset;
+        ReadExact(ref cover);
+
+        return cover;
+    }
+
     byte Read8() {
         return Buffer[Index++];
     }
@@ -205,10 +225,9 @@ public class SSPMap : IBeatmapSet {
     public Beatmap[] Difficulties { get; set; } 
     public string Path { get; set; }
     public byte[] AudioData { get; set; } = [];
+    public byte[] Cover { get; set; } = [];
 
     public SSPMap(string path) {
-        Logger.Info("Loading SSPM Map: ", path);
-
         var stopwatch = Stopwatch.StartNew();
         var mapBuffer = File.ReadAllBytes(path);
         var parser = new SSPMapParser(mapBuffer);
@@ -224,7 +243,12 @@ public class SSPMap : IBeatmapSet {
         Mappers = parser.GetMappers();
         Difficulties = [parser.GetBeatmapFromData()];
         Path = path;
-        AudioData = parser.GetAudioBytes(parser.GetDataOffsets());
-        Logger.Info("Loaded in ", stopwatch.ElapsedMilliseconds, "ms");
+
+        var dataOffsets = parser.GetDataOffsets();
+
+        AudioData = parser.GetAudioBytes(dataOffsets);
+        Cover = parser.GetCoverBytes(dataOffsets);
+
+        Logger.Info("Loaded '", Title, "' in ", stopwatch.ElapsedMilliseconds, "ms");
     }
 }

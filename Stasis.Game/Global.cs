@@ -1,6 +1,7 @@
 using Raylib_cs;
 using Stasis.Content.Beatmaps;
 using Stasis.Content.Settings;
+using Stasis.Game.Scenes.Menu;
 
 namespace Stasis.Game;
 
@@ -11,5 +12,5 @@ public static class Global {
 
     public static Color[] Colors = [Color.White, Color.Pink];
 
-    public static float LastScroll = 0f;
+    public static MenuScene? LoadedMenu = null;
 }
