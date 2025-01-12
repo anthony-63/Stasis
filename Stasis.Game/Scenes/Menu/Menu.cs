@@ -7,6 +7,7 @@ using Stasis.Engine.Scene;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Loading;
+using TinyTween;
 
 namespace Stasis.Game.Scenes.Menu;
 
@@ -21,10 +22,9 @@ public class MenuScene : IScene {
         MapGrid = new ScrollContainer() {
             Size = new UDim2(1f, 0, 1f, 0),
         };
-
         var mapList = new GridContainer() {
             Padding = 6,
-            ItemsPerRow = 8,
+            ItemsPerRow = 10,
             Size = new UDim2(0.97f, 0, 0.95f, 0),
             Position = new UDim2(0.03f, 0, 0.05f, 0),
         };
@@ -46,8 +46,9 @@ public class MenuScene : IScene {
                 PressedFrame = testFrame,
                 Label = new Label {
                     Visible = false,
-                }
+                },
             };
+
             if(map.Cover.Length > 0) {
                 button.Children.Add(new ImageFrame {
                     ImageData = map.Cover,
@@ -70,7 +71,6 @@ public class MenuScene : IScene {
                 FontSize = 18,
                 TextWrapped = true,
             });
-
             mapList.Children.Add(button);
         }
         MapGrid.Children.Add(mapList);

@@ -26,9 +26,10 @@ public class ScrollContainer : UiElement {
 
             var maxY = 0f;
             GetMaxYAllChildren(this, ref maxY);
-            if(maxY <= Raylib.GetRenderHeight() && mdelt < 0) {
+            if(-Scroll >= Raylib.GetRenderHeight() && mdelt < 0) {
                 Scroll -= mdelt;
-            } 
+
+            }
             Scroll = -Math.Max(-Scroll, 0);
             foreach(UiElement child in Children) {
                 child.Position.Y.Offset = Scroll;
