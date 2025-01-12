@@ -10,10 +10,8 @@ public class UiRoot {
     public virtual void Render(int width, int height) {
         var parentSize = new Vector2(width, height);
         var parentPosition = Vector2.Zero;
-        Parallel.ForEach(Children, elem => {
-            elem.UpdateAbsoluteValues(parentSize, parentPosition);
-        });
-        foreach(var element in Children) {
+        foreach (var element in Children) {
+            element.UpdateAbsoluteValues(parentSize, parentPosition);
             element.Render();
         }
     }

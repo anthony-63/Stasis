@@ -24,7 +24,7 @@ public class ScrollContainer : UiElement {
             var mdelt = Raylib.GetMouseWheelMove() * Sensitivity;
             Scroll += mdelt;
 
-            var maxY = 0f; 
+            var maxY = 0f;
             GetMaxYAllChildren(this, ref maxY);
             if(maxY <= Raylib.GetRenderHeight() && mdelt < 0) {
                 Scroll -= mdelt;

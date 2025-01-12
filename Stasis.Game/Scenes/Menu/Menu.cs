@@ -55,7 +55,7 @@ public class MenuScene : IScene {
                 });
                 button.Children.Add(new Frame {
                     Size = new UDim2(1, 0, 1, 0),
-                    Color = new Color(12, 12, 12, 150),
+                    Color = new Color(12, 12, 12, 200),
                 });
                 button.Children.Add(button.Children.First());
                 button.Children.RemoveAt(0);
