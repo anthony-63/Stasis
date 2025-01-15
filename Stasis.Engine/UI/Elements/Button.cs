@@ -3,6 +3,8 @@ using Raylib_cs;
 
 namespace Stasis.Engine.UI.Elements;
 
+
+
 public class Button : UiElement {
     public Frame NormalFrame = new Frame();
     public Frame PressedFrame = new Frame();
@@ -14,10 +16,27 @@ public class Button : UiElement {
     public Label Label = new Label();
 
     public ButtonState State = ButtonState.Normal;
+    public delegate void ButtonEvent();
+
+    public event ButtonEvent? PressedOnce;
+    public event ButtonEvent? Holding;
+    public event ButtonEvent? Released;
+    public event ButtonEvent? Hovering;
 
     public override void Update(double dt) {
-        if(IsHovering() && Raylib.IsMouseButtonDown(MouseButton.Left)) State = ButtonState.Pressed;
-        else if(IsHovering()) State = ButtonState.Hovering;
+        if(IsHovering() && State != ButtonState.Pressed && State != ButtonState.Holding && Raylib.IsMouseButtonDown(MouseButton.Left)) {
+            State = ButtonState.Pressed;
+            if(PressedOnce is not null) PressedOnce();
+        } else if(IsHovering() && Raylib.IsMouseButtonDown(MouseButton.Left) && State == ButtonState.Pressed | State == ButtonState.Holding) {
+            State = ButtonState.Holding;
+            if(Holding is not null) Holding();
+        } else if(IsHovering()) {
+            State = ButtonState.Hovering;
+            if(Hovering is not null) Hovering();
+        } else if(!IsHovering() && State == ButtonState.Pressed || State == ButtonState.Holding) {
+            State = ButtonState.Normal;
+            if(Released is not null) Released();
+        }
         else State = ButtonState.Normal;
         
         Label.Update(dt);
@@ -54,6 +73,7 @@ public class Button : UiElement {
 public enum ButtonState {
     Normal,
     Pressed,
+    Holding,
     Hovering,
     Disabled,
 }

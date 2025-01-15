@@ -1,3 +1,5 @@
+using Raylib_cs;
+
 namespace Stasis.Engine.UI;
 
 public struct UDim {
@@ -25,5 +27,9 @@ public struct UDim2 {
     public UDim2(float xScale, float xOffset, float yScale, float yOffset) {
         X = new UDim(xScale, xOffset);
         Y = new UDim(yScale, yOffset);
+    }
+
+    public static UDim2 ScaleByPixels(float xPixels, float yPixels) {
+        return new UDim2(xPixels / Raylib.GetRenderWidth(), 0, yPixels / Raylib.GetRenderHeight(), 0f);
     }
 }

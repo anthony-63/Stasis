@@ -6,16 +6,16 @@ using Stasis.Game.Scenes.Menu;
 
 namespace Stasis.Game.Scenes.Loading;
 
-public class LoadingScene : IScene {
+public class LoadingScene : Scene {
     public void Render(Window window) {}
 
-    public void Update(Window window, double dt) {
+    public override void Update(double dt) {
         Global.Settings = Settings.Load("Assets/settings.json");
 
         Global.SelectedMap = null;
         MapLoader.LoadMaps("Assets/Maps");
 
-        window.SceneHandler.RemoveSceneByType<LoadingScene>();
-        window.SceneHandler.AddScene(new MenuScene());
+        Window?.SceneHandler.RemoveSceneByType<LoadingScene>();
+        Window?.SceneHandler.AddScene(new MenuScene());
     }
 }

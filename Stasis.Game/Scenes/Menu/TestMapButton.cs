@@ -5,6 +5,7 @@ using Stasis.Engine;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Game;
+using Stasis.Game.Scenes.MapInfo;
 using TinyTween;
 
 namespace Stasis.Game.Scenes.Menu;
@@ -14,10 +15,12 @@ public class TestMapButton : Button {
         Size = new UDim2(1, 0, 1, 0),
         Color = new Color(255, 255, 255, 150),
     };
+
+    public delegate void MapSelectEvent(IBeatmapSet map);
     
-    public required IBeatmapSet Map;
-    public TestMapButton() {
+    public TestMapButton(IBeatmapSet map, MapSelectEvent SelectMap) {
         Children.Add(HoverFrame);
+        PressedOnce += () => SelectMap(map);
     }
 
     public override void Update(double dt) {
@@ -31,14 +34,5 @@ public class TestMapButton : Button {
 
     public override void Render() {
         base.Render();
-    }
-
-    public void CheckPressed(Window window, MenuScene menu) {
-        if(State == ButtonState.Pressed) {
-            Global.SelectedMap = Map;
-            Global.LoadedMenu = menu;
-            window.SceneHandler.RemoveSceneByType<MenuScene>();
-            window.SceneHandler.AddScene(new GameScene());
-        }
     }
 }

@@ -7,11 +7,12 @@ using Stasis.Engine.Scene;
 using Stasis.Game.Scenes.Game.HUD;
 using Stasis.Game.Scenes.Game.NoteObject;
 using Stasis.Game.Scenes.Game.Player;
+using Stasis.Game.Scenes.MapInfo;
 using Stasis.Game.Scenes.Menu;
 
 namespace Stasis.Game.Scenes.Game;
 
-public class GameScene : IScene {
+public class GameScene : Scene {
     public Player.Player Player = new();
     public Sprite Grid = Sprite.MakePlane(new Vector3(0, 0, 0), new Vector3(90, 0, 180), new Vector2(6, 6), "Assets/Game/Grid.png");
 
@@ -26,9 +27,9 @@ public class GameScene : IScene {
         InputManager.HideCursor();
     }
 
-    public void Update(Window window, double dt) {
+    public override void Update(double dt) {
         if(Global.SelectedMap == null || Raylib.IsKeyDown(KeyboardKey.R)) {
-            GoToMenu(window);
+            if(Window != null) GoToMenu(Window);
             return;
         }
 
@@ -42,13 +43,13 @@ public class GameScene : IScene {
         HUD.Update(Music.Time, Player.Score);
     }
 
-    public void GoToMenu(Window window) {
+    public static void GoToMenu(Window window) {
         window.SceneHandler.RemoveSceneByType<GameScene>();
-        window.SceneHandler.AddScene(Global.LoadedMenu ?? new MenuScene());
+        window.SceneHandler.AddScene(new MapInfoScene());
         InputManager.ShowCursor();
     }
 
-    public void Render(Window window) {
+    public override void Render() {
         HUD.Render();
 
         Player.StartRender();
