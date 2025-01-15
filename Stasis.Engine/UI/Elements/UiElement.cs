@@ -16,8 +16,11 @@ public class UiElement : IUiElement {
 
     public bool Visible { get => visible; set => visible = value; }
 
-    public UDim2 Size = UDim2.Zero;
-    public UDim2 Position = UDim2.Zero;
+    private UDim2 size = UDim2.Zero;
+    private UDim2 position = UDim2.Zero;
+
+    public virtual UDim2 Size { get => size; set => size = value; }
+    public virtual UDim2 Position { get => position; set => position = value; }
 
     public List<IUiElement> Children = new();
 
@@ -68,7 +71,7 @@ public class UiElement : IUiElement {
         foreach (var element in Children) element.Render();
     }
 
-    public void SetAbsoluteValues(Vector2 position, Vector2 size) {
+    public virtual void SetAbsoluteValues(Vector2 position, Vector2 size) {
         absolutePosition = position;
         absoluteSize = size;
     }

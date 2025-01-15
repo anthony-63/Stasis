@@ -65,8 +65,8 @@ public class MenuScene : Scene {
             button.Children.Add(new Label {
                 Size = new UDim2(0.9f, 0, 0.9f, 0),
                 Position = new UDim2(0.05f, 0, 0.05f, 0),
-                AlignmentX = TextAlignX.Center,
-                AlignmentY = TextAlignY.Middle,
+                AlignmentX = TextAlignX.Left,
+                AlignmentY = TextAlignY.Top,
                 Text = map.Title,
                 Font = Font,
                 FontSize = 18,
@@ -74,6 +74,7 @@ public class MenuScene : Scene {
             });
             mapList.Children.Add(button);
         }
+
         MapGrid.Children.Add(mapList);
 
         return MapGrid;

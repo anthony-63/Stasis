@@ -6,6 +6,8 @@ public interface IUiElement {
     public Vector2 AbsoluteSize { get; }
     public Vector2 AbsolutePosition { get; }
     public bool Visible { get; set; }
+    public UDim2 Size { get; set; }
+    public UDim2 Position { get; set; }
     public void Update(double dt);
     public bool IsHovering();
     public void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition);

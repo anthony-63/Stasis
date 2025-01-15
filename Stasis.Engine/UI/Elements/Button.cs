@@ -10,9 +10,7 @@ public class Button : UiElement {
     public Frame PressedFrame = new Frame();
     public Frame HoveringFrame = new Frame();
     public Frame DisabledFrame = new Frame();
-
-
-    private bool ReWrap = true;
+    
     public Label Label = new Label();
 
     public ButtonState State = ButtonState.Normal;

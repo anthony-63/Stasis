@@ -32,7 +32,10 @@ public class ScrollContainer : UiElement {
             Scroll = Math.Clamp(Scroll, -maxY, 0);
 
             foreach(UiElement child in Children) {
-                child.Position.Y.Offset = Scroll;
+                var cpos = child.Position;
+                cpos.Y.Offset = Scroll;
+                child.Position = cpos;
+                
                 if(child.AbsolutePosition.Y > Raylib.GetRenderHeight()) {
                     child.Visible = false;
                 }
