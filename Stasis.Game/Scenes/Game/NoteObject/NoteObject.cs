@@ -6,8 +6,8 @@ using Stasis.Game.Scenes.Game.Player;
 namespace Stasis.Game.Scenes.Game.NoteObject;
 
 public class NoteObject {
-    public const float HitWindow = 0.055f;
-    public const float AABB = (1.75f + 0.525f) / 2.0f;
+    public static float HitWindow = 0.055f;
+    public static float AABB = (1.75f + 0.525f) / 2.0f;
 
     public Note Note;
 

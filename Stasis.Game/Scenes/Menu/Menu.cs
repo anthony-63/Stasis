@@ -26,7 +26,7 @@ public class MenuScene : Scene {
         };
         var mapList = new GridContainer() {
             Padding = 6,
-            ItemsPerRow = 10,
+            ItemsPerRow = 8,
             Size = new UDim2(1f, 0, 0.95f, 0),
             Position = new UDim2(0f, 0, 0.05f, 0),
         };
