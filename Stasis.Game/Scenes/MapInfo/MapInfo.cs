@@ -23,7 +23,7 @@ public class MapInfoScene : Scene {
 
     Frame MakeCoverFrame() {
         Frame cover = new Frame() {
-            Size = UDim2.ScaleByPixels(150, 150),
+            Size = new UDim2(0.1171875f, 0, 0.20833333f, 0),
             Position = new UDim2(0.01f, 0, 0.01f, 0),
             Color = new Color(100, 100, 100, 100),
         };
