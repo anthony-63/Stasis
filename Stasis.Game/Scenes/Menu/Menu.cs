@@ -68,7 +68,7 @@ public class MenuScene : Scene {
                 AlignmentX = TextAlignX.Left,
                 AlignmentY = TextAlignY.Top,
                 Text = map.Title,
-                Font = Font,
+                Font = Global.UIFont,
                 FontSize = 18,
                 TextWrapped = true,
             });

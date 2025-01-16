@@ -13,4 +13,6 @@ public static class Global {
     public static Color[] Colors = [Color.White, Color.Pink];
 
     public static MenuScene? LoadedMenu = null;
+
+    public static string UIFont = "Assets/Game/font.ttf";
 }
