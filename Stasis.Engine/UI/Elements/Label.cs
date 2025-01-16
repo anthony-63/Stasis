@@ -7,6 +7,8 @@ namespace Stasis.Engine.UI.Elements;
 public class Label : UiElement {
     public string Text = "";
 
+    public static List<Tuple<string, int, Font>> LoadedFonts = new();
+
     public List<Tuple<char, int>> textIndexed = new();
 
     private List<Tuple<string, Vector2>> lines = new();
@@ -16,7 +18,18 @@ public class Label : UiElement {
 
     public Color TextColor = Color.White;
 
-    public Font Font = Raylib.GetFontDefault();
+    public string Font {
+        set {
+            if(LoadedFonts.Any((v) => v.Item1 == value && v.Item2 == FontSize)) {
+                font = LoadedFonts.Find((v) => v.Item1 == value && v.Item2 == FontSize)?.Item3 ?? Raylib.GetFontDefault();
+            } else {
+                font = Raylib.LoadFontEx(value, FontSize, [], 0);
+                LoadedFonts.Add(new(value, FontSize, font));
+            }
+        }
+    }
+
+    public Font font = Raylib.GetFontDefault();
     public int FontSize = 18;
     public int FontSpacing = 1;
 
@@ -40,7 +53,7 @@ public class Label : UiElement {
             var newLine = character == '\n';
             var keepCharacter = TextWrapped && !newLine;
             if (keepCharacter) {
-                var nextLineSize = Raylib.MeasureTextEx(Font, line + character, FontSize, FontSpacing);
+                var nextLineSize = Raylib.MeasureTextEx(font, line + character, FontSize, FontSpacing);
                 newLine = nextLineSize.X + FontSpacing >= AbsoluteSize.X;
             }
             if (newLine) {
@@ -52,7 +65,7 @@ public class Label : UiElement {
                 continue;
             }
             line += character;
-            lineSize = Raylib.MeasureTextEx(Font, line, FontSize, FontSpacing);
+            lineSize = Raylib.MeasureTextEx(font, line, FontSize, FontSpacing);
         }
         absoluteTextSize.X = Math.Max(absoluteTextSize.X, lineSize.X);
         lineHeight = Math.Max(lineHeight, lineSize.Y);
@@ -76,7 +89,7 @@ public class Label : UiElement {
             var textOffset = Vector2.UnitY * lineOffsetY;
             if (AlignmentX == TextAlignX.Center) textOffset.X = (absoluteTextSize.X - lineSize.X) / 2;
             if (AlignmentX == TextAlignX.Right) textOffset.X = absoluteTextSize.X - lineSize.X;
-            Raylib.DrawTextEx(Font, text, AbsolutePosition + textOrigin + textOffset, FontSize, FontSpacing, TextColor);
+            Raylib.DrawTextEx(font, text, AbsolutePosition + textOrigin + textOffset, FontSize, FontSpacing, TextColor);
         }
         base.Render();
     }
