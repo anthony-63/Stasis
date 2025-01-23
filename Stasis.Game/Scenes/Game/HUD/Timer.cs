@@ -1,15 +1,16 @@
 using System.Globalization;
 using System.Numerics;
 using Raylib_cs;
+using Stasis.Engine;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
 public class Timer {
     public float EndTime = 1f;
 
-    static readonly float Height = 8;
-    static readonly float BottomPadding = 5;
-    static readonly float SidePadding = 5;
+    static readonly float Height = 16;
+    static readonly float BottomPadding = 0;
+    static readonly float SidePadding = 0;
 
     float PerecentDone = 0f;
 

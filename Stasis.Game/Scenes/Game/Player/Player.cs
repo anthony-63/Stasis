@@ -1,5 +1,7 @@
 using System.Numerics;
+using Stasis.Engine;
 using Stasis.Engine.GFX;
+using Stasis.Game.Scenes.Game.HUD;
 using Stasis.Game.Scenes.Game.NoteObject;
 
 namespace Stasis.Game.Scenes.Game.Player;
@@ -15,10 +17,24 @@ public class Player {
     }
 
     public void Hit(int idx) {
-        Score.Hits += 1;
+        Score.Hits++;
+        Score.ScoreValue += 25 * Score.Multipier;
+        Score.Miniplier = Math.Min(8, Score.Miniplier + 1);
+        if(Score.Miniplier >= 8 && Score.Multipier < 8) {
+            Score.Miniplier = 0;
+            Score.Multipier = Math.Min(8, Score.Multipier + 1);
+        }
+
+        Score.Combo++;
+        Score.MaxCombo = Math.Max(Score.MaxCombo, Score.Combo);
     }
     public void Miss(int idx) {
-        Score.Misses += 1;
+        Score.Misses++;
+
+        Score.Miniplier = 0;
+        Score.Multipier = Math.Max(1, Score.Multipier - 1);
+
+        Score.Combo = 0;
     }
 
     public void Update(ref Sprite grid) {

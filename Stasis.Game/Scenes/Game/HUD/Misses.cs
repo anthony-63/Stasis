@@ -6,10 +6,10 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class Accuracy : Label {
-    Label AccValue;
+public class Misses : Label {
+    Label MissesValue;
 
-    public Accuracy() {
+    public Misses() {
         OneLine = true;
 
         Size = new UDim2(0, 0, 1, 0);
@@ -18,24 +18,24 @@ public class Accuracy : Label {
 
         AlignmentX = TextAlignX.Right;
         AlignmentY = TextAlignY.Top;
-        Text = "Accuracy";
+        Text = "Misses";
 
-        TextColor = Color.Lime;
+        TextColor = Color.Maroon;
 
-        Position = new UDim2(0.99f, 0, 0.375f, 0);
-        AccValue = new Label {
+        Position = new UDim2(0.99f, 0, 0.485f, 0);
+        MissesValue = new Label {
             OneLine = true,
-            Text = 100f.ToString("0.00") + "%",
+            Text = "0x",
             AlignmentX = AlignmentX,
             AlignmentY = AlignmentY,
             Position = new UDim2(Position.X.Scale, 0, 0, 35),
             Size = new UDim2(1, 0, 1, 0),
             FontSize = FontSize + 8,
             Font = Font,
-            TextColor = Color.Green,
+            TextColor = Color.Red,
         };
 
-        AddChild(AccValue);
+        AddChild(MissesValue);
     }
 
     public override void Render() {
@@ -43,7 +43,7 @@ public class Accuracy : Label {
     }
 
     public void Update(double dt, Score score) {
-        AccValue.Text = score.Accuracy.ToString("0.00") + "%";
+        MissesValue.Text = score.Misses.ToString() + "x";
         base.Update(dt);
     }
 }

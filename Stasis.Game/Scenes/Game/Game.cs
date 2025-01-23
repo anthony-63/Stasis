@@ -40,7 +40,7 @@ public class GameScene : Scene {
         else Music.Update();
         Player.Update(ref Grid);
         NoteManager?.Update(Player.Cursor);
-        HUD.Update(Music.Time, Player.Score);
+        HUD.Update(dt, Music.Time, Player.Score);
     }
 
     public static void GoToMenu(Window window) {
@@ -56,7 +56,6 @@ public class GameScene : Scene {
         NoteRenderer?.RenderNotes(Player.Cursor);
         Grid.Render();
         Player.EndRender();
-        Raylib.DrawText("Allocated Instances: " + NoteRenderer?.MultiMesh.InstanceCount, 0, 24, 24, Color.White);
-        Raylib.DrawFPS(0, 0);
+        // Raylib.DrawText("Allocated Instances: " + NoteRenderer?.MultiMesh.InstanceCount, 0, 24, 24, Color.White);
     }
 }
