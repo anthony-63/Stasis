@@ -36,7 +36,6 @@ public class ScrollContainer : UiElement {
         if(IsHovering(constantPosition ?? AbsolutePosition)) {
             var mdelt = Raylib.GetMouseWheelMove() * Sensitivity;
             Scroll += mdelt;
-            Logger.Info(Scroll, " ", maxY);
             Scroll = Math.Clamp(Scroll, -maxY, 0);
             var lpos = Position;
             lpos.Y.Offset = Scroll;
