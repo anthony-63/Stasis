@@ -23,7 +23,7 @@ public class Frame : UiElement {
                 Y = AbsolutePosition.Y - BorderWidth,
                 Width = AbsoluteSize.X + BorderWidth * 2,
                 Height = AbsoluteSize.Y + BorderWidth * 2,
-            }, Roundness, 0, BorderColor);
+            }, Roundness, 4, BorderColor);
         }
 
         Raylib.DrawRectangleRounded(new Rectangle {
@@ -31,7 +31,7 @@ public class Frame : UiElement {
             Y = AbsolutePosition.Y,
             Width = AbsoluteSize.X,
             Height = AbsoluteSize.Y,
-        }, Roundness, 0, Color);
+        }, Roundness, 4, Color);
 
         base.Render();
     }

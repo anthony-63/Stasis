@@ -8,38 +8,39 @@ public class ScrollContainer : UiElement {
     public float Scroll = 0f;
     public float Sensitivity = 50f;
 
+    private Vector2? constantPosition;
+    private float maxY = 0;
+    
+    public override void AddChild(IUiElement child) {
+        base.AddChild(child);
+    }
+
     public override void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
         base.UpdateAbsoluteValues(parentSize, parentPosition);
+        constantPosition ??= AbsolutePosition;
     }
 
     void GetMaxYAllChildren(UiElement element, ref float max) {
         foreach(UiElement child in element.Children) {
-            var extra = 0f;
-            if(child is GridContainer grid) extra = grid.Padding;  
-            max = Math.Max(max, child.AbsolutePosition.Y + child.AbsoluteSize.Y + extra);
             if(child.Children.Count > 0) GetMaxYAllChildren(child, ref max);
+            max = Math.Max(max, child.AbsolutePosition.Y - child.AbsoluteSize.Y * 3.5f);
         }
     }
 
     public override void Update(double dt) {
         if(!Visible) return;
-        if(IsHovering()) {
+        if(Scroll >= 0) {
+            maxY = 0;
+            GetMaxYAllChildren(this, ref maxY);
+        }
+        if(IsHovering(constantPosition ?? AbsolutePosition)) {
             var mdelt = Raylib.GetMouseWheelMove() * Sensitivity;
             Scroll += mdelt;
-
-            var maxY = 0f;
-            GetMaxYAllChildren(this, ref maxY);
+            Logger.Info(Scroll, " ", maxY);
             Scroll = Math.Clamp(Scroll, -maxY, 0);
-
-            foreach(UiElement child in Children) {
-                var cpos = child.Position;
-                cpos.Y.Offset = Scroll;
-                child.Position = cpos;
-                
-                if(child.AbsolutePosition.Y > Raylib.GetRenderHeight()) {
-                    child.Visible = false;
-                }
-            }
+            var lpos = Position;
+            lpos.Y.Offset = Scroll;
+            Position = lpos;
         }
         
         base.Update(dt);

@@ -10,6 +10,7 @@ public interface IUiElement {
     public UDim2 Position { get; set; }
     public void Update(double dt);
     public bool IsHovering();
+    public void AddChild(IUiElement child);
     public void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition);
     public void SetAbsoluteValues(Vector2 position, Vector2 size);
     public void Render();

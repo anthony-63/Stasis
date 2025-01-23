@@ -16,7 +16,11 @@ public class Label : UiElement {
     private float lineHeight = 0;
     public float LineHeight => lineHeight;
 
+    public bool OneLine = false;
+
     public Color TextColor = Color.White;
+
+    private string fontPath = "";
 
     public string Font {
         set {
@@ -26,10 +30,12 @@ public class Label : UiElement {
                 font = Raylib.LoadFontEx(value, FontSize, [], 0);
                 LoadedFonts.Add(new(value, FontSize, font));
             }
+            fontPath = value;
         }
+        get => fontPath;
     }
 
-    public Font font = Raylib.GetFontDefault();
+    private Font font = Raylib.GetFontDefault();
     public int FontSize = 18;
     public int FontSpacing = 1;
 
@@ -47,30 +53,34 @@ public class Label : UiElement {
         absoluteTextSize = Vector2.Zero;
         lineHeight = FontSize;
         lines.Clear();
-        var line = "";
-        var lineSize = Vector2.Zero;
-        foreach (char character in Text) {
-            var newLine = character == '\n';
-            var keepCharacter = TextWrapped && !newLine;
-            if (keepCharacter) {
-                var nextLineSize = Raylib.MeasureTextEx(font, line + character, FontSize, FontSpacing);
-                newLine = nextLineSize.X + FontSpacing >= AbsoluteSize.X;
+        if(!OneLine) {
+            var line = "";
+            var lineSize = Vector2.Zero;
+            foreach (char character in Text) {
+                var newLine = character == '\n';
+                var keepCharacter = TextWrapped && !newLine;
+                if (keepCharacter) {
+                    var nextLineSize = Raylib.MeasureTextEx(font, line + character, FontSize, FontSpacing);
+                    newLine = nextLineSize.X + FontSpacing >= AbsoluteSize.X;
+                }
+                if (newLine) {
+                    absoluteTextSize.X = Math.Max(absoluteTextSize.X, lineSize.X);
+                    lineHeight = Math.Max(lineHeight, lineSize.Y);
+                    lines.Add(new(line, lineSize));
+                    line = keepCharacter ? $"{character}" : "";
+                    lineSize = Vector2.Zero;
+                    continue;
+                }
+                line += character;
+                lineSize = Raylib.MeasureTextEx(font, line, FontSize, FontSpacing);
             }
-            if (newLine) {
-                absoluteTextSize.X = Math.Max(absoluteTextSize.X, lineSize.X);
-                lineHeight = Math.Max(lineHeight, lineSize.Y);
-                lines.Add(new(line, lineSize));
-                line = keepCharacter ? $"{character}" : "";
-                lineSize = Vector2.Zero;
-                continue;
-            }
-            line += character;
-            lineSize = Raylib.MeasureTextEx(font, line, FontSize, FontSpacing);
+            absoluteTextSize.X = Math.Max(absoluteTextSize.X, lineSize.X);
+            lineHeight = Math.Max(lineHeight, lineSize.Y);
+            lines.Add(new(line, lineSize));
+            absoluteTextSize.Y = (lineHeight * lines.Count) + (LineSpacing * (lines.Count - 1));
+        } else {
+            lines.Add(new(Text, Raylib.MeasureTextEx(font, Text, FontSize, FontSpacing)));
         }
-        absoluteTextSize.X = Math.Max(absoluteTextSize.X, lineSize.X);
-        lineHeight = Math.Max(lineHeight, lineSize.Y);
-        lines.Add(new(line, lineSize));
-        absoluteTextSize.Y = (lineHeight * lines.Count) + (LineSpacing * (lines.Count - 1));
         base.UpdateAbsoluteValues(parentSize, parentPosition);
     }
 

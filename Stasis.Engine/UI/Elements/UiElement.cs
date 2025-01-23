@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 using Raylib_cs;
 
 namespace Stasis.Engine.UI.Elements;
@@ -8,6 +9,7 @@ public class UiElement : IUiElement {
     private Vector2 absolutePosition = Vector2.Zero;
 
     private bool visible = true;
+    private bool culled = false;
 
     public UiElementAnchor Anchor = UiElementAnchor.TopLeft;
 
@@ -25,11 +27,12 @@ public class UiElement : IUiElement {
     public List<IUiElement> Children = new();
 
     public virtual void Update(double dt) {
+        if(culled) return;
         foreach (var element in Children) element.Update(dt);
     }
 
     public virtual bool IsHovering() {
-        if(!visible) return false;
+        if(!visible || culled) return false;
         return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle {
             X = AbsolutePosition.X,
             Y = AbsolutePosition.Y,
@@ -38,8 +41,19 @@ public class UiElement : IUiElement {
         });
     }
 
+    public virtual bool IsHovering(Vector2 position) {
+        if(!visible || culled) return false;
+        return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle {
+            X = position.X,
+            Y = position.Y,
+            Width = AbsoluteSize.X,
+            Height = AbsoluteSize.Y,
+        });
+    }
+
     public virtual void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
         if(!visible) return;
+
         absoluteSize = new Vector2(
             (parentSize.X * Size.X.Scale) + Size.X.Offset,
             (parentSize.Y * Size.Y.Scale) + Size.Y.Offset
@@ -60,6 +74,10 @@ public class UiElement : IUiElement {
             case UiElementAnchor.BottomMiddle: absolutePosition = Vector2.Subtract(absolutePosition, new Vector2(absoluteSize.X / 2f, absoluteSize.Y)); break;
             case UiElementAnchor.BottomRight: absolutePosition = Vector2.Subtract(absolutePosition, new Vector2(absoluteSize.X, absoluteSize.Y)); break;
         }
+        
+        culled = (Raylib.GetRenderHeight() < absolutePosition.Y || absolutePosition.Y + absoluteSize.Y < 0) && this is not GridContainer && this is not ScrollContainer;
+
+        if(culled) return;
 
         foreach (var element in Children) {
             element.UpdateAbsoluteValues(absoluteSize, absolutePosition);
@@ -67,13 +85,17 @@ public class UiElement : IUiElement {
     }
 
     public virtual void Render() {
-        if(!visible) return;
+        if(!visible || culled) return;
         foreach (var element in Children) element.Render();
     }
 
     public virtual void SetAbsoluteValues(Vector2 position, Vector2 size) {
         absolutePosition = position;
         absoluteSize = size;
+    }
+
+    public virtual void AddChild(IUiElement child) {
+        Children.Add(child);
     }
 }
 

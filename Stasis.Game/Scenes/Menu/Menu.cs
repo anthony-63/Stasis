@@ -24,6 +24,7 @@ public class MenuScene : Scene {
         MapGrid = new ScrollContainer() {
             Size = new UDim2(1f, 0, 1f, 0),
         };
+
         var mapList = new GridContainer() {
             Padding = 6,
             ItemsPerRow = 8,
@@ -51,31 +52,32 @@ public class MenuScene : Scene {
             };
 
             if(map.Cover.Length > 0) {
-                button.Children.Add(new ImageFrame {
+                button.AddChild(new ImageFrame {
                     ImageData = map.Cover,
                     Size = new UDim2(1, 0, 1, 0),
                 });
-                button.Children.Add(new Frame {
+                button.AddChild(new Frame {
                     Size = new UDim2(1, 0, 1, 0),
                     Color = new Color(12, 12, 12, 200),
                 });
-                button.Children.Add(button.Children.First());
+                button.AddChild(button.Children.First());
                 button.Children.RemoveAt(0);
             }
-            button.Children.Add(new Label {
+            button.AddChild(new Label {
                 Size = new UDim2(0.9f, 0, 0.9f, 0),
                 Position = new UDim2(0.05f, 0, 0.05f, 0),
                 AlignmentX = TextAlignX.Left,
                 AlignmentY = TextAlignY.Top,
                 Text = map.Title,
-                Font = Global.UIFont,
                 FontSize = 18,
+                Font = Global.UIFont,
                 TextWrapped = true,
             });
-            mapList.Children.Add(button);
+            mapList.AddChild(button);
         }
 
-        MapGrid.Children.Add(mapList);
+        mapList.UpdateAbsoluteValues(new Vector2(Raylib.GetRenderWidth(), Raylib.GetRenderHeight()), new Vector2(0, 0));
+        MapGrid.AddChild(mapList);
 
         return MapGrid;
     }
@@ -91,9 +93,9 @@ public class MenuScene : Scene {
             Color = Raylib.ColorFromNormalized(new Vector4(0.05f, 0.05f, 0.05f, 1f)),
             Size = new UDim2(1f, 0, 0.05f, 0),
         };
-        Root.Children.Add(MainFrame);
-        Root.Children.Add(MapGrid);
-        Root.Children.Add(MetaFrame);
+        Root.AddChild(MainFrame);
+        Root.AddChild(MapGrid);
+        Root.AddChild(MetaFrame);
     }
 
     private void SelectMap(IBeatmapSet map) {

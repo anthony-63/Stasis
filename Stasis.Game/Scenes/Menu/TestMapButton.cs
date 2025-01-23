@@ -19,7 +19,7 @@ public class TestMapButton : Button {
     public delegate void MapSelectEvent(IBeatmapSet map);
     
     public TestMapButton(IBeatmapSet map, MapSelectEvent SelectMap) {
-        Children.Add(HoverFrame);
+        AddChild(HoverFrame);
         PressedOnce += () => SelectMap(map);
     }
 
