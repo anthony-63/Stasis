@@ -1,14 +1,11 @@
 using System.Numerics;
-using System.Runtime.Intrinsics;
 using Raylib_cs;
 using Stasis.Content.Beatmaps;
-using Stasis.Engine;
 using Stasis.Engine.Scene;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Loading;
 using Stasis.Game.Scenes.MapInfo;
-using TinyTween;
 
 namespace Stasis.Game.Scenes.Menu;
 
@@ -95,6 +92,15 @@ public class MenuScene : Scene {
         Root.AddChild(MapGrid);
         Root.AddChild(MetaFrame);
         Root.AddChild(Global.BasicFPSLabel);
+
+        SetRPC();
+    }
+
+    public void SetRPC() {
+        Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
+            Details = "Viewing Map List",
+            Timestamps = DiscordRPC.Timestamps.Now,
+        });
     }
 
     private void SelectMap(IBeatmapSet map) {

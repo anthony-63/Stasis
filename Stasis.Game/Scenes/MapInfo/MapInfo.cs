@@ -1,15 +1,9 @@
-using System.Numerics;
-using System.Runtime.Intrinsics;
 using Raylib_cs;
-using Stasis.Content.Beatmaps;
-using Stasis.Engine;
 using Stasis.Engine.Scene;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Game;
-using Stasis.Game.Scenes.Loading;
 using Stasis.Game.Scenes.Menu;
-using TinyTween;
 
 namespace Stasis.Game.Scenes.MapInfo;
 
@@ -136,10 +130,16 @@ public class MapInfoScene : Scene {
         Root.AddChild(BackButton);
         Root.AddChild(PlayButton);
         Root.AddChild(Global.BasicFPSLabel);
+
+        Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
+            Details = "Viewing map '" + (Global.SelectedMap?.Title ?? "") + "'",
+            Timestamps = DiscordRPC.Timestamps.Now,
+        });
     }
 
     private void GoToMenu() {
         Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
+        Global.LoadedMenu?.SetRPC();
         Window?.SceneHandler.AddScene(Global.LoadedMenu ?? new MenuScene());
     }
 

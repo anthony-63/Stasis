@@ -2,6 +2,7 @@ using Raylib_cs;
 using Stasis.Content.Beatmaps;
 using Stasis.Content.Settings;
 using Stasis.Engine.UI;
+using Stasis.Engine.Discord;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Menu;
 
@@ -16,6 +17,8 @@ public static class Global {
     public static string UIFont = "Assets/Game/font.ttf";
 
     public static MenuScene? LoadedMenu = null;
+
+    public static RPCClient Discord = new();
 
     public static Label BasicFPSLabel = new() {
         TextColor = Color.Lime,

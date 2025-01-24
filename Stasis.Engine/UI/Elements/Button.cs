@@ -22,7 +22,7 @@ public class Button : UiElement {
     public event ButtonEvent? Hovering;
 
     public override void Update(double dt) {
-        if(IsHovering() && State != ButtonState.Pressed && State != ButtonState.Holding && Raylib.IsMouseButtonDown(MouseButton.Left)) {
+        if(IsHovering() && State != ButtonState.Pressed && State != ButtonState.Holding && Raylib.IsMouseButtonPressed(MouseButton.Left)) {
             State = ButtonState.Pressed;
             if(PressedOnce is not null) PressedOnce();
         } else if(IsHovering() && Raylib.IsMouseButtonDown(MouseButton.Left) && State == ButtonState.Pressed | State == ButtonState.Holding) {

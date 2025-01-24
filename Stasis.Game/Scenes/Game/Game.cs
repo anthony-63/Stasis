@@ -35,6 +35,11 @@ public class GameScene : Scene {
     public GameScene() {
         HUD.AddChild(FadeFrame);
         InputManager.HideCursor();
+
+        Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
+            Details = "Playing map '" + (Global.SelectedMap?.Title ?? "") + "'",
+            Timestamps = DiscordRPC.Timestamps.FromTimeSpan(TimeSpan.FromSeconds(Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0)),
+        });
     }
 
     public override void Update(double dt) {
