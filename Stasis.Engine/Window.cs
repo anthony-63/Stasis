@@ -8,6 +8,7 @@ public class Window {
     public SceneHandler SceneHandler = new SceneHandler();
 
     public Window(int width, int height, string title) {
+        Raylib.SetConfigFlags(ConfigFlags.Msaa4xHint | ConfigFlags.HighDpiWindow);
         Raylib.InitAudioDevice();
         Logger.Info("Initialized Audio");
         Raylib.InitWindow(width, height, title);

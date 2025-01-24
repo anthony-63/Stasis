@@ -170,11 +170,11 @@ namespace TinyTween
     public class Tween<T> : ITween<T>
         where T : struct
     {
-        private readonly LerpFunc<T> lerpFunc;
+        private readonly LerpFunc<T>? lerpFunc;
 
         private float currentTime;
         private float duration;
-        private ScaleFunc scaleFunc;
+        private ScaleFunc? scaleFunc;
         private TweenState state;
 
         private T start;
@@ -317,7 +317,8 @@ namespace TinyTween
         /// </summary>
         private void UpdateValue()
         {
-            value = lerpFunc(start, end, scaleFunc(currentTime / duration));
+            if(lerpFunc is not null && scaleFunc is not null)
+                value = lerpFunc(start, end, scaleFunc(currentTime / duration));
         }
     }
 
