@@ -18,20 +18,45 @@ public class Frame : UiElement {
     public override void Render() {
         if(!Visible) return;
         if(BorderWidth > 0) {
+            if(Roundness > 0) {
+                Raylib.DrawRectangleRounded(new Rectangle {
+                    X = AbsolutePosition.X - BorderWidth,
+                    Y = AbsolutePosition.Y - BorderWidth,
+                    Width = AbsoluteSize.X + BorderWidth * 2,
+                    Height = AbsoluteSize.Y + BorderWidth * 2,
+                }, Roundness, 16, Color);
+            } else {
+                Raylib.DrawRectangleRec(new Rectangle {
+                    X = AbsolutePosition.X - BorderWidth,
+                    Y = AbsolutePosition.Y - BorderWidth,
+                    Width = AbsoluteSize.X + BorderWidth * 2,
+                    Height = AbsoluteSize.Y + BorderWidth * 2,
+                }, Color);
+            }
             Raylib.DrawRectangleRounded(new Rectangle {
                 X = AbsolutePosition.X - BorderWidth,
                 Y = AbsolutePosition.Y - BorderWidth,
                 Width = AbsoluteSize.X + BorderWidth * 2,
                 Height = AbsoluteSize.Y + BorderWidth * 2,
-            }, Roundness, 4, BorderColor);
+            }, Roundness, 8, BorderColor);
         }
 
-        Raylib.DrawRectangleRounded(new Rectangle {
-            X = AbsolutePosition.X,
-            Y = AbsolutePosition.Y,
-            Width = AbsoluteSize.X,
-            Height = AbsoluteSize.Y,
-        }, Roundness, 4, Color);
+        if(Roundness > 0) {
+            Raylib.DrawRectangleRounded(new Rectangle {
+                X = AbsolutePosition.X,
+                Y = AbsolutePosition.Y,
+                Width = AbsoluteSize.X,
+                Height = AbsoluteSize.Y,
+            }, Roundness,8, Color);
+        } else {
+            Raylib.DrawRectangleRec(new Rectangle {
+                X = AbsolutePosition.X,
+                Y = AbsolutePosition.Y,
+                Width = AbsoluteSize.X,
+                Height = AbsoluteSize.Y,
+            }, Color);
+        }
+
 
         base.Render();
     }
