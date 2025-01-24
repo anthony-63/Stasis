@@ -25,10 +25,6 @@ public class FPS : Label {
         Position = new UDim2(0.995f, 0, 0, 0);
     }
 
-    public override void Render() {
-        base.Render();
-    }
-
     public void UpdatePos() {
         var pos = Position;
         pos.Y.Offset = Raylib.GetRenderHeight() - 60;

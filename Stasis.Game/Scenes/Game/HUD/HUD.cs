@@ -15,6 +15,7 @@ public class HUDRoot: UiRoot {
     public Combo Combo = new();
     public SongArtist SongArtist = new();
     public Multiplier Multiplier = new();
+    public Health Health = new();
 
     public HUDRoot() {
         Timer.MaxValue = Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0f;
@@ -27,6 +28,7 @@ public class HUDRoot: UiRoot {
         AddChild(Combo);
         AddChild(SongArtist);
         AddChild(Multiplier);
+        AddChild(Health);
     }
 
     public void Render() {
@@ -35,13 +37,14 @@ public class HUDRoot: UiRoot {
     }
 
     public void Update(double dt, float currentTime, Score score) {
-        Timer.Value = currentTime;
-        Accuracy.Update(dt, score);
-        Misses.Update(dt, score);
-        Progress.Update(dt, currentTime);
-        ScoreValue.Update(dt, score);
-        Combo.Update(dt, score);
-        Multiplier.Update(dt, score);
+        Timer.Update(currentTime);
+        Health.Update(score);
+        Accuracy.Update(score);
+        Misses.Update(score);
+        Progress.Update(currentTime);
+        ScoreValue.Update(score);
+        Combo.Update(score);
+        Multiplier.Update(score);
         base.Update(dt);
     }
 }

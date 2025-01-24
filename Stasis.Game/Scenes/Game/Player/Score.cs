@@ -25,5 +25,10 @@ public class Score {
     public int Multipier = 1;
     public int Miniplier = 0;
 
+    public float Health = 100;
+    public float HealthStep = 15;
+
+    public bool Failed = false;
+
     public double Accuracy => Hits + Misses > 0 ? Hits / (double)(Misses + Hits) * 100.0 : 100.0;
 }

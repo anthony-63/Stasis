@@ -23,12 +23,4 @@ public class SongArtist : Label {
 
         Position = new UDim2(0.5f, 0, 0.01f, 0);
     }
-
-    public override void Render() {
-        base.Render();
-    }
-
-    public override void Update(double dt) {
-        base.Update(dt);
-    }
 }

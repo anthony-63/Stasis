@@ -4,6 +4,7 @@ using Raylib_cs;
 using Stasis.Engine;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
+using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
@@ -16,5 +17,9 @@ public class Timer : ProgressBar {
         Position = new UDim2(0, 0, 1, 0);
         Foreground.Color = Color.SkyBlue;
         Background.Color = Color.DarkGray;
+    }
+
+    public void Update(float currentTime) {
+        Value = currentTime;
     }
 }

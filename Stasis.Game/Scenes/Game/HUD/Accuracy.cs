@@ -38,12 +38,7 @@ public class Accuracy : Label {
         AddChild(AccValue);
     }
 
-    public override void Render() {
-        base.Render();
-    }
-
-    public void Update(double dt, Score score) {
+    public void Update(Score score) {
         AccValue.Text = score.Accuracy.ToString("0.00") + "%";
-        base.Update(dt);
     }
 }

@@ -29,6 +29,7 @@ public class SyncAudioPlayer {
         AudioStream = Raylib.LoadMusicStreamFromMemory(AudioUtil.GetFileFormat(AudioData), AudioData);
         Raylib.SetMusicVolume(AudioStream, volume);
         Raylib.SetMusicPitch(AudioStream, speed);
+        AudioStream.Looping = false;
         Speed = speed;
     }
 

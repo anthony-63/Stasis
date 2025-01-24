@@ -32,12 +32,12 @@ public class Multiplier : Label {
             Position = new UDim2(0, 0, 0, 45),
             Size = new UDim2(0, 225, 0, 12),
             Background = new() {
-                // Roundness = 1.5f,
+                Roundness = 1.5f,
                 Size = UDim2.Fill,
                 Color = Color.DarkGray,
             },
             Foreground = new() {
-                // Roundness = 1.5f,
+                Roundness = 1.5f,
                 Size = UDim2.Fill,
                 Color = Color.SkyBlue,
             },
@@ -60,17 +60,11 @@ public class Multiplier : Label {
         AddChild(Encouragement);
     }
 
-    public override void Render() {
-        base.Render();
-    }
 
-
-    public void Update(double dt, Score score) {
+    public void Update(Score score) {
         Text = score.Multipier + "X";
         Value.Value = score.Multipier;
 
         Encouragement.Text = EncouragementMessages.Messages[score.Multipier-1];
-        
-        base.Update(dt);
     }
 }

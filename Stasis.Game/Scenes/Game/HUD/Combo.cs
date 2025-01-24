@@ -23,19 +23,14 @@ public class Combo : Label {
         Position = new UDim2(0.005f, 0, 0, 0);
     }
 
-    public override void Render() {
-        base.Render();
-    }
-
     public void UpdatePos() {
         var pos = Position;
         pos.Y.Offset = Raylib.GetRenderHeight() - 100;
         Position = pos;
     }
 
-    public void Update(double dt, Score score) {
+    public void Update(Score score) {
         Text = score.Combo.ToString() + "x";
         UpdatePos();
-        base.Update(dt);
     }
 }

@@ -42,8 +42,7 @@ public class Misses : Label {
         base.Render();
     }
 
-    public void Update(double dt, Score score) {
+    public void Update(Score score) {
         MissesValue.Text = score.Misses.ToString() + "x";
-        base.Update(dt);
     }
 }

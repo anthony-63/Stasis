@@ -39,13 +39,11 @@ public class Progress : Label {
         Position = pos;
     }
 
-    public void Update(double dt, float currentTime) {
-        // Text = 
+    public void Update(float currentTime) {
         var progressTimespan = TimeSpan.FromSeconds(currentTime);
         var progressString = String.Format("{0:D1}:{1:D2}", progressTimespan.Minutes, progressTimespan.Seconds);
 
         Text = progressString + "/" + MapLengthString;
         UpdatePos();
-        base.Update(dt);
     }
 }

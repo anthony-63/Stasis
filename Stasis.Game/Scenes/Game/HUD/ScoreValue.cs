@@ -34,9 +34,8 @@ public class ScoreValue : Label {
         Position = pos;
     }
 
-    public void Update(double dt, Score score) {
+    public void Update(Score score) {
         Text = score.ScoreValue.ToString();
         UpdatePos();
-        base.Update(dt);
     }
 }
