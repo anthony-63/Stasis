@@ -18,8 +18,6 @@ public class MenuScene : Scene {
     public ScrollContainer MapGrid;
     public Frame MainFrame;
 
-    Font Font = Raylib.LoadFontEx("Assets/Game/font.ttf", 18, [], 0);
-
     public ScrollContainer MakeMapList() {
         MapGrid = new ScrollContainer() {
             Size = new UDim2(1f, 0, 1f, 0),
@@ -54,10 +52,10 @@ public class MenuScene : Scene {
             if(map.Cover.Length > 0) {
                 button.AddChild(new ImageFrame {
                     ImageData = map.Cover,
-                    Size = new UDim2(1, 0, 1, 0),
+                    Size = UDim2.Fill,
                 });
                 button.AddChild(new Frame {
-                    Size = new UDim2(1, 0, 1, 0),
+                    Size = UDim2.Fill,
                     Color = new Color(12, 12, 12, 200),
                 });
                 button.AddChild(button.Children.First());
@@ -96,6 +94,7 @@ public class MenuScene : Scene {
         Root.AddChild(MainFrame);
         Root.AddChild(MapGrid);
         Root.AddChild(MetaFrame);
+        Root.AddChild(Global.BasicFPSLabel);
     }
 
     private void SelectMap(IBeatmapSet map) {
@@ -106,8 +105,8 @@ public class MenuScene : Scene {
     }
 
     public override void Render() {
+        Global.BasicFPSLabel.Text = Raylib.GetFPS().ToString() + " FPS";
         Root.Render(Raylib.GetRenderWidth(), Raylib.GetRenderHeight());
-        Raylib.DrawFPS(10, 10);
     }
 
     public override void Update(double dt) {

@@ -73,7 +73,7 @@ public class MapInfoScene : Scene {
         };
 
         Frame buttonFrame = new Frame() {
-            Size = new UDim2(1, 0, 1, 0),
+            Size = UDim2.Fill,
             Color = new Color(60, 60, 60, 255),
             BorderWidth = 2,
             Roundness = 0.1f,
@@ -85,7 +85,7 @@ public class MapInfoScene : Scene {
             Anchor = UiElementAnchor.MiddleLeft,
             Label = new Label() {
                 Text = "Back",
-                Size = new UDim2(1, 0, 1, 0),
+                Size = UDim2.Fill,
                 AlignmentX = TextAlignX.Center,
                 // AlignmentY = TextAlignY.Middle,
                 FontSize = 24,
@@ -104,7 +104,7 @@ public class MapInfoScene : Scene {
             Anchor = UiElementAnchor.MiddleRight,
             Label = new Label() {
                 Text = "Play",
-                Size = new UDim2(1, 0, 1, 0),
+                Size = UDim2.Fill,
                 AlignmentX = TextAlignX.Center,
                 // AlignmentY = TextAlignY.Middle,
                 FontSize = 24,
@@ -135,6 +135,7 @@ public class MapInfoScene : Scene {
         Root.AddChild(MainFrame);
         Root.AddChild(BackButton);
         Root.AddChild(PlayButton);
+        Root.AddChild(Global.BasicFPSLabel);
     }
 
     private void GoToMenu() {
@@ -148,8 +149,8 @@ public class MapInfoScene : Scene {
     }
 
     public override void Render() {
+        Global.BasicFPSLabel.Text = Raylib.GetFPS().ToString() + " FPS";
         Root.Render(Raylib.GetRenderWidth(), Raylib.GetRenderHeight());
-        Raylib.DrawFPS(10, 10);
     }
 
     public override void Update(double dt) {
