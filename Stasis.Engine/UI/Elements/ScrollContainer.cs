@@ -10,10 +10,6 @@ public class ScrollContainer : UiElement {
 
     private Vector2? constantPosition;
     private float maxY = 0;
-    
-    public override void AddChild(IUiElement child) {
-        base.AddChild(child);
-    }
 
     public override void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
         base.UpdateAbsoluteValues(parentSize, parentPosition);
@@ -37,9 +33,7 @@ public class ScrollContainer : UiElement {
             var mdelt = Raylib.GetMouseWheelMove() * Sensitivity;
             Scroll += mdelt;
             Scroll = Math.Clamp(Scroll, -maxY, 0);
-            var lpos = Position;
-            lpos.Y.Offset = Scroll;
-            Position = lpos;
+            Position.Y.Offset = Scroll;
         }
         
         base.Update(dt);
