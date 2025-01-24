@@ -12,7 +12,7 @@ public class Combo : Label {
 
         Size = new UDim2(0, 0, 1, 0);
         FontSize = 48;
-        Font = "Assets/Game/font.ttf";
+        Font = Global.UIFont;
 
         AlignmentX = TextAlignX.Left;
         AlignmentY = TextAlignY.Top;

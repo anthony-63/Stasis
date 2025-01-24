@@ -10,9 +10,9 @@ public class SongArtist : Label {
     public SongArtist() {
         OneLine = true;
 
-        Size = new UDim2(1, 0, 1, 0);
+        Size = UDim2.Fill;
         FontSize = 48;
-        Font = "Assets/Game/font.ttf";
+        Font = Global.UIFont;
 
         AlignmentX = TextAlignX.Center;
         AlignmentY = TextAlignY.Top;

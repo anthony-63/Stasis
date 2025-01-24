@@ -2,32 +2,19 @@ using System.Globalization;
 using System.Numerics;
 using Raylib_cs;
 using Stasis.Engine;
+using Stasis.Engine.UI;
+using Stasis.Engine.UI.Elements;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class Timer {
-    public float EndTime = 1f;
-
+public class Timer : ProgressBar {
     static readonly float Height = 16;
-    static readonly float BottomPadding = 0;
-    static readonly float SidePadding = 0;
 
-    float PerecentDone = 0f;
-
-    public void Render() {
-        Raylib.DrawRectanglePro(new Rectangle {
-            X = SidePadding, Y = Raylib.GetRenderHeight() - Height - BottomPadding,
-            Height = Height,
-            Width = Raylib.GetRenderWidth() - SidePadding * 2f,
-        }, Vector2.Zero, 0, Raylib.ColorAlpha(Color.DarkGray, 0.5f));
-        Raylib.DrawRectanglePro(new Rectangle {
-            X = SidePadding, Y = Raylib.GetRenderHeight() - Height - BottomPadding,
-            Height = Height,
-            Width = Math.Min(PerecentDone, 1.0f) * (Raylib.GetRenderWidth() - SidePadding * 2f),
-        }, Vector2.Zero, 0, Color.SkyBlue);
-    }
-
-    public void Update(float currentTime) {
-        PerecentDone = (currentTime == 0 ? 1f : currentTime) / EndTime;
+    public Timer() {
+        Anchor = UiElementAnchor.BottomLeft;
+        Size = new UDim2(1, 0, 0, Height);
+        Position = new UDim2(0, 0, 1, 0);
+        Foreground.Color = Color.SkyBlue;
+        Background.Color = Color.DarkGray;
     }
 }

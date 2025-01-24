@@ -17,8 +17,9 @@ public class HUDRoot: UiRoot {
     public Multiplier Multiplier = new();
 
     public HUDRoot() {
-        Timer.EndTime = Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0f;
+        Timer.MaxValue = Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0f;
         AddChild(Accuracy);
+        AddChild(Timer);
         AddChild(Misses);
         AddChild(FPS);
         AddChild(Progress);
@@ -29,12 +30,12 @@ public class HUDRoot: UiRoot {
     }
 
     public void Render() {
-        Timer.Render();
+        // Timer.Render();
         base.Render(Raylib.GetRenderWidth(), Raylib.GetRenderHeight());
     }
 
     public void Update(double dt, float currentTime, Score score) {
-        Timer.Update(currentTime);
+        Timer.Value = currentTime;
         Accuracy.Update(dt, score);
         Misses.Update(dt, score);
         Progress.Update(dt, currentTime);

@@ -18,7 +18,7 @@ public class Progress : Label {
 
         Size = new UDim2(0, 0, 1, 0);
         FontSize = 38;
-        Font = "Assets/Game/font.ttf";
+        Font = Global.UIFont;
 
         AlignmentX = TextAlignX.Right;
         AlignmentY = TextAlignY.Top;

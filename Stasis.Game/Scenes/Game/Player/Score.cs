@@ -1,5 +1,18 @@
 namespace Stasis.Game.Scenes.Game.Player;
 
+public static class EncouragementMessages {
+    public static string[] Messages = {
+        "Ehhh....",
+        "Getting There!",
+        "Doing Alright!",
+        "Looking Better!",
+        "Note Slayer!",
+        "Note Destroyer!",
+        "Note Annihilator!",
+        "Note KING!",
+    };
+}
+
 public class Score {
     public int Misses = 0;
     public int Hits = 0;

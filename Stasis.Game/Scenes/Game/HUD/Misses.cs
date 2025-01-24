@@ -14,7 +14,7 @@ public class Misses : Label {
 
         Size = new UDim2(0, 0, 1, 0);
         FontSize = 48;
-        Font = "Assets/Game/font.ttf";
+        Font = Global.UIFont;
 
         AlignmentX = TextAlignX.Right;
         AlignmentY = TextAlignY.Top;
@@ -29,7 +29,7 @@ public class Misses : Label {
             AlignmentX = AlignmentX,
             AlignmentY = AlignmentY,
             Position = new UDim2(Position.X.Scale, 0, 0, 35),
-            Size = new UDim2(1, 0, 1, 0),
+            Size = UDim2.Fill,
             FontSize = FontSize + 8,
             Font = Font,
             TextColor = Color.Red,

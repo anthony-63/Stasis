@@ -1,5 +1,7 @@
+using System.Formats.Asn1;
 using System.Numerics;
 using Raylib_cs;
+using Stasis.Engine;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Game.Player;
@@ -7,15 +9,16 @@ using Stasis.Game.Scenes.Game.Player;
 namespace Stasis.Game.Scenes.Game.HUD;
 
 public class Multiplier : Label {
-    Frame BG;
-    Frame FG;
+    ProgressBar Value;
+
+    Label Encouragement;
 
     public Multiplier() {
         OneLine = true;
 
         Size = new UDim2(0, 0, 1, 0);
         FontSize = 52;
-        Font = "Assets/Game/font.ttf";
+        Font = Global.UIFont;
 
         AlignmentX = TextAlignX.Left;
         AlignmentY = TextAlignY.Top;
@@ -23,23 +26,38 @@ public class Multiplier : Label {
 
         TextColor = Color.SkyBlue;
 
-        Position = new UDim2(0.005f, 0, 0.495f, 0);
+        Position = new UDim2(0.005f, 0, 0.40f, 0);
 
-        BG = new() {
-            Roundness = 0.4f,
-            Color = Color.DarkGray,
+        Value = new() {
             Position = new UDim2(0, 0, 0, 45),
             Size = new UDim2(0, 225, 0, 12),
+            Background = new() {
+                // Roundness = 1.5f,
+                Size = UDim2.Fill,
+                Color = Color.DarkGray,
+            },
+            Foreground = new() {
+                // Roundness = 1.5f,
+                Size = UDim2.Fill,
+                Color = Color.SkyBlue,
+            },
+            Value = 1,
+            MaxValue = 8,
         };
-        FG = new() {
-            Roundness = 0.4f,
-            Color = Color.SkyBlue,
-            Size = new UDim2(1f / 8f, 0, 1, 0),
+        
+        Encouragement = new() {
+            FontSize = 24,
+            Font = Global.UIFont,
+            Size = Size,
+            AlignmentX = TextAlignX.Left,
+            AlignmentY = TextAlignY.Top,
+            Position = new UDim2(0, 0, 0, 57),
+            Text = EncouragementMessages.Messages[0],
+            OneLine = true,
         };
 
-        BG.AddChild(FG);
-
-        AddChild(BG);
+        AddChild(Value);
+        AddChild(Encouragement);
     }
 
     public override void Render() {
@@ -49,11 +67,10 @@ public class Multiplier : Label {
 
     public void Update(double dt, Score score) {
         Text = score.Multipier + "X";
+        Value.Value = score.Multipier;
 
-        var sz = FG.Size;
-        sz.X.Scale = score.Multipier / 8f;
-        FG.Size = sz;
-
+        Encouragement.Text = EncouragementMessages.Messages[score.Multipier-1];
+        
         base.Update(dt);
     }
 }
