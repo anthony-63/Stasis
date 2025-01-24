@@ -19,6 +19,7 @@ public struct UDim2 {
     public UDim Y;
 
     public static UDim2 Zero => new UDim2(0, 0, 0, 0);
+    public static UDim2 Fill => new UDim2(1, 0, 1, 0);
 
     public UDim2(UDim x, UDim y) {
         X = x;
