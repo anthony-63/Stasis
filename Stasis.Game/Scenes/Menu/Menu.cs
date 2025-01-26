@@ -101,6 +101,7 @@ public class MenuScene : Scene {
     }
 
 
+    #pragma warning disable CS8618
     public MenuScene() {
         MainFrame = new Frame() {
             Size = new UDim2(1f, 0, 1, 0),
@@ -200,6 +201,7 @@ public class MenuScene : Scene {
 
         SetRPC();
     }
+    #pragma warning restore CS8618
 
     public void SetRPC() {
         Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
@@ -237,7 +239,7 @@ public class MenuScene : Scene {
         if(LastSearch != SearchBox.Text.Text) MapGrid.Scroll = 0;
         foreach(UiElement button in MapGrid.Children[0].Children) {
             if(button is TestMapButton mapButton) {
-                button.IgnoreUpdate = SearchBox.IsHovering() || ReloadMaps.IsHovering();
+                button.IgnoreUpdate = MetaFrame.IsHovering();
                 button.Visible =
                     mapButton.Map.Title.Contains(SearchBox.Text.Text, StringComparison.CurrentCultureIgnoreCase) ||
                     mapButton.Map.Artist.Contains(SearchBox.Text.Text, StringComparison.CurrentCultureIgnoreCase) ||
