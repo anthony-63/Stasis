@@ -1,3 +1,4 @@
+using Raylib_cs;
 using Stasis.Content.Beatmaps;
 using Stasis.Content.Settings;
 using Stasis.Engine;
@@ -19,6 +20,7 @@ public class NoteObjectManager {
     public NoteEventHandler? Hit;
     public NoteEventHandler? Miss;
 
+    public bool Skippable = false;
 
     public NoteObjectManager(GameScene game, Player.Player player) {
         Game = game;
@@ -28,8 +30,17 @@ public class NoteObjectManager {
     }
 
     public void Update(Cursor cursor) {
+        UpdateSkippable(Game.Music);
         UpdateNotes(Game.Music, cursor);
         UpdateRenderer(Game.NoteRenderer, Game.Music);
+    }
+
+    public void UpdateSkippable(SyncAudioPlayer? music) {
+        Skippable = OrderedNotes[StartProcess].Time - (music?.Time ?? 0f) > 4f;
+    }
+
+    public void SkipToNote(ref SyncAudioPlayer? music) {
+        music?.Seek(OrderedNotes[StartProcess].Time - 2f);
     }
 
     public void UpdateRenderer(NoteObjectRenderer? renderer, SyncAudioPlayer? music) {

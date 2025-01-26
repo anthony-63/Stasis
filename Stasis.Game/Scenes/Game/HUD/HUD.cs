@@ -36,8 +36,8 @@ public class HUDRoot: UiRoot {
         base.Render(Raylib.GetRenderWidth(), Raylib.GetRenderHeight());
     }
 
-    public void Update(double dt, float currentTime, Score score) {
-        Timer.Update(currentTime);
+    public void Update(double dt, float currentTime, Score score, bool skippable) {
+        Timer.Update(currentTime, skippable);
         Health.Update(score);
         Accuracy.Update(score);
         Misses.Update(score);

@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using Raylib_cs;
 using Stasis.Engine;
 using Stasis.Engine.Audio;
@@ -45,6 +46,10 @@ public class GameScene : Scene {
             Ending = true;
         }
 
+        if(Raylib.IsKeyDown(KeyboardKey.Space) && (NoteManager?.Skippable ?? false)) {
+            NoteManager.SkipToNote(ref Music);
+        }
+
         if(Ending) {
             if(Window is not null) UpdateEndSequence(Window, dt);
             return;
@@ -57,7 +62,7 @@ public class GameScene : Scene {
         else Music.Update();
         Player.Update(ref Grid);
         NoteManager?.Update(Player.Cursor);
-        HUD.Update(dt, Music.Time, Player.Score);
+        HUD.Update(dt, Music.Time, Player.Score, NoteManager?.Skippable ?? false);
     }
 
     public static void GoToMenu(Window window) {

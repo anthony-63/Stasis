@@ -46,6 +46,7 @@ public class SyncAudioPlayer {
 
     public void Seek(float from) {
         Raylib.SeekMusicStream(AudioStream, from);
+        Time = from;
     }
 
     public void Update() {
