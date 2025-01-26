@@ -32,6 +32,14 @@ public class TestMapButton : Button {
         base.Update(dt);
     }
 
+    public void Unload() {
+        foreach(var child in Children) {
+            if(child is ImageFrame img) {
+                img.Unload();
+            }
+        }
+    }
+
     public override void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
         base.UpdateAbsoluteValues(parentSize, parentPosition);
     }

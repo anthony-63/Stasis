@@ -24,6 +24,10 @@ public class ImageFrame : UiElement {
     public float BorderWidth = 0f;
     public float Roundness = 0f;
 
+    public void Unload() {
+        if(texture is not null) Raylib.UnloadTexture(texture ?? new());
+    }
+
     private void EnqueueLoadFromMemory(byte[] bytes) {
         new Thread(() => {
             ImageQueue = Raylib.LoadImageFromMemory(".png", bytes);

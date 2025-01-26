@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Raylib_cs;
@@ -16,21 +17,11 @@ public class MenuScene : Scene {
     public ScrollContainer MapGrid;
     public Frame MainFrame;
     public TextBox SearchBox;
+    public Button ReloadMaps;
 
     public string LastSearch = "";
 
-    public ScrollContainer MakeMapList() {
-        MapGrid = new ScrollContainer() {
-            Size = new UDim2(1f, 0, 1f, 0),
-        };
-
-        var mapList = new GridContainer() {
-            Padding = 17,
-            ItemsPerRow = 8,
-            Size = new UDim2(0.97f, 0, 0.95f, 0),
-            Position = new UDim2(0.03f, 0, 0.05f, 0),
-        };
-
+    public void LoadMapButtons(ref GridContainer mapGrid) {
         foreach(IBeatmapSet map in MapLoader.Maps) {
             var testFrame = new Frame {
                 Color = Raylib.ColorFromNormalized(new Vector4(0.1f, 0.1f, 0.1f, 1f)),
@@ -73,8 +64,32 @@ public class MenuScene : Scene {
                 Font = Global.UIFont,
                 TextWrapped = true,
             });
-            mapList.AddChild(button);
+            mapGrid.AddChild(button);
         }
+    }
+
+    public ScrollContainer MakeMapList() {
+        MapGrid = new ScrollContainer() {
+            Size = new UDim2(1f, 0, 1f, 0),
+        };
+
+        var mapList = new GridContainer() {
+            Padding = 17,
+            ItemsPerRow = 8,
+            Size = new UDim2(0.97f, 0, 0.95f, 0),
+            Position = new UDim2(0.03f, 0, 0.05f, 0),
+        };
+
+        ReloadMaps.PressedOnce += () => {
+            MapGrid.Scroll = 0;
+            foreach(TestMapButton button in mapList.Children) {
+                button.Unload();
+            }
+            mapList.Children.Clear();
+            LoadMapButtons(ref mapList);            
+        };
+
+        LoadMapButtons(ref mapList);
 
         mapList.UpdateAbsoluteValues(new Vector2(Raylib.GetRenderWidth(), Raylib.GetRenderHeight()), new Vector2(0, 0));
         MapGrid.AddChild(mapList);
@@ -82,18 +97,52 @@ public class MenuScene : Scene {
         return MapGrid;
     }
 
+
     public MenuScene() {
         MainFrame = new Frame() {
             Size = new UDim2(1f, 0, 1, 0),
             Color = new Color(12, 12, 12, 255),
         };
 
-        MapGrid = MakeMapList();
         MetaFrame = new Frame() {
             Color = Raylib.ColorFromNormalized(new Vector4(0.03f, 0.03f, 0.03f, 1f)),
             Size = new UDim2(0.97f, 0, 0.07f, 0),
             Position = new UDim2(0.03f, 0, -0.02f, 0),
             Roundness = 0.5f,
+        };
+
+        ReloadMaps = new Button() {
+            Position = new UDim2(0.22f, 0, 0.42f, 0),
+            Size = new UDim2(0.09f, 0, 0.4f, 0),
+            Label = new Label() {
+                Text = "Reload Maps",
+                Size = UDim2.Fill,
+                AlignmentX = TextAlignX.Center,
+                FontSize = 18,
+                Font = Global.UIFont,
+                OneLine = true,
+            },
+
+            NormalFrame = new() {
+                Color = Color.DarkGray,
+                BorderWidth = 1f,
+                BorderColor = Color.Gray,
+                Roundness = 3f,
+            },
+
+            PressedFrame = new() {
+                Color = new Color(120, 120, 120, 255),
+                BorderWidth = 1f,
+                BorderColor = Color.Gray,
+                Roundness = 3f,
+            },
+
+            HoveringFrame = new() {
+                Color = new Color(100, 100, 100, 255),
+                BorderWidth = 1f,
+                BorderColor = Color.Gray,
+                Roundness = 3f,
+            },
         };
 
         SearchBox = new TextBox() {
@@ -134,7 +183,10 @@ public class MenuScene : Scene {
             },
         };
 
+        MetaFrame.AddChild(ReloadMaps);
         MetaFrame.AddChild(SearchBox);
+
+        MapGrid = MakeMapList();
 
         Root.AddChild(MainFrame);
         Root.AddChild(MapGrid);
@@ -166,9 +218,9 @@ public class MenuScene : Scene {
     public override void Update(double dt) {
         Root.Update(dt);
         if(LastSearch != SearchBox.Text.Text) MapGrid.Scroll = 0;
-        foreach(UiElement button in ((UiElement)MapGrid.Children[0]).Children) {
+        foreach(UiElement button in MapGrid.Children[0].Children) {
             if(button is TestMapButton mapButton) {
-                button.IgnoreUpdate = SearchBox.IsHovering();
+                button.IgnoreUpdate = SearchBox.IsHovering() || ReloadMaps.IsHovering();
                 button.Visible =
                     mapButton.Map.Title.Contains(SearchBox.Text.Text, StringComparison.CurrentCultureIgnoreCase) ||
                     mapButton.Map.Artist.Contains(SearchBox.Text.Text, StringComparison.CurrentCultureIgnoreCase) ||
