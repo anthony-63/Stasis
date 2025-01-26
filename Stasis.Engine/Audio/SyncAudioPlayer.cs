@@ -11,10 +11,8 @@ public class SyncAudioPlayer {
 
     public float Speed = 1f;
 
-    public float Time = 0;
-    public bool Playing => Raylib.IsMusicStreamPlaying(AudioStream);
-
-    private float LastTime = 0;
+    public float Time = 0f;
+    public bool Playing = false;
 
     public SyncAudioPlayer(string path, float volume, float speed = 1f) {
         AudioStream = Raylib.LoadMusicStream(path);
@@ -34,34 +32,37 @@ public class SyncAudioPlayer {
     }
 
     public void Play(float from) {
+        if(from < 0) {
+            Playing = true;
+            Time = from;
+            return;
+        }
+
         Raylib.PlayMusicStream(AudioStream);
         Raylib.SeekMusicStream(AudioStream, from);
-        LastTime = Now();
+        Playing = true;
+        Time = Raylib.GetMusicTimePlayed(AudioStream);
     }
 
-    private static long Now() {
-        long nano = 10000L * Stopwatch.GetTimestamp();
-        nano /= TimeSpan.TicksPerMillisecond;
-        nano *= 100L;
-        return nano;
+    public void Seek(float from) {
+        Raylib.SeekMusicStream(AudioStream, from);
     }
 
     public void Update() {
-        if(!Raylib.IsMusicStreamPlaying(AudioStream)) return;
+        if(!Playing) return;
+        if(Time < 0) {
+            Time += Raylib.GetFrameTime();
+            return;
+        }
+
+        if(Time >= 0 && Playing && !Raylib.IsMusicStreamPlaying(AudioStream)) {
+            Raylib.PlayMusicStream(AudioStream);
+        }
 
         Raylib.UpdateMusicStream(AudioStream);
-
-        Time += Raylib.GetFrameTime();
-    }
-
-    public void Sync() {
-        if(ShouldSync()) {
-            Console.WriteLine($"Resynced audio: {Time}");
-            Raylib.SeekMusicStream(AudioStream, Time);
+        Time += Raylib.GetFrameTime() * Speed;
+        if(Math.Abs(Time - Raylib.GetMusicTimePlayed(AudioStream)) > 0.5f) {
+            Time = Raylib.GetMusicTimePlayed(AudioStream);
         }
-    }
-
-    private bool ShouldSync() {
-        return Math.Abs(Time - Raylib.GetMusicTimePlayed(AudioStream)) >= 0.05;
     }
 }
