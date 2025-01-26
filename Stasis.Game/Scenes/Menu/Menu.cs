@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Microsoft.VisualBasic;
 using Raylib_cs;
 using Stasis.Content.Beatmaps;
+using Stasis.Engine;
 using Stasis.Engine.Scene;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
@@ -15,6 +17,7 @@ public class MenuScene : Scene {
     public UiRoot Root = new();
     public Frame MetaFrame;
     public ScrollContainer MapGrid;
+    public GridContainer MapList;
     public Frame MainFrame;
     public TextBox SearchBox;
     public Button ReloadMaps;
@@ -73,28 +76,28 @@ public class MenuScene : Scene {
             Size = new UDim2(1f, 0, 1f, 0),
         };
 
-        var mapList = new GridContainer() {
+        MapList = new GridContainer() {
             Padding = 17,
             ItemsPerRow = 8,
             Size = new UDim2(0.97f, 0, 0.95f, 0),
             Position = new UDim2(0.03f, 0, 0.05f, 0),
         };
 
-        ReloadMaps.PressedOnce += () => {
-            MapGrid.Scroll = 0;
-            foreach(TestMapButton button in mapList.Children) {
-                button.Unload();
-            }
-            mapList.Children.Clear();
-            LoadMapButtons(ref mapList);            
-        };
+        LoadMapButtons(ref MapList);
 
-        LoadMapButtons(ref mapList);
-
-        mapList.UpdateAbsoluteValues(new Vector2(Raylib.GetRenderWidth(), Raylib.GetRenderHeight()), new Vector2(0, 0));
-        MapGrid.AddChild(mapList);
+        MapList.UpdateAbsoluteValues(new Vector2(Raylib.GetRenderWidth(), Raylib.GetRenderHeight()), new Vector2(0, 0));
+        MapGrid.AddChild(MapList);
 
         return MapGrid;
+    }
+
+    public void ReloadMapsAction() {
+        MapGrid.Scroll = 0;
+        foreach(TestMapButton button in MapList.Children) {
+            button.Unload();
+        }
+        MapList.Children.Clear();
+        LoadMapButtons(ref MapList);            
     }
 
 
@@ -183,6 +186,8 @@ public class MenuScene : Scene {
             },
         };
 
+        ReloadMaps.PressedOnce += ReloadMapsAction;
+
         MetaFrame.AddChild(ReloadMaps);
         MetaFrame.AddChild(SearchBox);
 
@@ -216,6 +221,18 @@ public class MenuScene : Scene {
     }
 
     public override void Update(double dt) {
+        if(Raylib.IsFileDropped()) {
+            var files = Raylib.GetDroppedFiles();
+            foreach(string file in files) {
+                Logger.Info("Loading drag and dropped map: ", file);
+                var newPath = "Assets/Maps/" + Path.GetFileName(file);
+                File.Copy(file, newPath);
+                MapLoader.LoadMap(newPath);
+            }
+            ReloadMapsAction();
+        }
+
+
         Root.Update(dt);
         if(LastSearch != SearchBox.Text.Text) MapGrid.Scroll = 0;
         foreach(UiElement button in MapGrid.Children[0].Children) {
