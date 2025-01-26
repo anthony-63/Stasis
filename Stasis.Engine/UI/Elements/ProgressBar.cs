@@ -23,7 +23,6 @@ public class ProgressBar : UiElement {
         base.UpdateAbsoluteValues(parentSize, parentPosition);
         Background.UpdateAbsoluteValues(AbsoluteSize, AbsolutePosition);
         Foreground.UpdateAbsoluteValues(Background.AbsoluteSize, Background.AbsolutePosition);
-
     }
 
     void GetMaxYAllChildren(UiElement element, ref float max) {
@@ -35,7 +34,9 @@ public class ProgressBar : UiElement {
 
     public override void Update(double dt) {
         if(!Visible) return;
-        Foreground.Size.X.Scale = Value / MaxValue;
+        
+        var val = Value / MaxValue;
+        Foreground.Size.X.Scale = val;
 
         Foreground.Update(dt);
         Background.Update(dt);

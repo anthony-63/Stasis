@@ -5,9 +5,10 @@ using Stasis.Engine.UI.Elements;
 namespace Stasis.Engine.UI;
 
 public class UiRoot {
-    public List<IUiElement> Children = new();
+    public List<UiElement> Children = new();
 
-    public virtual void AddChild(IUiElement child) {
+    public virtual void AddChild(UiElement child) {
+        child.Root = this;
         Children.Add(child);
     }
 
@@ -19,7 +20,7 @@ public class UiRoot {
             element.Render();
         }
     }
-    
+
     public virtual void Update(double dt) {
         foreach (var element in Children) {
             element.Update(dt);

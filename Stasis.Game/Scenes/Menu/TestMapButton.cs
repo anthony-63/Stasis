@@ -17,13 +17,17 @@ public class TestMapButton : Button {
     };
 
     public delegate void MapSelectEvent(IBeatmapSet map);
+
+    public IBeatmapSet Map;
     
     public TestMapButton(IBeatmapSet map, MapSelectEvent SelectMap) {
         AddChild(HoverFrame);
+        Map = map;
         PressedOnce += () => SelectMap(map);
     }
 
     public override void Update(double dt) {
+        HoverFrame.Roundness = NormalFrame.Roundness;
         HoverFrame.Visible = State == ButtonState.Hovering || State == ButtonState.Pressed;
         base.Update(dt);
     }

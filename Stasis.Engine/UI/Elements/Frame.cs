@@ -10,6 +10,8 @@ public class Frame : UiElement {
     public float BorderWidth = 0f;
     public float Roundness = 0f;
 
+    public float Rotation = 0f;
+
     public override void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
         if(!Visible) return;
         base.UpdateAbsoluteValues(parentSize, parentPosition);
@@ -24,14 +26,14 @@ public class Frame : UiElement {
                     Y = AbsolutePosition.Y - BorderWidth,
                     Width = AbsoluteSize.X + BorderWidth * 2,
                     Height = AbsoluteSize.Y + BorderWidth * 2,
-                }, Roundness, 16, Color);
+                }, Roundness, 16, BorderColor);
             } else {
                 Raylib.DrawRectangleRec(new Rectangle {
                     X = AbsolutePosition.X - BorderWidth,
                     Y = AbsolutePosition.Y - BorderWidth,
                     Width = AbsoluteSize.X + BorderWidth * 2,
                     Height = AbsoluteSize.Y + BorderWidth * 2,
-                }, Color);
+                }, BorderColor);
             }
             Raylib.DrawRectangleRounded(new Rectangle {
                 X = AbsolutePosition.X - BorderWidth,

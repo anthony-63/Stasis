@@ -29,17 +29,21 @@ public class Multiplier : Label {
         Position = new UDim2(0.005f, 0, 0.40f, 0);
 
         Value = new() {
-            Position = new UDim2(0, 0, 0, 45),
-            Size = new UDim2(0, 225, 0, 12),
+            Position = new UDim2(0, 0, 0, 50),
+            Size = new UDim2(0, 175, 0, 12),
             Background = new() {
                 Roundness = 1.5f,
                 Size = UDim2.Fill,
+                BorderWidth = 4,
+                BorderColor = Color.White,
                 Color = Color.DarkGray,
+                Rotation = 90,
             },
             Foreground = new() {
                 Roundness = 1.5f,
                 Size = UDim2.Fill,
                 Color = Color.SkyBlue,
+                Rotation = 90,
             },
             Value = 1,
             MaxValue = 8,
@@ -51,7 +55,7 @@ public class Multiplier : Label {
             Size = Size,
             AlignmentX = TextAlignX.Left,
             AlignmentY = TextAlignY.Top,
-            Position = new UDim2(0, 0, 0, 57),
+            Position = new UDim2(0, 0, 0, 70),
             Text = EncouragementMessages.Messages[0],
             OneLine = true,
         };

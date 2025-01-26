@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.InteropServices;
 using Raylib_cs;
 using Stasis.Content.Beatmaps;
 using Stasis.Engine.Scene;
@@ -14,6 +15,9 @@ public class MenuScene : Scene {
     public Frame MetaFrame;
     public ScrollContainer MapGrid;
     public Frame MainFrame;
+    public TextBox SearchBox;
+
+    public string LastSearch = "";
 
     public ScrollContainer MakeMapList() {
         MapGrid = new ScrollContainer() {
@@ -21,17 +25,18 @@ public class MenuScene : Scene {
         };
 
         var mapList = new GridContainer() {
-            Padding = 6,
+            Padding = 17,
             ItemsPerRow = 8,
-            Size = new UDim2(1f, 0, 0.95f, 0),
-            Position = new UDim2(0f, 0, 0.05f, 0),
+            Size = new UDim2(0.97f, 0, 0.95f, 0),
+            Position = new UDim2(0.03f, 0, 0.05f, 0),
         };
 
         foreach(IBeatmapSet map in MapLoader.Maps) {
             var testFrame = new Frame {
                 Color = Raylib.ColorFromNormalized(new Vector4(0.1f, 0.1f, 0.1f, 1f)),
-                BorderWidth = 1,
-                BorderColor = Color.LightGray,
+                BorderWidth = 3,
+                // Roundness = 0.15f,
+                BorderColor = Color.White,
             };
 
             var button = new TestMapButton(map, SelectMap) {
@@ -85,9 +90,52 @@ public class MenuScene : Scene {
 
         MapGrid = MakeMapList();
         MetaFrame = new Frame() {
-            Color = Raylib.ColorFromNormalized(new Vector4(0.05f, 0.05f, 0.05f, 1f)),
-            Size = new UDim2(1f, 0, 0.05f, 0),
+            Color = Raylib.ColorFromNormalized(new Vector4(0.03f, 0.03f, 0.03f, 1f)),
+            Size = new UDim2(0.97f, 0, 0.07f, 0),
+            Position = new UDim2(0.03f, 0, -0.02f, 0),
+            Roundness = 0.5f,
         };
+
+        SearchBox = new TextBox() {
+            Position = new UDim2(0.01f, 0, 0.42f, 0),
+            Size = new UDim2(0.2f, 0, 0.4f, 0),
+            NormalFrame = new() {
+                Color = Color.DarkGray,
+                BorderWidth = 1f,
+                BorderColor = Color.Gray,
+                Roundness = 3f,
+            },
+            FocusedFrame = new() {
+                Color = new Color(100, 100, 100, 255),
+                BorderWidth = 1f,
+                BorderColor = Color.Gray,
+                Roundness = 3f,
+            },
+            Placeholder = new() {
+                AlignmentX = TextAlignX.Left,
+                AlignmentY = TextAlignY.Top,
+                Position = new UDim2(0.04f, 0, 0.05f, 0),
+                Size = new UDim2(0.96f, 0, 0.95f, 0),
+                Text = "Search...",
+                FontSize = 18,
+                Font = Global.UIFont,
+                TextColor = Color.Gray,
+                OneLine = true,
+            },
+            Text = new() {
+                AlignmentX = TextAlignX.Left,
+                AlignmentY = TextAlignY.Top,
+                Position = new UDim2(0.04f, 0, 0.05f, 0),
+                Size = new UDim2(0.96f, 0, 0.95f, 0),
+                FontSize = 18,
+                Font = Global.UIFont,
+                TextColor = Color.White,
+                OneLine = true,
+            },
+        };
+
+        MetaFrame.AddChild(SearchBox);
+
         Root.AddChild(MainFrame);
         Root.AddChild(MapGrid);
         Root.AddChild(MetaFrame);
@@ -117,5 +165,16 @@ public class MenuScene : Scene {
 
     public override void Update(double dt) {
         Root.Update(dt);
+        if(LastSearch != SearchBox.Text.Text) MapGrid.Scroll = 0;
+        foreach(UiElement button in ((UiElement)MapGrid.Children[0]).Children) {
+            if(button is TestMapButton mapButton) {
+                button.IgnoreUpdate = SearchBox.IsHovering();
+                button.Visible =
+                    mapButton.Map.Title.Contains(SearchBox.Text.Text, StringComparison.CurrentCultureIgnoreCase) ||
+                    mapButton.Map.Artist.Contains(SearchBox.Text.Text, StringComparison.CurrentCultureIgnoreCase) ||
+                    mapButton.Map.Mappers.Any(p => p.Contains(SearchBox.Text.Text, StringComparison.CurrentCultureIgnoreCase));
+            }
+        }
+        LastSearch = SearchBox.Text.Text;
     }
 }

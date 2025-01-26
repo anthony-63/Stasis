@@ -3,6 +3,7 @@ using Stasis.Engine.Scene;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Game;
+using Stasis.Game.Scenes.Loading;
 using Stasis.Game.Scenes.Menu;
 
 namespace Stasis.Game.Scenes.MapInfo;
@@ -140,7 +141,13 @@ public class MapInfoScene : Scene {
     private void GoToMenu() {
         Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
         Global.LoadedMenu?.SetRPC();
-        Window?.SceneHandler.AddScene(Global.LoadedMenu ?? new MenuScene());
+        if(Global.LoadedMenu is not null) {
+            if(((UiElement)Global.LoadedMenu.MapGrid.Children[0]).Children.Count != MapLoader.Maps.Count) {
+                Global.LoadedMenu.MapGrid = new();
+                Global.LoadedMenu.MakeMapList();
+            }
+            Window?.SceneHandler.AddScene(Global.LoadedMenu);
+        }
     }
 
     private void PlayMap() {

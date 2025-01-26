@@ -22,7 +22,7 @@ public class ImageFrame : UiElement {
     
     public Color BorderColor = Color.Gray;
     public float BorderWidth = 0f;
-
+    public float Roundness = 0f;
 
     private void EnqueueLoadFromMemory(byte[] bytes) {
         new Thread(() => {
@@ -50,12 +50,27 @@ public class ImageFrame : UiElement {
         }
         if(texture is Texture2D tex) {
             if(BorderWidth > 0) {
-                Raylib.DrawRectanglePro(new Rectangle {
+                if(Roundness > 0) {
+                    Raylib.DrawRectangleRounded(new Rectangle {
+                        X = AbsolutePosition.X - BorderWidth,
+                        Y = AbsolutePosition.Y - BorderWidth,
+                        Width = AbsoluteSize.X + BorderWidth * 2,
+                        Height = AbsoluteSize.Y + BorderWidth * 2,
+                    }, Roundness, 16, BorderColor);
+                } else {
+                    Raylib.DrawRectangleRec(new Rectangle {
+                        X = AbsolutePosition.X - BorderWidth,
+                        Y = AbsolutePosition.Y - BorderWidth,
+                        Width = AbsoluteSize.X + BorderWidth * 2,
+                        Height = AbsoluteSize.Y + BorderWidth * 2,
+                    }, BorderColor);
+                }
+                Raylib.DrawRectangleRounded(new Rectangle {
                     X = AbsolutePosition.X - BorderWidth,
                     Y = AbsolutePosition.Y - BorderWidth,
                     Width = AbsoluteSize.X + BorderWidth * 2,
                     Height = AbsoluteSize.Y + BorderWidth * 2,
-                }, Vector2.Zero, 0, BorderColor);
+                }, Roundness, 8, BorderColor);
             }
             Raylib.DrawTexturePro(tex, new Rectangle {
                 X = 0, Y = 0,

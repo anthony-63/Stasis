@@ -11,7 +11,7 @@ public class Label : UiElement {
 
     public List<Tuple<char, int>> textIndexed = new();
 
-    private List<Tuple<string, Vector2>> lines = new();
+    public List<Tuple<string, Vector2>> lines = new();
 
     private float lineHeight = 0;
     public float LineHeight => lineHeight;

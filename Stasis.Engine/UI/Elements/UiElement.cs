@@ -4,12 +4,13 @@ using Raylib_cs;
 
 namespace Stasis.Engine.UI.Elements;
 
-public class UiElement : IUiElement {
+public class UiElement {
     private Vector2 absoluteSize = Vector2.Zero;
     private Vector2 absolutePosition = Vector2.Zero;
 
     private bool visible = true;
     private bool culled = false;
+    public bool IgnoreUpdate = false;
 
     public UiElementAnchor Anchor = UiElementAnchor.TopLeft;
 
@@ -21,10 +22,12 @@ public class UiElement : IUiElement {
     public UDim2 Size = UDim2.Zero;
     public UDim2 Position = UDim2.Zero;
 
-    public List<IUiElement> Children = new();
+    public List<UiElement> Children = new();
+
+    public UiRoot Root = new();
 
     public virtual void Update(double dt) {
-        if(culled) return;
+        if(culled || IgnoreUpdate) return;
         foreach (var element in Children) element.Update(dt);
     }
 
@@ -91,7 +94,7 @@ public class UiElement : IUiElement {
         absoluteSize = size;
     }
 
-    public virtual void AddChild(IUiElement child) {
+    public virtual void AddChild(UiElement child) {
         Children.Add(child);
     }
 }

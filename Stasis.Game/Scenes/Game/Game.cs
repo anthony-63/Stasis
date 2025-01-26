@@ -8,9 +8,7 @@ using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Game.HUD;
 using Stasis.Game.Scenes.Game.NoteObject;
-using Stasis.Game.Scenes.Game.Player;
 using Stasis.Game.Scenes.MapInfo;
-using Stasis.Game.Scenes.Menu;
 
 namespace Stasis.Game.Scenes.Game;
 

@@ -18,6 +18,7 @@ public class ScrollContainer : UiElement {
 
     void GetMaxYAllChildren(UiElement element, ref float max) {
         foreach(UiElement child in element.Children) {
+            if(!child.Visible) continue;
             if(child.Children.Count > 0) GetMaxYAllChildren(child, ref max);
             max = Math.Max(max, child.AbsolutePosition.Y - child.AbsoluteSize.Y * 3.5f);
         }

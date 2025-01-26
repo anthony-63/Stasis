@@ -1,10 +1,6 @@
-using System.Globalization;
-using System.Numerics;
 using Raylib_cs;
-using Stasis.Engine;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
-using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 

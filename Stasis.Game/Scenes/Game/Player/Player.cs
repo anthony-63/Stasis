@@ -1,5 +1,7 @@
 using System.Numerics;
+using Raylib_cs;
 using Stasis.Engine;
+using Stasis.Engine.Audio;
 using Stasis.Engine.GFX;
 using Stasis.Game.Scenes.Game.HUD;
 using Stasis.Game.Scenes.Game.NoteObject;
@@ -11,6 +13,8 @@ public class Player {
     public Camera Camera = new(new Vector3(0, 0, 7), 70f);
     public Cursor Cursor = new(Vector3.Zero, new Vector3(90, 0, 180), Vector2.One * Global.Settings.Cursor.Scale, "Assets/Game/Cursor.png");
     
+    public AudioFX HitFX = new("Assets/Game/hit.mp3", Global.Settings.Audio.FXVolume);
+
     public void StartRender() {
         Camera.Start();
         Cursor.Render();
@@ -30,7 +34,9 @@ public class Player {
 
         Score.HealthStep = Math.Max(Score.HealthStep / 1.45f, 15f);
         Score.Health = Math.Min(Score.Health + Score.HealthStep / 1.75f, 100f);
+        HitFX.Play();
     }
+
     public void Miss(int idx) {
         Score.Misses++;
 
