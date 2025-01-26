@@ -79,7 +79,9 @@ public class Label : UiElement {
             lines.Add(new(line, lineSize));
             absoluteTextSize.Y = (lineHeight * lines.Count) + (LineSpacing * (lines.Count - 1));
         } else {
-            lines.Add(new(Text, Raylib.MeasureTextEx(font, Text, FontSize, FontSpacing)));
+            var textSize = Raylib.MeasureTextEx(font, Text, FontSize, FontSpacing);
+            absoluteTextSize = textSize;
+            lines.Add(new(Text, textSize));
         }
         base.UpdateAbsoluteValues(parentSize, parentPosition);
     }

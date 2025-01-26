@@ -42,12 +42,12 @@ public class GameScene : Scene {
     }
 
     public override void Update(double dt) {
-        if(Global.SelectedMap == null || Raylib.IsKeyDown(KeyboardKey.R) || Player.Score.Failed) {
+        if(Global.SelectedMap == null || Raylib.IsKeyDown(KeyboardKey.R) || Player.Score.Failed || Music?.Time > Global.SelectedMap?.Difficulties[0].Notes.Last().Time + 1) {
             Ending = true;
         }
 
         if(Raylib.IsKeyDown(KeyboardKey.Space) && (NoteManager?.Skippable ?? false)) {
-            NoteManager.SkipToNote(ref Music);
+            if(Music is not null) NoteManager.SkipToNote(ref Music);
         }
 
         if(Ending) {
@@ -58,11 +58,11 @@ public class GameScene : Scene {
         NoteManager ??= new NoteObjectManager(this, Player);
         NoteRenderer ??= new NoteObjectRenderer(this);
 
-        if(!Music.Playing) Music.Play(-2f);
-        else Music.Update();
+        if(!Music?.Playing ?? false ) Music?.Play(-2f);
+        else Music?.Update();
         Player.Update(ref Grid);
         NoteManager?.Update(Player.Cursor);
-        HUD.Update(dt, Music.Time, Player.Score, NoteManager?.Skippable ?? false);
+        HUD.Update(dt, Math.Max(0f, Music?.Time ?? 0f), Player.Score, NoteManager?.Skippable ?? false);
     }
 
     public static void GoToMenu(Window window) {
@@ -78,12 +78,10 @@ public class GameScene : Scene {
     }
 
     public override void Render() {
-
         Player.StartRender();
         NoteRenderer?.RenderNotes(Player.Cursor);
         Grid.Render();
         Player.EndRender();
         HUD.Render();
-        // Raylib.DrawText("Allocated Instances: " + NoteRenderer?.MultiMesh.InstanceCount, 0, 24, 24, Color.White);
     }
 }

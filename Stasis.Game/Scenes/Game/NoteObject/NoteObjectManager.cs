@@ -39,7 +39,7 @@ public class NoteObjectManager {
         Skippable = OrderedNotes[StartProcess].Time - (music?.Time ?? 0f) > 4f;
     }
 
-    public void SkipToNote(ref SyncAudioPlayer? music) {
+    public void SkipToNote(ref SyncAudioPlayer music) {
         music?.Seek(OrderedNotes[StartProcess].Time - 2f);
     }
 
