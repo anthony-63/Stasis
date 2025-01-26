@@ -5,6 +5,7 @@ using Stasis.Engine.UI;
 using Stasis.Engine.Discord;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Menu;
+using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game;
 
