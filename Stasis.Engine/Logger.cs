@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Formats.Asn1;
+using System.Runtime.InteropServices;
 using System.Text;
 using Raylib_cs;
 
@@ -10,12 +11,31 @@ public static class Logger {
     public static Queue<string> OutputQueue = new(); 
     public static void Init(string outputPath) {
         // Raylib.SetTraceLogLevel(TraceLogLevel.None);
-
+        unsafe {
+            Raylib.SetTraceLogCallback(&RaylibLogger);
+        }
         if(File.Exists(outputPath)) File.Delete(outputPath);
-
+    
         OutputFilePath = outputPath;
         Info("Initialized Logger");
     }
+
+    [UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
+    public static unsafe void RaylibLogger(int logLevel, sbyte* text, sbyte* args) {
+        var message = Logging.GetLogMessage(new IntPtr(text), new IntPtr(args));
+
+        switch((TraceLogLevel)logLevel) {
+            case TraceLogLevel.All:
+            case TraceLogLevel.Trace:
+            case TraceLogLevel.Debug: 
+            case TraceLogLevel.None: 
+            case TraceLogLevel.Info: Info(message); break;
+            case TraceLogLevel.Warning: Warn(message); break;
+            case TraceLogLevel.Error: 
+            case TraceLogLevel.Fatal: Err(message); break;
+        }
+    }
+ 
 
     public static void Info(params object[] args) {
         WriteToOut("INFO", args);
