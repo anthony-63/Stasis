@@ -23,7 +23,7 @@ public class NoteObjectRenderer {
 
         foreach(var note in ToRender) {
             MultiMesh.AddInstance(
-                note.GetTransform(Game.Music?.Time ?? 0f, cursor), 
+                note.GetTransform(Game.Music?.Time ?? 0f, Game.Music?.Speed ?? 1f, cursor), 
                 note.Color
             );
         }

@@ -23,6 +23,8 @@ public class TextBox : UiElement {
     private float timer = 0f;
     private bool caretVisible = true;
 
+    public bool IsNumeric = false;
+
     public TextBoxState State = TextBoxState.Normal;
 
     public override void UpdateAbsoluteValues(Vector2 parentPosition, Vector2 parentSize) {
@@ -32,6 +34,12 @@ public class TextBox : UiElement {
         DisabledFrame.SetAbsoluteValues(AbsolutePosition, AbsoluteSize);
         Text.UpdateAbsoluteValues(NormalFrame.AbsoluteSize, NormalFrame.AbsolutePosition);
         Placeholder.UpdateAbsoluteValues(NormalFrame.AbsoluteSize, NormalFrame.AbsolutePosition);
+    }
+
+    public virtual void GetInput() {
+        var c = Raylib.GetCharPressed();
+        if((Raylib.IsKeyPressed(KeyboardKey.Backspace) || Raylib.IsKeyPressedRepeat(KeyboardKey.Backspace)) && Text.Text.Length > 0) Text.Text = Text.Text[..^1];
+        else if(c != 0) Text.Text += (char)c;
     }
 
     public override void Update(double dt) {
@@ -44,9 +52,7 @@ public class TextBox : UiElement {
         }
 
         if(State == TextBoxState.Focused) {
-            var c = Raylib.GetCharPressed();
-            if((Raylib.IsKeyPressed(KeyboardKey.Backspace) || Raylib.IsKeyPressedRepeat(KeyboardKey.Backspace)) && Text.Text.Length > 0) Text.Text = Text.Text[..^1];
-            else if(c != 0) Text.Text += (char)c;
+            GetInput();
         }
         if(IsHovering()) {
             if(Raylib.IsMouseButtonPressed(MouseButton.Left)) {

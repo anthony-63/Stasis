@@ -9,6 +9,10 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game;
 
+public static class Mods {
+    public static float Speed = 1f;
+}
+
 public static class Global {
     public static IBeatmapSet? SelectedMap;
 

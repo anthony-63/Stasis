@@ -26,14 +26,14 @@ public class NoteObject {
         Color = color;
     }
 
-    public Matrix4x4 GetTransform(float Time, Cursor cursor) {
+    public Matrix4x4 GetTransform(float Time, float Speed, Cursor cursor) {
         return Matrix4x4.Transpose(Matrix4x4.CreateTranslation(
-            new Vector3(X + (cursor.ClampedPosition.X * Global.Settings.Camera.GridParallax / 50f), Y + -(cursor.ClampedPosition.Y * Global.Settings.Camera.GridParallax / 50f), GetZ(Time))
+            new Vector3(X + (cursor.ClampedPosition.X * Global.Settings.Camera.GridParallax / 50f), Y + -(cursor.ClampedPosition.Y * Global.Settings.Camera.GridParallax / 50f), GetZ(Time, Speed))
         ));
     }
 
-    public float GetZ(float Time) {
-        return -(CalculateTime(Time, Global.Settings.Note.ApproachTime) * Global.Settings.Note.ApproachDistance);
+    public float GetZ(float Time, float Speed) {
+        return -(CalculateTime(Time, Speed, Global.Settings.Note.ApproachTime) * Global.Settings.Note.ApproachDistance);
     }
 
     public bool InHitWindow(float Time, float Speed) {
@@ -42,12 +42,12 @@ public class NoteObject {
 
     public bool IsVisible(float Time, float Speed, float ApproachTime, bool Pushback) {
         if(Hit) return false;
-        if(Time > Note.Time && !Pushback && GetZ(Time) > 0.2) return false;
-        return CalculateTime(Time, ApproachTime) <= 1f && InHitWindow(Time, Speed);
+        if(Time > Note.Time && !Pushback && GetZ(Time, Speed) > 0.2) return false;
+        return CalculateTime(Time, Speed, ApproachTime) <= 1f && InHitWindow(Time, Speed);
     }
 
-    public float CalculateTime(float Time, float ApproachTime) {
-        return (Note.Time - Time) / ApproachTime;
+    public float CalculateTime(float Time, float Speed, float ApproachTime) {
+        return (Note.Time - Time) / Speed / ApproachTime;
     }
 
     public bool IsHitting(Vector2 cursorPosition) {

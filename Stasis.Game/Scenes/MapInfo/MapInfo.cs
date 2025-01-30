@@ -1,4 +1,5 @@
 using Raylib_cs;
+using Stasis.Engine;
 using Stasis.Engine.Scene;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
@@ -13,6 +14,8 @@ public class MapInfoScene : Scene {
     Frame MainFrame;
     Button BackButton;
     Button PlayButton;
+
+    SpinBox SpeedMod;
 
     Frame Cover;
 
@@ -92,7 +95,6 @@ public class MapInfoScene : Scene {
             PressedFrame = buttonFrame,
         };
 
-
         PlayButton = new Button() {
             Size = new UDim2(0.078125f, 0, 0.06944445f, 0),
             Position = new UDim2(0.99f, 0, 0.95f, 0),
@@ -110,6 +112,61 @@ public class MapInfoScene : Scene {
             DisabledFrame = buttonFrame,
             PressedFrame = buttonFrame,
         };
+
+        SpeedMod = new SpinBox() {
+            Value = Mods.Speed,
+            Step = 0.01f,
+            Position = new UDim2(0.01f, 88, 0.23f, 0),
+            Size = new UDim2(0, 100, 0, 25),
+            Format = "0.00",
+            NormalFrame = new() {
+                Color = Color.DarkGray,
+                BorderWidth = 1f,
+                BorderColor = Color.Gray,
+                Roundness = 3f,
+            },
+            FocusedFrame = new() {
+                Color = new Color(100, 100, 100, 255),
+                BorderWidth = 1f,
+                BorderColor = Color.Gray,
+                Roundness = 3f,
+            },
+            Placeholder = new() {
+                AlignmentX = TextAlignX.Left,
+                AlignmentY = TextAlignY.Middle,
+                Position = new UDim2(0.04f, 0, 0, 0),
+                Size = new UDim2(0.96f, 0, 1, 0),
+                FontSize = 24,
+                Font = Global.UIFont,
+                TextColor = Color.Gray,
+                OneLine = true,
+            },
+            Text = new() {
+                AlignmentX = TextAlignX.Left,
+                AlignmentY = TextAlignY.Middle,
+                Position = new UDim2(0.04f, 0, 0, 0),
+                Size = new UDim2(0.96f, 0, 1, 0),
+                FontSize = 18,
+                Text = Mods.Speed.ToString(),
+                Font = Global.UIFont,
+                TextColor = Color.White,
+                OneLine = true,
+            },
+        };
+
+        var speedModLabel = new Label() {
+            AlignmentX = TextAlignX.Right,
+            AlignmentY = TextAlignY.Middle,
+            Position = new UDim2(0f, -100f, 0, 0),
+            Size = new UDim2(0.96f, 0, 1, 0),
+            FontSize = 32,
+            Text = "Speed: ",
+            Font = Global.UIFont,
+            TextColor = Color.White,
+            OneLine = true,
+        };
+
+        SpeedMod.AddChild(speedModLabel);
         
         BackButton.PressedOnce += GoToMenu;
         PlayButton.PressedOnce += PlayMap;
@@ -130,6 +187,7 @@ public class MapInfoScene : Scene {
         Root.AddChild(MainFrame);
         Root.AddChild(BackButton);
         Root.AddChild(PlayButton);
+        Root.AddChild(SpeedMod);
         Root.AddChild(Global.BasicFPSLabel);
 
         Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
@@ -161,6 +219,7 @@ public class MapInfoScene : Scene {
     }
 
     public override void Update(double dt) {
+        Mods.Speed = SpeedMod.Value;
         Root.Update(dt);
     }
 }

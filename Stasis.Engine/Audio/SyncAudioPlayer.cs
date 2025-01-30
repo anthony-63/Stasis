@@ -34,7 +34,7 @@ public class SyncAudioPlayer {
     public void Play(float from) {
         if(from < 0) {
             Playing = true;
-            Time = from;
+            Time = from * Speed;
             return;
         }
 
@@ -52,7 +52,7 @@ public class SyncAudioPlayer {
     public void Update() {
         if(!Playing) return;
         if(Time < 0) {
-            Time += Raylib.GetFrameTime();
+            Time += Raylib.GetFrameTime() * Speed;
             return;
         }
 
