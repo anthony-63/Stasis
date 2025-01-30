@@ -13,7 +13,7 @@ namespace Stasis.Game.Scenes.Loading;
 
 public class LoadingScene : Scene {
     public void Render(Window window) {}
-
+    
     public void CloneDefaultAssets() {
         {
             Logger.Info("Downloading assets...");
