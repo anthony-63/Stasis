@@ -36,12 +36,7 @@ public class Health : ProgressBar {
             Position = new UDim2(0.5f, 0, 0, 33),
         };
 
-        List<string> modList = new();
-
-        if(Mods.Speed != 1f) modList.Add(Mods.Speed.ToString("0.00") + "x");
-        if(Mods.NoFail) modList.Add("No Fail");
-        modLabel.Text = string.Join(", ", modList);
-
+        modLabel.Text = Global.GetModText(Global.Mods);
         AddChild(modLabel);
     }
 

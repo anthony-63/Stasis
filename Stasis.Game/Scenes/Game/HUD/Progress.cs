@@ -14,7 +14,7 @@ public class Progress : Label {
         OneLine = true;
 
         var mapLengthTimespan = TimeSpan.FromSeconds(Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0);
-        MapLengthString = String.Format("{0:D1}:{1:D2}", mapLengthTimespan.Minutes, mapLengthTimespan.Seconds);
+        MapLengthString = string.Format("{0:D1}:{1:D2}", mapLengthTimespan.Minutes, mapLengthTimespan.Seconds);
 
         Size = new UDim2(0, 0, 1, 0);
         FontSize = 38;

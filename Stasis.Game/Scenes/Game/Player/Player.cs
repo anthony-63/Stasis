@@ -47,7 +47,7 @@ public class Player {
 
         Score.HealthStep += 1.2f;
         Score.Health = Math.Max(Score.Health - Score.HealthStep, 0);
-        if(Score.Health <= 0 && !Mods.NoFail) Score.Failed = true;
+        if(Score.Health <= 0 && !Global.Mods.NoFail) Score.Failed = true;
     }
 
     public void Update(ref Sprite grid) {

@@ -17,7 +17,7 @@ public class GameScene : Scene {
     public Player.Player Player = new();
     public Sprite Grid = Sprite.MakePlane(new Vector3(0, 0, 0), new Vector3(90, 0, 180), new Vector2(6, 6), "Assets/Game/Grid.png");
 
-    public SyncAudioPlayer Music = new(Global.SelectedMap?.AudioData ?? null, Global.Settings.Audio.Volume, Mods.Speed);
+    public SyncAudioPlayer Music = new(Global.SelectedMap?.AudioData ?? null, Global.Settings.Audio.Volume, Global.Mods.Speed);
 
     public NoteObjectManager? NoteManager = null;
     public NoteObjectRenderer? NoteRenderer = null;
@@ -42,8 +42,11 @@ public class GameScene : Scene {
     }
 
     public override void Update(double dt) {
-        if(Global.SelectedMap == null || Raylib.IsKeyDown(KeyboardKey.R) || Player.Score.Failed || Music?.Time > Global.SelectedMap?.Difficulties[0].Notes.Last().Time + 1) {
+        var quitEarly = Raylib.IsKeyDown(KeyboardKey.R);
+        if(Global.SelectedMap == null || quitEarly || Player.Score.Failed || Music?.Time > Global.SelectedMap?.Difficulties[0].Notes.Last().Time + 1) {
             Ending = true;
+            Player.Score.Failed |= quitEarly;
+            Player.Score.TimeEnd = (int)(Music?.Time ?? 0);
         }
 
         if(Raylib.IsKeyDown(KeyboardKey.Space) && (NoteManager?.Skippable ?? false)) {
@@ -65,7 +68,8 @@ public class GameScene : Scene {
         HUD.Update(dt, Math.Max(0f, Music?.Time ?? 0f), Player.Score, NoteManager?.Skippable ?? false);
     }
 
-    public static void GoToMenu(Window window) {
+    public static void GoToMenu(Window window, Player.Player player) {
+        player.Score.Serialize();
         window.SceneHandler.RemoveSceneByType<GameScene>();
         window.SceneHandler.AddScene(new MapInfoScene());
         InputManager.ShowCursor();
@@ -74,7 +78,7 @@ public class GameScene : Scene {
     public void UpdateEndSequence(Window window, double dt) {
         FadeFrame.Color = Raylib.ColorAlpha(FadeFrame.Color, EndTimer);
         EndTimer += (float)dt;
-        if(EndTimer >= 1f) GoToMenu(window);
+        if(EndTimer >= 1f) GoToMenu(window, Player);
     }
 
     public override void Render() {

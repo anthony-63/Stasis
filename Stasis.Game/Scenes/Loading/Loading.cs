@@ -37,6 +37,7 @@ public class LoadingScene : Scene {
 
     public void CreateDirectories() {
         if(!Directory.Exists("Assets/")) CloneDefaultAssets();
+        Directory.CreateDirectory("Assets/Scores");
         Directory.CreateDirectory("Assets/Maps");
         if(!File.Exists("Assets/settings.json")) Global.Settings.Save("Assets/settings.json");
     }

@@ -41,6 +41,8 @@ public class ScrollContainer : UiElement {
     }
 
     public override void Render() {
+        Raylib.BeginScissorMode((int)AbsolutePosition.X, (int)AbsolutePosition.Y - (int)Scroll, (int)AbsoluteSize.X, (int)AbsoluteSize.Y);
         base.Render();
+        Raylib.EndScissorMode();
     }
 }

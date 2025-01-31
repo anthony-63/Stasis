@@ -8,13 +8,15 @@ public class GridContainer : UiElement {
 
     public float ItemsPerRow = 16;
 
+    public bool SquareItems = true;
+
     public override void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
         int x = 0;
         int y = 0;
         var size = AbsoluteSize.X / ItemsPerRow - Padding;
         foreach(UiElement child in Children) {
             child.Size.X.Offset = size;
-            child.Size.Y.Offset = size;
+            if(SquareItems) child.Size.Y.Offset = size;
 
             if(!child.Visible) continue;
 
@@ -23,7 +25,11 @@ public class GridContainer : UiElement {
                 y++;
             }
 
-            child.Position.Y.Offset = y * (size + Padding) + Padding / 2f;
+            float ySize;
+            if(SquareItems) ySize = size;
+            else ySize = child.AbsoluteSize.Y;
+
+            child.Position.Y.Offset = y * (ySize + Padding) + Padding / 2f;
             child.Position.X.Offset = x * (size + Padding) + Padding / 2f;
             x++;
         }

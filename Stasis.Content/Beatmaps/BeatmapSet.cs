@@ -15,6 +15,10 @@ public class BeatmapSet : IBeatmapSet {
     public string Path { get; set; } = "";
     public byte[] Cover { get; set; } = [];
 
+    public BeatmapSet() {
+        AudioData = [];
+    }
+
     public BeatmapSet(string folderPath) {
         Logger.Info("Loading map: ", folderPath);
 

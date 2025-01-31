@@ -9,9 +9,9 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game;
 
-public static class Mods {
-    public static float Speed = 1f;
-    public static bool NoFail = false;
+public class Mods {
+    public float Speed = 1f;
+    public bool NoFail = false;
 }
 
 public static class Global {
@@ -22,9 +22,23 @@ public static class Global {
     public static Color[] Colors = [Color.White, Color.Pink];
     public static string UIFont = "Assets/Game/font.ttf";
 
+    public static Mods Mods = new();
+
     public static MenuScene? LoadedMenu = null;
 
     public static RPCClient Discord = new();
+
+    public static string GetMapHash(IBeatmapSet map) {
+        return Util.GetSHA256(map.Title + string.Concat(map.Difficulties[0].Notes.Select(x => x.X + x.Y + x.Time) ?? []));
+    }
+
+    public static string GetModText(Mods mods) {
+        List<string> modList = [];
+
+        if(mods.Speed != 1f) modList.Add(Global.Mods.Speed.ToString("0.00") + "x");
+        if(mods.NoFail) modList.Add("No Fail");
+        return string.Join(", ", modList);
+    }
 
     public static Label BasicFPSLabel = new() {
         TextColor = Color.Lime,

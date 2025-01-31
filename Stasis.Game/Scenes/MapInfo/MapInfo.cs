@@ -1,4 +1,5 @@
 using Raylib_cs;
+using Stasis.Content.Beatmaps;
 using Stasis.Engine;
 using Stasis.Engine.Scene;
 using Stasis.Engine.UI;
@@ -14,6 +15,8 @@ public class MapInfoScene : Scene {
     Frame MainFrame;
     Button BackButton;
     Button PlayButton;
+
+    Frame Leaderboard;
 
     SpinBox SpeedMod;
     Button NoFailMod;
@@ -65,9 +68,148 @@ public class MapInfoScene : Scene {
         return Title;
     }
 
+    Frame MakeLeaderboard() {
+        var lbFrame = new Frame() {
+            Position = new UDim2(1, -20, 0, 30),
+            Anchor = UiElementAnchor.TopRight,
+            Size = new UDim2(0.3f, 0, 1, -185),
+            Color = new Color(20, 20, 20, 255),
+            BorderWidth = 2,
+            Roundness = 0.1f,
+        };
+
+        var title = new Label() {
+            Position = new UDim2(0, 0, 0, 20),
+            Size = new UDim2(1, 0, 0, 0),
+            FontSize = 32,
+            Font = Global.UIFont,
+            Text = "Local Leaderboard",
+        };
+
+        var scrollContainer = new ScrollContainer() {
+            Position = new UDim2(0, 0, 0.08f, 0),
+            Size = new UDim2(1, 0, 0.92f, 0),
+        };
+
+        var gridContainer = new GridContainer() {
+            ItemsPerRow = 1,
+            Padding = 8,
+            Size = new UDim2(1, -20, 1, 0),
+            Position = new UDim2(0, 10, 0, 0),
+            SquareItems = false,
+        };
+
+        var lbEntries = LeaderboardLoader.LoadLeaderboardFromMap(Global.SelectedMap ?? new BeatmapSet());
+
+        foreach(var e in lbEntries) {
+            var entry = new Frame() {
+                Size = new UDim2(0, 0, 0, 50),
+                Color = new Color(30, 30, 30, 255),
+                Roundness = 0.5f,
+                BorderWidth = 2,
+            };
+
+            var failFrame = new Frame() {
+                Size = UDim2.Fill,
+                Color = new Color(155, 0, 0, 20),
+                Visible = e.Score.Failed,
+            };
+
+            var acc = new Label() {
+                Size = UDim2.Fill,
+                Position = new UDim2(0, -8, 0, 4),
+                FontSize = 18,
+                Font = Global.UIFont,
+                TextColor = Color.Gray,
+                AlignmentX = TextAlignX.Right,
+                AlignmentY = TextAlignY.Middle,
+                OneLine = true,
+                Text = e.Score.AccPlaceholder.ToString("0.00") + "%",
+            };
+
+            var scoreOrProgress = new Label() {
+                Size = UDim2.Fill,
+                Position = new UDim2(0, -8, 0, 0),
+                FontSize = 24,
+                Font = Global.UIFont,
+                TextColor = Color.White,
+                AlignmentX = TextAlignX.Right,
+                AlignmentY = TextAlignY.Top,
+                OneLine = true,
+                Text = e.Score.ScoreValue.ToString(),
+            };
+
+            if(e.Score.Failed) {
+                scoreOrProgress.TextColor = Color.Gray;
+                var startTime = TimeSpan.FromSeconds(e.timeStart);
+                var endTime = TimeSpan.FromSeconds(e.timeEnd);
+                scoreOrProgress.Text = string.Format("{0:D1}:{1:D2}", startTime.Minutes, startTime.Seconds) + " / " + string.Format("{0:D1}:{1:D2}", endTime.Minutes, endTime.Seconds);
+            }
+
+            var playerName = new Label() {
+                Size = new UDim2(0.98f, 0, 1, 0),
+                Position = new UDim2(0.02f, 0, 0, 4),
+                FontSize = 24,
+                Font = Global.UIFont,
+                AlignmentX = TextAlignX.Left,
+                AlignmentY = TextAlignY.Top,
+                OneLine = true,
+                Text = "You",
+            };
+
+            var mods = new Label() {
+                Size = new UDim2(0.98f, 0, 1, 0),
+                Position = new UDim2(0.02f, 0, 0, -4),
+                FontSize = 18,
+                Font = Global.UIFont,
+                TextColor = Color.DarkGray,
+                AlignmentX = TextAlignX.Left,
+                AlignmentY = TextAlignY.Bottom,
+                OneLine = true,
+                Text = Global.GetModText(e.Mods),
+            };
+
+            string from = (e.time - DateTime.Now) switch
+            {
+                { TotalHours: < 1 } ts => $"{ts.Minutes} minutes ago",
+                { TotalDays: < 1 } ts => $"{ts.Hours} hours ago",
+                { TotalDays: < 2 } => $"yesterday",
+                { TotalDays: < 5 } => $"on {e.time.DayOfWeek}",
+                var ts => $"{ts.Days} days ago",
+            };
+
+            var timeSet = new Label() {
+                Size = UDim2.Fill,
+                Position = new UDim2(0, -8, 0, 0),
+                FontSize = 16,
+                Font = Global.UIFont,
+                TextColor = Color.DarkGray,
+                AlignmentX = TextAlignX.Right,
+                AlignmentY = TextAlignY.Bottom,
+                OneLine = true,
+                Text = from,
+            };
+
+            entry.AddChild(acc);
+            entry.AddChild(scoreOrProgress);
+            entry.AddChild(timeSet);
+            entry.AddChild(playerName);
+            entry.AddChild(mods);
+            entry.AddChild(failFrame);
+            gridContainer.AddChild(entry);
+        }
+
+        scrollContainer.AddChild(gridContainer);
+
+        lbFrame.AddChild(title);
+        lbFrame.AddChild(scrollContainer);
+
+        return lbFrame;
+    }
+
     SpinBox MakeSpeedMod() {
         var speedMod = new SpinBox() {
-            Value = Mods.Speed,
+            Value = Global.Mods.Speed,
             Step = 0.01f,
             Position = new UDim2(0.01f, 88, 0.23f, 0),
             Size = new UDim2(0, 100, 0, 25),
@@ -100,7 +242,7 @@ public class MapInfoScene : Scene {
                 Position = new UDim2(0.04f, 0, 0, 0),
                 Size = new UDim2(0.96f, 0, 1, 0),
                 FontSize = 18,
-                Text = Mods.Speed.ToString(),
+                Text = Global.Mods.Speed.ToString(),
                 Font = Global.UIFont,
                 TextColor = Color.White,
                 OneLine = true,
@@ -146,12 +288,13 @@ public class MapInfoScene : Scene {
             Roundness = 0.1f,
         };
 
+        var speedModPos = SpeedMod.Position;
 
         var noFailButton = new Button() {
             Size = new UDim2(0, 188, 0, 25),
-            Position = new UDim2(0.01f, 0, 0.3f, 0),
+            Position = new UDim2(0.01f, 0, speedModPos.Y.Scale, speedModPos.Y.Offset + 50),
             Toggle = true,
-            ToggledValue = Mods.NoFail,
+            ToggledValue = Global.Mods.NoFail,
             Anchor = UiElementAnchor.MiddleLeft,
             Label = new Label() {
                 Text = "No Fail",
@@ -167,7 +310,7 @@ public class MapInfoScene : Scene {
             PressedFrame = toggleFrame,
         };
 
-        noFailButton.Toggled += (v) => Mods.NoFail = v;
+        noFailButton.Toggled += (v) => Global.Mods.NoFail = v;
 
         return noFailButton;
     }
@@ -224,6 +367,8 @@ public class MapInfoScene : Scene {
         SpeedMod = MakeSpeedMod();
         NoFailMod = MakeNoFailMod();
 
+        Leaderboard = MakeLeaderboard();
+        
         BackButton.PressedOnce += GoToMenu;
         PlayButton.PressedOnce += PlayMap;
 
@@ -241,6 +386,7 @@ public class MapInfoScene : Scene {
         MainFrame.AddChild(MakeInfoLabel("Note Count", Global.SelectedMap?.Difficulties[0].Notes.Length.ToString(), 110, initial + toIncrease * 3));
 
         Root.AddChild(MainFrame);
+        Root.AddChild(Leaderboard);
         Root.AddChild(BackButton);
         Root.AddChild(PlayButton);
         Root.AddChild(SpeedMod);
@@ -276,7 +422,7 @@ public class MapInfoScene : Scene {
     }
 
     public override void Update(double dt) {
-        Mods.Speed = SpeedMod.Value;
+        Global.Mods.Speed = SpeedMod.Value;
         Root.Update(dt);
     }
 }
