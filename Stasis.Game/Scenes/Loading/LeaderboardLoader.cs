@@ -1,5 +1,4 @@
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.VisualBasic;
+using System.Security.Cryptography;
 using Stasis.Content.Beatmaps;
 using Stasis.Engine;
 using Stasis.Game.Scenes.Game.Player;
@@ -14,14 +13,25 @@ public static class LeaderboardLoader {
 
         public int timeStart;
         public int timeEnd;
+        public bool Valid = true;
     }
     
     static LeaderboardEntry ReadEntry(string path) {
-        var file = File.Open(path, FileMode.Open);
-        
+        var filePath = Directory.GetFiles(path)[0];
+        var hashComputer = File.Open(filePath, FileMode.Open);
+        var folderPath = Convert.ToHexString(SHA256.Create().ComputeHash(hashComputer));
+        hashComputer.Close();
         var entry = new LeaderboardEntry();
 
-        entry.time = DateTime.FromFileTimeUtc(long.Parse(Path.GetFileName(path)));
+        if(Path.GetFileName(path) != folderPath) {
+            Logger.Warn("INVALID SCORE HASH: ", Path.GetFileName(path), " != ", folderPath);
+            entry.Valid = false;
+            return entry;
+        }
+
+
+        var file = File.Open(filePath, FileMode.Open);
+        entry.time = DateTime.FromFileTime(long.Parse(Path.GetFileName(filePath)));
 
         var buf = new byte[4];
         var buf8 = new byte[8];
@@ -62,11 +72,13 @@ public static class LeaderboardLoader {
         }
         if(!scoreExists) return lb;
 
-        var files = Directory.GetFiles(parent);
+        var files = Directory.GetDirectories(parent);
         foreach(var path in files) {
             try {
                 lb.Add(ReadEntry(path));
-            } catch {}
+            } catch(Exception e) {
+                Logger.Warn("Error loading score: ", e);
+            }
         }
 
         return lb;

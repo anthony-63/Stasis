@@ -102,6 +102,7 @@ public class MapInfoScene : Scene {
         var lbEntries = LeaderboardLoader.LoadLeaderboardFromMap(Global.SelectedMap ?? new BeatmapSet());
 
         foreach(var e in lbEntries) {
+            if(!e.Valid) continue;
             var entry = new Frame() {
                 Size = new UDim2(0, 0, 0, 50),
                 Color = new Color(30, 30, 30, 255),
@@ -169,8 +170,8 @@ public class MapInfoScene : Scene {
                 Text = Global.GetModText(e.Mods),
             };
 
-            string from = (e.time - DateTime.Now) switch
-            {
+            string from = (DateTime.Now - e.time) switch {
+                { TotalMinutes: < 1} ts => $"{ts.Seconds} seconds ago",
                 { TotalHours: < 1 } ts => $"{ts.Minutes} minutes ago",
                 { TotalDays: < 1 } ts => $"{ts.Hours} hours ago",
                 { TotalDays: < 2 } => $"yesterday",

@@ -1,5 +1,9 @@
+using System.Runtime.Intrinsics.Arm;
 using System.Security.AccessControl;
+using System.Security.Cryptography;
+using Raylib_cs;
 using Stasis.Content.Beatmaps;
+using Stasis.Engine;
 
 namespace Stasis.Game.Scenes.Game.Player;
 
@@ -51,7 +55,9 @@ public class Score {
             Directory.CreateDirectory(toCreate);
             parent = toCreate;
             if(d.Equals(last)) {
-                var file = File.Create(toCreate + "/" + DateTime.Now.ToFileTimeUtc().ToString());
+                var time = DateTime.Now.ToFileTime();
+
+                var file = File.Create(toCreate + "/" + time.ToString());
                 file.Write(BitConverter.GetBytes(Failed));
                 file.Write(BitConverter.GetBytes(Misses));
                 file.Write(BitConverter.GetBytes(Hits));
@@ -62,8 +68,16 @@ public class Score {
                 file.Write(BitConverter.GetBytes(Global.Mods.Speed));
                 file.Write(BitConverter.GetBytes(TimeStart));
                 file.Write(BitConverter.GetBytes(TimeEnd));
+                file.Write(BitConverter.GetBytes(time));
                 file.Flush();
                 file.Close();
+
+                var hashComputer = File.Open(toCreate + "/" + time.ToString(), FileMode.Open);
+                var folderPath = toCreate + "/" + Convert.ToHexString(SHA256.Create().ComputeHash(hashComputer));
+                hashComputer.Close();
+                Logger.Info(folderPath);
+                Directory.CreateDirectory(folderPath);
+                File.Move(file.Name, folderPath + "/" + Path.GetFileName(file.Name));
             }
         }
     }
