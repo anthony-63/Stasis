@@ -61,7 +61,7 @@ public static class LeaderboardLoader {
     public static List<LeaderboardEntry> LoadLeaderboardFromMap(IBeatmapSet map) {
         var lb = new List<LeaderboardEntry>();
         var hash = Global.GetMapHash(map);
-        var dirs = hash.Chunk(8).Select(x => new string(x)).ToList();
+        var dirs = hash.Chunk(16).Select(x => new string(x)).ToList();
         dirs.Reverse();
 
         var scoreExists = false;
