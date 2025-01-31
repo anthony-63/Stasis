@@ -20,7 +20,7 @@ public class MapInfoScene : Scene {
 
     SpinBox SpeedMod;
     Button NoFailMod;
-
+    Button VisualMapMod;
     Frame Cover;
 
     Frame MakeCoverFrame() {
@@ -271,21 +271,21 @@ public class MapInfoScene : Scene {
             Size = UDim2.Fill,
             Color = new Color(60, 60, 60, 255),
             BorderWidth = 2,
-            Roundness = 0.1f,
+            Roundness = 0.3f,
         };
 
         Frame toggleFrame = new Frame() {
             Size = UDim2.Fill,
             Color = new Color(100, 100, 100, 255),
             BorderWidth = 2,
-            Roundness = 0.1f,
+            Roundness = 0.3f,
         };
 
         Frame hoveringFrame = new Frame() {
             Size = UDim2.Fill,
             Color = new Color(140, 140, 140, 255),
             BorderWidth = 2,
-            Roundness = 0.1f,
+            Roundness = 0.3f,
         };
 
         var speedModPos = SpeedMod.Position;
@@ -313,6 +313,55 @@ public class MapInfoScene : Scene {
         noFailButton.Toggled += (v) => Global.Mods.NoFail = v;
 
         return noFailButton;
+    }
+
+    Button MakeVisualMapModeButton() {
+        Frame buttonFrame = new Frame() {
+            Size = UDim2.Fill,
+            Color = new Color(60, 60, 60, 255),
+            BorderWidth = 2,
+            Roundness = 0.3f,
+        };
+
+        Frame toggleFrame = new Frame() {
+            Size = UDim2.Fill,
+            Color = new Color(100, 100, 100, 255),
+            BorderWidth = 2,
+            Roundness = 0.3f,
+        };
+
+        Frame hoveringFrame = new Frame() {
+            Size = UDim2.Fill,
+            Color = new Color(140, 140, 140, 255),
+            BorderWidth = 2,
+            Roundness = 0.3f,
+        };
+
+        var noFailModPos = NoFailMod.Position;
+
+        var visualMapButton = new Button() {
+            Size = new UDim2(0, 188, 0, 25),
+            Position = new UDim2(0.01f, 0, noFailModPos.Y.Scale, noFailModPos.Y.Offset + 37),
+            Toggle = true,
+            ToggledValue = Global.Mods.NoFail,
+            Anchor = UiElementAnchor.MiddleLeft,
+            Label = new Label() {
+                Text = "Visual Mode",
+                Size = UDim2.Fill,
+                AlignmentX = TextAlignX.Center,
+                // AlignmentY = TextAlignY.Middle,
+                FontSize = 24,
+                Font = Global.UIFont,
+            },
+            NormalFrame = buttonFrame,
+            HoveringFrame = hoveringFrame,
+            DisabledFrame = buttonFrame,
+            PressedFrame = toggleFrame,
+        };
+
+        visualMapButton.Toggled += (v) => Global.Mods.VisualMap = v;
+
+        return visualMapButton;
     }
 
     public MapInfoScene() {
@@ -366,6 +415,7 @@ public class MapInfoScene : Scene {
 
         SpeedMod = MakeSpeedMod();
         NoFailMod = MakeNoFailMod();
+        VisualMapMod = MakeVisualMapModeButton();
 
         Leaderboard = MakeLeaderboard();
         
@@ -390,6 +440,7 @@ public class MapInfoScene : Scene {
         Root.AddChild(BackButton);
         Root.AddChild(PlayButton);
         Root.AddChild(SpeedMod);
+        Root.AddChild(VisualMapMod);
         Root.AddChild(NoFailMod);
         Root.AddChild(Global.BasicFPSLabel);
 

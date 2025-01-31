@@ -25,8 +25,10 @@ public class NoteObjectManager {
     public NoteObjectManager(GameScene game, Player.Player player) {
         Game = game;
         LoadNotes();
-        Hit += player.Hit;
-        Miss += player.Miss;
+        if(!Global.Mods.VisualMap) {
+            Hit += player.Hit;
+            Miss += player.Miss;
+        }
     }
 
     public void Update(Cursor cursor) {

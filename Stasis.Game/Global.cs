@@ -12,6 +12,7 @@ namespace Stasis.Game;
 public class Mods {
     public float Speed = 1f;
     public bool NoFail = false;
+    public bool VisualMap = false;
 }
 
 public static class Global {
@@ -37,6 +38,7 @@ public static class Global {
 
         if(mods.Speed != 1f) modList.Add(Global.Mods.Speed.ToString("0.00") + "x");
         if(mods.NoFail) modList.Add("No Fail");
+        if(mods.VisualMap) modList.Add("Visual Mode");
         return string.Join(", ", modList);
     }
 
