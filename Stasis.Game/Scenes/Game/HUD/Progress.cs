@@ -19,12 +19,12 @@ public class Progress : Label {
         Size = new UDim2(0, 0, 1, 0);
         FontSize = 38;
         Font = Global.UIFont;
+        TextColor = Color.DarkGray;
 
         AlignmentX = TextAlignX.Right;
         AlignmentY = TextAlignY.Top;
         Text = "0:00/0:00";
 
-        TextColor = Color.DarkGray;
 
         Position = new UDim2(0.995f, 0, 0, 0);
     }

@@ -16,6 +16,7 @@ public class MapInfoScene : Scene {
     Button PlayButton;
 
     SpinBox SpeedMod;
+    Button NoFailMod;
 
     Frame Cover;
 
@@ -64,56 +65,8 @@ public class MapInfoScene : Scene {
         return Title;
     }
 
-    public MapInfoScene() {
-        MainFrame = new Frame() {
-            Size = new UDim2(1f, 0, 1, 0),
-            Color = new Color(12, 12, 12, 255),
-        };
-
-        Frame buttonFrame = new Frame() {
-            Size = UDim2.Fill,
-            Color = new Color(60, 60, 60, 255),
-            BorderWidth = 2,
-            Roundness = 0.1f,
-        };
-
-        BackButton = new Button() {
-            Size = new UDim2(0.078125f, 0, 0.06944445f, 0),
-            Position = new UDim2(0.01f, 0, 0.95f, 0),
-            Anchor = UiElementAnchor.MiddleLeft,
-            Label = new Label() {
-                Text = "Back",
-                Size = UDim2.Fill,
-                AlignmentX = TextAlignX.Center,
-                // AlignmentY = TextAlignY.Middle,
-                FontSize = 24,
-                Font = Global.UIFont,
-            },
-            NormalFrame = buttonFrame,
-            HoveringFrame = buttonFrame,
-            DisabledFrame = buttonFrame,
-            PressedFrame = buttonFrame,
-        };
-
-        PlayButton = new Button() {
-            Size = new UDim2(0.078125f, 0, 0.06944445f, 0),
-            Position = new UDim2(0.99f, 0, 0.95f, 0),
-            Anchor = UiElementAnchor.MiddleRight,
-            Label = new Label() {
-                Text = "Play",
-                Size = UDim2.Fill,
-                AlignmentX = TextAlignX.Center,
-                // AlignmentY = TextAlignY.Middle,
-                FontSize = 24,
-                Font = Global.UIFont,
-            },
-            NormalFrame = buttonFrame,
-            HoveringFrame = buttonFrame,
-            DisabledFrame = buttonFrame,
-            PressedFrame = buttonFrame,
-        };
-
-        SpeedMod = new SpinBox() {
+    SpinBox MakeSpeedMod() {
+        var speedMod = new SpinBox() {
             Value = Mods.Speed,
             Step = 0.01f,
             Position = new UDim2(0.01f, 88, 0.23f, 0),
@@ -166,8 +119,111 @@ public class MapInfoScene : Scene {
             OneLine = true,
         };
 
-        SpeedMod.AddChild(speedModLabel);
-        
+        speedMod.AddChild(speedModLabel);
+
+        return speedMod;
+    }
+
+    Button MakeNoFailMod() {
+        Frame buttonFrame = new Frame() {
+            Size = UDim2.Fill,
+            Color = new Color(60, 60, 60, 255),
+            BorderWidth = 2,
+            Roundness = 0.1f,
+        };
+
+        Frame toggleFrame = new Frame() {
+            Size = UDim2.Fill,
+            Color = new Color(100, 100, 100, 255),
+            BorderWidth = 2,
+            Roundness = 0.1f,
+        };
+
+        Frame hoveringFrame = new Frame() {
+            Size = UDim2.Fill,
+            Color = new Color(140, 140, 140, 255),
+            BorderWidth = 2,
+            Roundness = 0.1f,
+        };
+
+
+        var noFailButton = new Button() {
+            Size = new UDim2(0, 188, 0, 25),
+            Position = new UDim2(0.01f, 0, 0.3f, 0),
+            Toggle = true,
+            ToggledValue = Mods.NoFail,
+            Anchor = UiElementAnchor.MiddleLeft,
+            Label = new Label() {
+                Text = "No Fail",
+                Size = UDim2.Fill,
+                AlignmentX = TextAlignX.Center,
+                // AlignmentY = TextAlignY.Middle,
+                FontSize = 24,
+                Font = Global.UIFont,
+            },
+            NormalFrame = buttonFrame,
+            HoveringFrame = hoveringFrame,
+            DisabledFrame = buttonFrame,
+            PressedFrame = toggleFrame,
+        };
+
+        noFailButton.Toggled += (v) => Mods.NoFail = v;
+
+        return noFailButton;
+    }
+
+    public MapInfoScene() {
+        MainFrame = new Frame() {
+            Size = new UDim2(1f, 0, 1, 0),
+            Color = new Color(12, 12, 12, 255),
+        };
+
+        Frame buttonFrame = new Frame() {
+            Size = UDim2.Fill,
+            Color = new Color(60, 60, 60, 255),
+            BorderWidth = 2,
+            Roundness = 0.1f,
+        };
+
+        BackButton = new Button() {
+            Size = new UDim2(0.078125f, 0, 0.06944445f, 0),
+            Position = new UDim2(0.01f, 0, 0.95f, 0),
+            Anchor = UiElementAnchor.MiddleLeft,
+            Label = new Label() {
+                Text = "Back",
+                Size = UDim2.Fill,
+                AlignmentX = TextAlignX.Center,
+                // AlignmentY = TextAlignY.Middle,
+                FontSize = 24,
+                Font = Global.UIFont,
+            },
+            NormalFrame = buttonFrame,
+            HoveringFrame = buttonFrame,
+            DisabledFrame = buttonFrame,
+            PressedFrame = buttonFrame,
+        };
+
+        PlayButton = new Button() {
+            Size = new UDim2(0.078125f, 0, 0.06944445f, 0),
+            Position = new UDim2(0.99f, 0, 0.95f, 0),
+            Anchor = UiElementAnchor.MiddleRight,
+            Label = new Label() {
+                Text = "Play",
+                Size = UDim2.Fill,
+                AlignmentX = TextAlignX.Center,
+                // AlignmentY = TextAlignY.Middle,
+                FontSize = 24,
+                Font = Global.UIFont,
+            },
+            NormalFrame = buttonFrame,
+            HoveringFrame = buttonFrame,
+            DisabledFrame = buttonFrame,
+            PressedFrame = buttonFrame,
+        };
+
+        SpeedMod = MakeSpeedMod();
+        NoFailMod = MakeNoFailMod();
+
         BackButton.PressedOnce += GoToMenu;
         PlayButton.PressedOnce += PlayMap;
 
@@ -188,6 +244,7 @@ public class MapInfoScene : Scene {
         Root.AddChild(BackButton);
         Root.AddChild(PlayButton);
         Root.AddChild(SpeedMod);
+        Root.AddChild(NoFailMod);
         Root.AddChild(Global.BasicFPSLabel);
 
         Global.Discord.SetPresence(new DiscordRPC.RichPresence() {

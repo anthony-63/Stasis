@@ -13,15 +13,19 @@ public class Button : UiElement {
 
     public ButtonState State = ButtonState.Normal;
     public delegate void ButtonEvent();
+    public delegate void ButtonToggleEvent(bool value);
 
     public event ButtonEvent? PressedOnce;
     public event ButtonEvent? Holding;
     public event ButtonEvent? Released;
     public event ButtonEvent? Hovering;
 
-    public override void Update(double dt) {
-        if(!Visible || IgnoreUpdate) return;
-        
+    public event ButtonToggleEvent? Toggled;
+
+    public bool Toggle = false;
+    public bool ToggledValue = false;
+
+    private void UpdateNoToggle() {
         if(IsHovering() && State != ButtonState.Pressed && State != ButtonState.Holding && Raylib.IsMouseButtonPressed(MouseButton.Left)) {
             State = ButtonState.Pressed;
             Raylib.SetMouseCursor(MouseCursor.Arrow);
@@ -38,6 +42,36 @@ public class Button : UiElement {
             Raylib.SetMouseCursor(MouseCursor.Arrow);
             if(Released is not null) Released();
         } else State = ButtonState.Normal;
+    }
+
+    private void UpdateToggle() {
+        if(IsHovering() && !ToggledValue && Raylib.IsMouseButtonPressed(MouseButton.Left)) {
+            State = ButtonState.Pressed;
+            ToggledValue = true;
+            if(Toggled is not null) Toggled(true);
+            Raylib.SetMouseCursor(MouseCursor.Arrow);
+            if(PressedOnce is not null) PressedOnce();
+        } else if(IsHovering() && ToggledValue && Raylib.IsMouseButtonPressed(MouseButton.Left)) {
+            State = ButtonState.Hovering;
+            ToggledValue = false;
+            if(Toggled is not null) Toggled(false);
+            Raylib.SetMouseCursor(MouseCursor.Arrow);
+            if(PressedOnce is not null) PressedOnce();
+        } else if(IsHovering() && State != ButtonState.Pressed) {
+            State = ButtonState.Hovering;
+            Raylib.SetMouseCursor(MouseCursor.PointingHand);
+            if(Hovering is not null) Hovering();
+        } else if(!IsHovering() && State == ButtonState.Pressed || State == ButtonState.Holding || !IsHovering() && State == ButtonState.Hovering) {
+            State = ButtonState.Normal;
+            Raylib.SetMouseCursor(MouseCursor.Arrow);
+            if(Released is not null) Released();
+        } else State = ButtonState.Normal;
+    }
+
+    public override void Update(double dt) {
+        if(!Visible || IgnoreUpdate) return;
+        if(Toggle) UpdateToggle();
+        else UpdateNoToggle();
         
         Label.Update(dt);
         base.Update(dt);
@@ -45,11 +79,19 @@ public class Button : UiElement {
 
     public override void Render() {
         if(!Visible) return;
-        switch(State) {
-            case ButtonState.Normal: NormalFrame.Render(); break;
-            case ButtonState.Pressed: PressedFrame.Render(); break;
-            case ButtonState.Hovering: HoveringFrame.Render(); break;
-            case ButtonState.Disabled: DisabledFrame.Render(); break;
+
+        if(Toggle) {
+            if(ToggledValue) PressedFrame.Render();
+            else if(State == ButtonState.Hovering) HoveringFrame.Render();
+            else NormalFrame.Render();
+        } else{
+            switch(State) {
+                case ButtonState.Normal: NormalFrame.Render(); break;
+                case ButtonState.Holding:
+                case ButtonState.Pressed: PressedFrame.Render(); break;
+                case ButtonState.Hovering: HoveringFrame.Render(); break;
+                case ButtonState.Disabled: DisabledFrame.Render(); break;
+            }
         }
 
         Label.Render();

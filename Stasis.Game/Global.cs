@@ -11,6 +11,7 @@ namespace Stasis.Game;
 
 public static class Mods {
     public static float Speed = 1f;
+    public static bool NoFail = false;
 }
 
 public static class Global {
