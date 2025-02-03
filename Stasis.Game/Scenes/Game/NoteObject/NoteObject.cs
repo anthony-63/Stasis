@@ -26,28 +26,28 @@ public class NoteObject {
         Color = color;
     }
 
-    public Matrix4x4 GetTransform(float Time, float Speed, Cursor cursor) {
+    public Matrix4x4 GetTransform(float time, float speed, Cursor cursor) {
         return Matrix4x4.Transpose(Matrix4x4.CreateTranslation(
-            new Vector3(X + (cursor.ClampedPosition.X * Global.Settings.Camera.GridParallax / 50f), Y + -(cursor.ClampedPosition.Y * Global.Settings.Camera.GridParallax / 50f), GetZ(Time, Speed))
+            new Vector3(X + (cursor.ClampedPosition.X * Global.Settings.Camera.GridParallax / 50f), Y + -(cursor.ClampedPosition.Y * Global.Settings.Camera.GridParallax / 50f), GetZ(time, speed))
         ));
     }
 
-    public float GetZ(float Time, float Speed) {
-        return -(CalculateTime(Time, Speed, Global.Settings.Note.ApproachTime) * Global.Settings.Note.ApproachDistance);
+    public float GetZ(float time, float speed) {
+        return -(CalculateTime(time, speed, Global.Settings.Note.ApproachTime) * Global.Settings.Note.ApproachDistance);
     }
 
-    public bool InHitWindow(float Time, float Speed) {
-        return (Time - Note.Time) <= HitWindow * Speed;
+    public bool InHitWindow(float time, float speed) {
+        return (time - Note.Time) <= HitWindow * speed;
     }
 
-    public bool IsVisible(float Time, float Speed, float ApproachTime, bool Pushback) {
+    public bool IsVisible(float time, float speed, float approachTime, bool pushback) {
         if(Hit) return false;
-        if(Time > Note.Time && !Pushback && GetZ(Time, Speed) > 0.2) return false;
-        return CalculateTime(Time, Speed, ApproachTime) <= 1f && InHitWindow(Time, Speed);
+        if(Time > Note.Time && !pushback && GetZ(time, speed) > 0.2) return false;
+        return CalculateTime(time, speed, approachTime) <= 1f && InHitWindow(time, speed);
     }
 
-    public float CalculateTime(float Time, float Speed, float ApproachTime) {
-        return (Note.Time - Time) / Speed / ApproachTime;
+    public float CalculateTime(float time, float speed, float approachTime) {
+        return (Note.Time - time) / speed / approachTime;
     }
 
     public bool IsHitting(Vector2 cursorPosition) {
