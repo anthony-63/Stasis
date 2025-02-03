@@ -14,6 +14,8 @@ public class NoteObjectManager {
 
     public List<int> ToUpdateIndices = [];
 
+    NoteObject? NextNote = null;
+
     GameScene Game;
 
     public delegate void NoteEventHandler(int idx);
@@ -38,11 +40,12 @@ public class NoteObjectManager {
     }
 
     public void UpdateSkippable(SyncAudioPlayer? music) {
-        Skippable = OrderedNotes[StartProcess].Time - (music?.Time ?? 0f) > 4f;
+        Skippable = NextNote?.Time - (music?.Time ?? 0f) > 4f;
     }
 
     public void SkipToNote(ref SyncAudioPlayer music) {
-        music?.Seek(OrderedNotes[StartProcess].Time - 2f);
+        music?.Seek(Math.Max((NextNote?.Time ?? 0) - 2f, 0));
+        Logger.Info(music?.Time ?? 0);
     }
 
     public void UpdateRenderer(NoteObjectRenderer? renderer, SyncAudioPlayer? music) {
@@ -87,6 +90,7 @@ public class NoteObjectManager {
             }
 
             if(didHitreg && OrderedNotes[i].Index < OrderedNotes.Length - 1) {
+                NextNote = OrderedNotes[i+1];
                 StartProcess++;
             }
         }
@@ -97,9 +101,10 @@ public class NoteObjectManager {
         OrderedNotes = new NoteObject[Global.SelectedMap?.Difficulties[0].Notes.Length ?? 1];
 
         for(int i = 0; i < (Global.SelectedMap?.Difficulties[0].Notes.Length ?? 0); i++) {
-            var noteData = Global.SelectedMap?.Difficulties[0].Notes[i] ?? new Content.Beatmaps.Note();
+            var noteData = Global.SelectedMap?.Difficulties[0].Notes[i] ?? new Note();
             OrderedNotes[i] = new NoteObject(noteData, i, Global.Colors[i % Global.Colors.Length]);
         }
+        NextNote = OrderedNotes[0];
 
         Logger.Info($"Loaded {OrderedNotes.Length} Notes");
     }
