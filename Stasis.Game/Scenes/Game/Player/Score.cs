@@ -1,7 +1,4 @@
-using System.Runtime.Intrinsics.Arm;
-using System.Security.AccessControl;
 using System.Security.Cryptography;
-using Raylib_cs;
 using Stasis.Content.Beatmaps;
 using Stasis.Engine;
 
@@ -56,7 +53,6 @@ public class Score {
             parent = toCreate;
             if(d.Equals(last)) {
                 var time = DateTime.Now.ToFileTime();
-
                 var file = File.Create(toCreate + "/" + time.ToString());
                 file.Write(BitConverter.GetBytes(Failed));
                 file.Write(BitConverter.GetBytes(Misses));

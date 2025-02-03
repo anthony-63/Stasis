@@ -46,8 +46,8 @@ public class MapInfoScene : Scene {
         return cover;
     }
 
-    Label MakeInfoLabel(string name, string? value, float x, float y) {
-        var Title = new Label() {
+    void MakeInfoLabel(ref Frame parent, string name, string? value, float padding, float y) {
+        var Info = new Label() {
             Text = name + ": ",
             TextColor = Color.SkyBlue,
             Position = new UDim2(0.14f, 0, y, 0),
@@ -56,8 +56,10 @@ public class MapInfoScene : Scene {
             FontSize = 24,
             Font = Global.UIFont,
         };
-        Title.AddChild(new Label() {
-            Position = new UDim2(0, x, 0, 0),
+        Info.UpdateAbsoluteValues(parent.AbsoluteSize, parent.AbsolutePosition);
+
+        Info.AddChild(new Label() {
+            Position = new UDim2(0, Info.lines[0].Item2.X + padding, 0, 0),
             Text = value ?? "None",
             AlignmentX = TextAlignX.Left,
             Size = new UDim2(1, 0, 0, 0),
@@ -65,7 +67,7 @@ public class MapInfoScene : Scene {
             Font = Global.UIFont,
         });
 
-        return Title;
+        parent.AddChild(Info);
     }
 
     Frame MakeLeaderboard() {
@@ -212,7 +214,7 @@ public class MapInfoScene : Scene {
         var speedMod = new SpinBox() {
             Value = Global.Mods.Speed,
             Step = 0.01f,
-            Position = new UDim2(0.01f, 88, 0.23f, 0),
+            Position = new UDim2(0.01f, 107, 0.23f, 0),
             Size = new UDim2(0, 100, 0, 25),
             Format = "0.00",
             NormalFrame = new() {
@@ -431,10 +433,10 @@ public class MapInfoScene : Scene {
         var mapLength = TimeSpan.FromSeconds(Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0);
         var mapLengthString = String.Format("{0:D1}:{1:D2}", mapLength.Minutes, mapLength.Seconds);
 
-        MainFrame.AddChild(MakeInfoLabel("Title", Global.SelectedMap?.Title, 50, initial + toIncrease * 0));
-        MainFrame.AddChild(MakeInfoLabel("Mapper", String.Join(" & ", Global.SelectedMap?.Mappers.ToArray() ?? ["None"]), 75, initial + toIncrease * 1));
-        MainFrame.AddChild(MakeInfoLabel("Length", mapLengthString, 75, initial + toIncrease * 2));
-        MainFrame.AddChild(MakeInfoLabel("Note Count", Global.SelectedMap?.Difficulties[0].Notes.Length.ToString(), 110, initial + toIncrease * 3));
+        MakeInfoLabel(ref MainFrame, "Title", Global.SelectedMap?.Title, 3, initial + toIncrease * 0);
+        MakeInfoLabel(ref MainFrame, "Mapper", String.Join(" & ", Global.SelectedMap?.Mappers.ToArray() ?? ["None"]), 3, initial + toIncrease * 1);
+        MakeInfoLabel(ref MainFrame, "Length", mapLengthString, 3, initial + toIncrease * 2);
+        MakeInfoLabel(ref MainFrame, "Note Count", Global.SelectedMap?.Difficulties[0].Notes.Length.ToString(), 3, initial + toIncrease * 3);
 
         Root.AddChild(MainFrame);
         Root.AddChild(Leaderboard);
