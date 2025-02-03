@@ -51,6 +51,6 @@ public class NoteObject {
     }
 
     public bool IsHitting(Vector2 cursorPosition) {
-        return Math.Abs(-cursorPosition.X - X) <= AABB && Math.Abs(cursorPosition.Y - Y) <= AABB;
+        return Math.Abs(-cursorPosition.X - (X + (cursorPosition.X * Global.Settings.Camera.GridParallax / 50f))) <= AABB && Math.Abs(cursorPosition.Y - (Y + -(cursorPosition.Y * Global.Settings.Camera.GridParallax / 50f))) <= AABB;
     }
 }
