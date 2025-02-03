@@ -24,6 +24,9 @@ public class UiElement {
 
     public List<UiElement> Children = new();
 
+    public bool ClipContents = false;
+    public Rectangle ScissorRect = new();
+
     public UiRoot Root = new();
 
     public virtual void Update(double dt) {
@@ -86,12 +89,21 @@ public class UiElement {
 
     public virtual void Render() {
         if(!visible || culled) return;
+        SetClipDim();
+        if(ClipContents) Raylib.BeginScissorMode((int)ScissorRect.X, (int)ScissorRect.Y, (int)ScissorRect.Width, (int)ScissorRect.Height);
         foreach (var element in Children) element.Render();
+        if(ClipContents) Raylib.EndScissorMode();
     }
 
     public virtual void SetAbsoluteValues(Vector2 position, Vector2 size) {
         absolutePosition = position;
         absoluteSize = size;
+    }
+    
+    public virtual void SetClipDim() {
+        ScissorRect = new Rectangle() {
+            X = AbsolutePosition.X, Y = AbsolutePosition.Y, Width = AbsoluteSize.X, Height = AbsoluteSize.Y
+        };
     }
 
     public virtual void AddChild(UiElement child) {

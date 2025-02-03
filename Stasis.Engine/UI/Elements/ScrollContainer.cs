@@ -40,9 +40,16 @@ public class ScrollContainer : UiElement {
         base.Update(dt);
     }
 
+    public override void SetClipDim() {
+        ScissorRect = new Rectangle() {
+            X = AbsolutePosition.X,
+            Y = AbsolutePosition.Y - Scroll,
+            Width = AbsoluteSize.X,
+            Height = AbsoluteSize.Y,
+        };
+    }
+
     public override void Render() {
-        Raylib.BeginScissorMode((int)AbsolutePosition.X, (int)AbsolutePosition.Y - (int)Scroll, (int)AbsoluteSize.X, (int)AbsoluteSize.Y);
         base.Render();
-        Raylib.EndScissorMode();
     }
 }

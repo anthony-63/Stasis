@@ -74,6 +74,7 @@ public class MenuScene : Scene {
     public ScrollContainer MakeMapList() {
         MapGrid = new ScrollContainer() {
             Size = new UDim2(1f, 0, 1f, 0),
+            ClipContents = true,
         };
 
         MapList = new GridContainer() {

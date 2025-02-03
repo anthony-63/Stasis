@@ -36,7 +36,7 @@ public class GameScene : Scene {
         InputManager.HideCursor();
 
         Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
-            Details = "Playing map '" + (Global.SelectedMap?.Title ?? "") + "'",
+            Details = "Playing map '" + (Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 64)] ?? "") + "'",
             Timestamps = DiscordRPC.Timestamps.FromTimeSpan(TimeSpan.FromSeconds(Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0)),
         });
     }
@@ -46,7 +46,7 @@ public class GameScene : Scene {
         if(Global.SelectedMap == null || quitEarly || Player.Score.Failed || Music?.Time > Global.SelectedMap?.Difficulties[0].Notes.Last().Time + 1) {
             Ending = true;
             Player.Score.Failed |= quitEarly;
-            Player.Score.TimeEnd = (int)(Music?.Time ?? 0);
+            Player.Score.TimeEnd = Math.Max((int)(Music?.Time ?? 0), 0);
         }
 
         if(Raylib.IsKeyDown(KeyboardKey.Space) && (NoteManager?.Skippable ?? false)) {

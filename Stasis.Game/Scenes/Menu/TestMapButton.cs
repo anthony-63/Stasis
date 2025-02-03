@@ -23,6 +23,7 @@ public class TestMapButton : Button {
     public TestMapButton(IBeatmapSet map, MapSelectEvent SelectMap) {
         AddChild(HoverFrame);
         Map = map;
+        ClipContents = true;
         PressedOnce += () => SelectMap(map);
     }
 

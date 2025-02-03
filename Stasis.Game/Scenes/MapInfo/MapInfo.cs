@@ -91,6 +91,7 @@ public class MapInfoScene : Scene {
         var scrollContainer = new ScrollContainer() {
             Position = new UDim2(0, 0, 0.08f, 0),
             Size = new UDim2(1, 0, 0.92f, 0),
+            ClipContents = true,
         };
 
         var gridContainer = new GridContainer() {
@@ -448,7 +449,7 @@ public class MapInfoScene : Scene {
         Root.AddChild(Global.BasicFPSLabel);
 
         Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
-            Details = "Viewing map '" + (Global.SelectedMap?.Title ?? "") + "'",
+            Details = "Viewing map '" + (Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 64)] ?? "") + "'",
             Timestamps = DiscordRPC.Timestamps.Now,
         });
     }
