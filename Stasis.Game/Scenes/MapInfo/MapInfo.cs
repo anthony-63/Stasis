@@ -214,7 +214,7 @@ public class MapInfoScene : Scene {
         var speedMod = new SpinBox() {
             Value = Global.Mods.Speed,
             Step = 0.01f,
-            Position = new UDim2(0.01f, 107, 0.23f, 0),
+            Position = new UDim2(0.01f, 85, 0.23f, 0),
             Size = new UDim2(0, 100, 0, 25),
             Format = "0.00",
             NormalFrame = new() {
