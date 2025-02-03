@@ -43,11 +43,8 @@ public class LabelFont {
         var size = new Vector2(0, fontHeight);
         int i = 0;
         foreach(var c in text) {
-            try {
-                size.X += fontSizes[c];
-            } catch {
-                size.X += fontSizes['?'];
-            }
+            if(fontSizes.ContainsKey(c)) size.X += fontSizes[c];
+            else size.X += fontSizes['?'];
             if(i != 0) size.X += Spacing;
             i++;
         }
