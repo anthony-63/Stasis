@@ -10,7 +10,7 @@ namespace Stasis.Game.Scenes.Game.NoteObject;
 public class NoteObjectManager {
     public NoteObject[] OrderedNotes = [];
 
-    int StartProcess = 0;
+    public int StartProcess = 0;
 
     public List<int> ToUpdateIndices = [];
 

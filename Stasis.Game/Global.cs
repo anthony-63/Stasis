@@ -26,6 +26,7 @@ public static class Global {
     public static Mods Mods = new();
 
     public static MenuScene? LoadedMenu = null;
+    public static bool EnableDebugStats = false;
 
     public static RPCClient Discord = new();
 

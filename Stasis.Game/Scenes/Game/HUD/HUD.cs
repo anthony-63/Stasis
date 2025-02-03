@@ -16,6 +16,7 @@ public class HUDRoot: UiRoot {
     public SongArtist SongArtist = new();
     public Multiplier Multiplier = new();
     public Health Health = new();
+    public DebugStats DebugStats = new();
 
     public HUDRoot() {
         Timer.MaxValue = Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0f;
@@ -29,6 +30,7 @@ public class HUDRoot: UiRoot {
         AddChild(SongArtist);
         AddChild(Multiplier);
         AddChild(Health);
+        if(Global.EnableDebugStats) AddChild(DebugStats);
     }
 
     public void Render() {
@@ -36,7 +38,17 @@ public class HUDRoot: UiRoot {
         base.Render(Raylib.GetRenderWidth(), Raylib.GetRenderHeight());
     }
 
-    public void Update(double dt, float currentTime, Score score, bool skippable) {
+    public void Update(
+        double dt, 
+        float currentTime, 
+        Score score, bool 
+        skippable, 
+        int allocatedInstances, 
+        int startProcess,
+        int visibleCount,
+        float health,
+        float healthStep
+    ) {
         Timer.Update(currentTime, skippable);
         Health.Update(score);
         Accuracy.Update(score);
@@ -45,6 +57,7 @@ public class HUDRoot: UiRoot {
         ScoreValue.Update(score);
         Combo.Update(score);
         Multiplier.Update(score);
+        if(Global.EnableDebugStats) DebugStats.Update(allocatedInstances, startProcess, currentTime, visibleCount, health, healthStep);
         base.Update(dt);
     }
 }

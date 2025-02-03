@@ -1,6 +1,6 @@
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using Raylib_cs;
+using Stasis.Content.Beatmaps;
 using Stasis.Engine;
 using Stasis.Engine.Audio;
 using Stasis.Engine.GFX;
@@ -65,7 +65,17 @@ public class GameScene : Scene {
         else Music?.Update();
         Player.Update(ref Grid);
         NoteManager?.Update(Player.Cursor);
-        HUD.Update(dt, Math.Max(0f, Music?.Time ?? 0f), Player.Score, NoteManager?.Skippable ?? false);
+        HUD.Update(
+            dt, 
+            Math.Max(0f, Music?.Time ?? 0f), 
+            Player.Score, 
+            NoteManager?.Skippable ?? false, 
+            NoteRenderer.MultiMesh.InstanceCount, 
+            NoteManager?.StartProcess ?? 0,
+            NoteRenderer.ToRender.Count,
+            Player.Score.Health,
+            Player.Score.HealthStep
+        );
     }
 
     public static void GoToMenu(Window window, Player.Player player) {

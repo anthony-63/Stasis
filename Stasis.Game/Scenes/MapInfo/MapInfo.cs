@@ -467,6 +467,9 @@ public class MapInfoScene : Scene {
     }
 
     private void PlayMap() {
+        if(Raylib.IsKeyDown(KeyboardKey.D)) {
+            Global.EnableDebugStats = true;
+        }
         Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
         Window?.SceneHandler.AddScene(new GameScene());
     }
