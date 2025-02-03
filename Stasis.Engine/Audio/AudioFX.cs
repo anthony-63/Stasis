@@ -15,8 +15,8 @@ public class AudioFX {
         FX = Raylib.LoadSound(path);
         for(int i = 0; i < channels.Length; i++) {
             channels[i] = Raylib.LoadSoundAlias(FX);
+            Raylib.SetSoundVolume(channels[i], volume);
         }
-        Raylib.SetSoundVolume(FX, volume);
     }
 
     public void Play() {
