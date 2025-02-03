@@ -1,20 +1,26 @@
+using System.Runtime.InteropServices;
 using Raylib_cs;
 
 namespace Stasis.Engine.Audio;
 
 public class AudioFX {
+    public const int ChannelCount = 32; 
+
     public Sound FX;
 
-    private byte[] AudioData = {};
-
+    public Sound[] channels = new Sound[ChannelCount];
+    private int currentChannel = 0;
 
     public AudioFX(string path, float volume) {
         FX = Raylib.LoadSound(path);
+        for(int i = 0; i < channels.Length; i++) {
+            channels[i] = Raylib.LoadSoundAlias(FX);
+        }
         Raylib.SetSoundVolume(FX, volume);
     }
 
     public void Play() {
-        Sound newSound = Raylib.LoadSoundAlias(FX);
-        Raylib.PlaySound(newSound);
+        Raylib.PlaySound(channels[currentChannel % ChannelCount]);
+        currentChannel++;
     }
 }
