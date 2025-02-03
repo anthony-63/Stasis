@@ -1,13 +1,64 @@
 using System.IO.Compression;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using System.Text;
 using Raylib_cs;
 
 namespace Stasis.Engine.UI.Elements;
 
+public class LabelFont {
+    public Font Font;
+    public int Spacing = 1;
+
+    Dictionary<char, float> fontSizes;
+    float fontHeight;
+    float scaleFactor;
+
+
+    public LabelFont() : this(Raylib.GetFontDefault(), 10) {}
+
+    public LabelFont(Font font, int size) {
+        Font = font;
+
+        fontSizes = [];
+        fontHeight = font.BaseSize;
+        scaleFactor = size/font.BaseSize;
+
+        unsafe {
+            for(int i = 0; i < font.GlyphCount; i++) {
+                var glyph = font.Glyphs[i];
+                fontSizes[(char)glyph.Value] = glyph.AdvanceX == 0 ? font.Recs[i].Width * scaleFactor : glyph.AdvanceX * scaleFactor;
+            }
+            if(!fontSizes.ContainsKey('?')) fontSizes['?'] = fontSizes['H'];
+        }
+    }
+
+    private static Font loadFont(string path, int size) {
+        return Raylib.LoadFontEx(path, size, [], 0);
+    }
+
+    public LabelFont(string path, int size) : this(loadFont(path, size), size) {}
+
+    public Vector2 MeasureText(string text) {
+        var size = new Vector2(0, fontHeight);
+        int i = 0;
+        foreach(var c in text) {
+            try {
+                size.X += fontSizes[c];
+            } catch {
+                size.X += fontSizes['?'];
+            }
+            if(i != 0) size.X += Spacing;
+            i++;
+        }
+        return size;
+    }
+}
+
 public class Label : UiElement {
     public string Text = "";
 
-    public static List<Tuple<string, int, Font>> LoadedFonts = new();
+    public static List<Tuple<string, int, LabelFont>> LoadedFonts = new();
 
     public List<Tuple<char, int>> textIndexed = new();
 
@@ -25,9 +76,9 @@ public class Label : UiElement {
     public string Font {
         set {
             if(LoadedFonts.Any((v) => v.Item1 == value && v.Item2 == FontSize)) {
-                font = LoadedFonts.Find((v) => v.Item1 == value && v.Item2 == FontSize)?.Item3 ?? Raylib.GetFontDefault();
+                font = LoadedFonts.Find((v) => v.Item1 == value && v.Item2 == FontSize)?.Item3 ?? new LabelFont();
             } else {
-                font = Raylib.LoadFontEx(value, FontSize, [], 0);
+                font = new LabelFont(value, FontSize);
                 LoadedFonts.Add(new(value, FontSize, font));
             }
             fontPath = value;
@@ -35,9 +86,8 @@ public class Label : UiElement {
         get => fontPath;
     }
 
-    private Font font = Raylib.GetFontDefault();
+    private LabelFont font = new LabelFont();
     public int FontSize = 18;
-    public int FontSpacing = 1;
 
     public TextAlignX AlignmentX = TextAlignX.Center;
     public TextAlignY AlignmentY = TextAlignY.Middle;
@@ -60,8 +110,8 @@ public class Label : UiElement {
                 var newLine = character == '\n';
                 var keepCharacter = TextWrapped && !newLine;
                 if (keepCharacter) {
-                    var nextLineSize = Raylib.MeasureTextEx(font, line + character, FontSize, FontSpacing);
-                    newLine = nextLineSize.X + FontSpacing >= AbsoluteSize.X;
+                    var nextLineSize = font.MeasureText(line + character);
+                    newLine = nextLineSize.X >= AbsoluteSize.X;
                 }
                 if (newLine) {
                     absoluteTextSize.X = Math.Max(absoluteTextSize.X, lineSize.X);
@@ -72,14 +122,14 @@ public class Label : UiElement {
                     continue;
                 }
                 line += character;
-                lineSize = Raylib.MeasureTextEx(font, line, FontSize, FontSpacing);
+                lineSize = font.MeasureText(line);
             }
             absoluteTextSize.X = Math.Max(absoluteTextSize.X, lineSize.X);
             lineHeight = Math.Max(lineHeight, lineSize.Y);
             lines.Add(new(line, lineSize));
-            absoluteTextSize.Y = (lineHeight * lines.Count) + (LineSpacing * (lines.Count - 1));
+            absoluteTextSize.Y = lineHeight * lines.Count;
         } else {
-            var textSize = Raylib.MeasureTextEx(font, Text, FontSize, FontSpacing);
+            var textSize = font.MeasureText(Text);
             absoluteTextSize = textSize;
             lines.Add(new(Text, textSize));
         }
@@ -101,7 +151,7 @@ public class Label : UiElement {
             var textOffset = Vector2.UnitY * lineOffsetY;
             if (AlignmentX == TextAlignX.Center) textOffset.X = (absoluteTextSize.X - lineSize.X) / 2;
             if (AlignmentX == TextAlignX.Right) textOffset.X = absoluteTextSize.X - lineSize.X;
-            Raylib.DrawTextEx(font, text, AbsolutePosition + textOrigin + textOffset, FontSize, FontSpacing, TextColor);
+            Raylib.DrawTextEx(font.Font, text, AbsolutePosition + textOrigin + textOffset, FontSize, font.Spacing, TextColor);
         }
         base.Render();
     }
