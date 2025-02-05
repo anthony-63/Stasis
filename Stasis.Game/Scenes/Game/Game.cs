@@ -35,8 +35,10 @@ public class GameScene : Scene {
         HUD.AddChild(FadeFrame);
         InputManager.HideCursor();
 
+        var modText = Global.GetModText(Global.Mods);
         Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
-            Details = "Playing map '" + (Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 64)] ?? "") + "'",
+            Details = "Playing Map" + (modText == "" ? "" : " with " + modText),
+            State = Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 127)] ?? "",
             Timestamps = DiscordRPC.Timestamps.FromTimeSpan(TimeSpan.FromSeconds(Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0)),
         });
     }

@@ -206,7 +206,8 @@ public class MenuScene : Scene {
 
     public void SetRPC() {
         Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
-            Details = "Viewing Map List",
+            Details = "In Menu",
+            State = "Listening to PLACEHOLDER",
             Timestamps = DiscordRPC.Timestamps.Now,
         });
     }

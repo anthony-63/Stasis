@@ -449,7 +449,8 @@ public class MapInfoScene : Scene {
         Root.AddChild(Global.BasicFPSLabel);
 
         Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
-            Details = "Viewing map '" + (Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 64)] ?? "") + "'",
+            Details = "Viewing map",
+            State = Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 127)] ?? "",
             Timestamps = DiscordRPC.Timestamps.Now,
         });
     }
@@ -458,7 +459,7 @@ public class MapInfoScene : Scene {
         Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
         Global.LoadedMenu?.SetRPC();
         if(Global.LoadedMenu is not null) {
-            if(((UiElement)Global.LoadedMenu.MapGrid.Children[0]).Children.Count != MapLoader.Maps.Count) {
+            if(Global.LoadedMenu.MapGrid.Children[0].Children.Count != MapLoader.Maps.Count) {
                 Global.LoadedMenu.MapGrid = new();
                 Global.LoadedMenu.MakeMapList();
             }
