@@ -15,10 +15,10 @@ public class Button : UiElement {
     public delegate void ButtonEvent();
     public delegate void ButtonToggleEvent(bool value);
 
-    public event ButtonEvent? PressedOnce;
-    public event ButtonEvent? Holding;
-    public event ButtonEvent? Released;
-    public event ButtonEvent? Hovering;
+    public ButtonEvent? PressedOnce;
+    public ButtonEvent? Holding;
+    public ButtonEvent? Released;
+    public ButtonEvent? Hovering;
 
     public event ButtonToggleEvent? Toggled;
 
