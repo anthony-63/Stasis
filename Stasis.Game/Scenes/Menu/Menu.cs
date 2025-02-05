@@ -221,10 +221,11 @@ public class MenuScene : Scene {
                         ]
                     },
                 },
+
                 new TabContainerTab() {
                     Size = new UDim2(0.95f, 0, 0.95f, 0),
                     Position = new UDim2(0.05f, 0, 0.05f, 0),
-                    Color = Color.DarkGray,
+                    Color = MainFrame.Color,
                     SwapTo = new Button() {
                         Size = new UDim2(0.05f, 0, 0.082f, 0),
                         Position = new UDim2(0, 0, 0.082f, 0),
