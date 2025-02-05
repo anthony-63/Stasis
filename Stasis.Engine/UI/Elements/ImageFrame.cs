@@ -45,10 +45,18 @@ public class ImageFrame : UiElement {
         base.UpdateAbsoluteValues(parentSize, parentPosition);
     }
 
+    void LoadTexture(Image img) {
+        var tex = Raylib.LoadTextureFromImage(img);
+        Raylib.GenTextureMipmaps(ref tex);
+        Raylib.SetTextureFilter(tex, TextureFilter.Trilinear);
+        texture = tex;
+    }
+
     public override void Render() {
         if(!Visible) return;
+
         if(ImageQueue is Image img) {
-            texture = Raylib.LoadTextureFromImage(img);
+            LoadTexture(img);
             Raylib.UnloadImage(img);
             ImageQueue = null;
         }
