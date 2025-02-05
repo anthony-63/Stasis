@@ -18,6 +18,7 @@ public class MenuScene : Scene {
     public Frame MetaFrame;
     public ScrollContainer MapGrid;
     public GridContainer MapList;
+    public TabContainer MainTabContainer;
     public Frame MainFrame;
     public TextBox SearchBox;
     public Button ReloadMaps;
@@ -73,15 +74,14 @@ public class MenuScene : Scene {
 
     public ScrollContainer MakeMapList() {
         MapGrid = new ScrollContainer() {
-            Size = new UDim2(1f, 0, 1f, 0),
+            Size = UDim2.Fill,
             ClipContents = true,
         };
 
         MapList = new GridContainer() {
             Padding = 17,
             ItemsPerRow = 8,
-            Size = new UDim2(0.97f, 0, 0.95f, 0),
-            Position = new UDim2(0.03f, 0, 0.05f, 0),
+            Size = UDim2.Fill,
         };
 
         LoadMapButtons(ref MapList);
@@ -111,8 +111,8 @@ public class MenuScene : Scene {
 
         MetaFrame = new Frame() {
             Color = Raylib.ColorFromNormalized(new Vector4(0.03f, 0.03f, 0.03f, 1f)),
-            Size = new UDim2(0.97f, 0, 0.07f, 0),
-            Position = new UDim2(0.03f, 0, -0.02f, 0),
+            Size = new UDim2(0.95f, 0, 0.07f, 0),
+            Position = new UDim2(0.05f, 0, -0.02f, 0),
             Roundness = 0.5f,
         };
 
@@ -195,8 +195,61 @@ public class MenuScene : Scene {
 
         MapGrid = MakeMapList();
 
+        var leftFrame = new Frame() {
+            Color = new Color(3, 3, 3, 255),
+            Size = new UDim2(0.05f, 0, 1, 0),
+        };
+        MainTabContainer = new TabContainer() {
+            Tabs = [
+                new TabContainerTab() {
+                    Size = new UDim2(0.95f, 0, 0.95f, 0),
+                    Position = new UDim2(0.05f, 0, 0.05f, 0),
+                    Color = MainFrame.Color,
+                    SwapTo = new Button() {
+                        Size = new UDim2(0.05f, 0, 0.082f, 0),
+                        NormalFrame = new Frame() {
+                            Color = new Color(8, 8, 8, 255),
+                        },
+                        HoveringFrame = new Frame() {
+                            Color = new Color(12, 12, 12, 255),
+                        },
+                        Children = [
+                            new ImageFrame() {
+                                Size = UDim2.Fill,
+                                ImagePath = "Assets/Menu/PlayButton.png",
+                            }
+                        ]
+                    },
+                },
+                new TabContainerTab() {
+                    Size = new UDim2(0.95f, 0, 0.95f, 0),
+                    Position = new UDim2(0.05f, 0, 0.05f, 0),
+                    Color = Color.DarkGray,
+                    SwapTo = new Button() {
+                        Size = new UDim2(0.05f, 0, 0.082f, 0),
+                        Position = new UDim2(0, 0, 0.082f, 0),
+                        NormalFrame = new Frame() {
+                            Color = new Color(8, 8, 8, 255),
+                        },
+                        HoveringFrame = new Frame() {
+                            Color = new Color(12, 12, 12, 255),
+                        },
+                        Children = [
+                            new ImageFrame() {
+                                Size = UDim2.Fill,
+                                ImagePath = "Assets/Menu/SettingsButton.png",
+                            }
+                        ]
+                    },
+                }
+            ]
+        };
+
+        MainTabContainer.Tabs[0].AddChild(MapGrid);
+
         Root.AddChild(MainFrame);
-        Root.AddChild(MapGrid);
+        Root.AddChild(leftFrame);
+        Root.AddChild(MainTabContainer);
         Root.AddChild(MetaFrame);
         Root.AddChild(Global.BasicFPSLabel);
 
@@ -235,7 +288,6 @@ public class MenuScene : Scene {
             }
             ReloadMapsAction();
         }
-
 
         Root.Update(dt);
         if(LastSearch != SearchBox.Text.Text) MapGrid.Scroll = 0;

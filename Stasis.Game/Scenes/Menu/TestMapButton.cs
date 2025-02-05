@@ -1,12 +1,8 @@
 using System.Numerics;
 using Raylib_cs;
 using Stasis.Content.Beatmaps;
-using Stasis.Engine;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
-using Stasis.Game.Scenes.Game;
-using Stasis.Game.Scenes.MapInfo;
-using TinyTween;
 
 namespace Stasis.Game.Scenes.Menu;
 
