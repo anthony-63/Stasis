@@ -1,4 +1,3 @@
-using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace Stasis.Content.Settings;

@@ -20,7 +20,7 @@ public class Button : UiElement {
     public ButtonEvent? Released;
     public ButtonEvent? Hovering;
 
-    public event ButtonToggleEvent? Toggled;
+    public ButtonToggleEvent? Toggled;
 
     public bool Toggle = false;
     public bool ToggledValue = false;

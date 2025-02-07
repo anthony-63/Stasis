@@ -92,6 +92,8 @@ public class Label : UiElement {
     public int LineSpacing = 4;
     public bool TextWrapped = false;
 
+    public Vector2 TextOrigin = Vector2.Zero;
+
     private Vector2 absoluteTextSize = Vector2.Zero;
     public Vector2 AbsoluteTextSize => absoluteTextSize;
 
@@ -135,11 +137,11 @@ public class Label : UiElement {
 
     public override void Render() {
         if(!Visible) return;
-        var textOrigin = Vector2.Zero;
-        if (AlignmentX == TextAlignX.Center) textOrigin.X = (AbsoluteSize.X - absoluteTextSize.X) / 2;
-        if (AlignmentX == TextAlignX.Right) textOrigin.X = AbsoluteSize.X - absoluteTextSize.X;
-        if (AlignmentY == TextAlignY.Middle) textOrigin.Y = (AbsoluteSize.Y - absoluteTextSize.Y) / 2;
-        if (AlignmentY == TextAlignY.Bottom) textOrigin.Y = AbsoluteSize.Y - absoluteTextSize.Y;
+        TextOrigin = Vector2.Zero;
+        if (AlignmentX == TextAlignX.Center) TextOrigin.X = (AbsoluteSize.X - absoluteTextSize.X) / 2;
+        if (AlignmentX == TextAlignX.Right) TextOrigin.X = AbsoluteSize.X - absoluteTextSize.X;
+        if (AlignmentY == TextAlignY.Middle) TextOrigin.Y = (AbsoluteSize.Y - absoluteTextSize.Y) / 2;
+        if (AlignmentY == TextAlignY.Bottom) TextOrigin.Y = AbsoluteSize.Y - absoluteTextSize.Y;
         for (int i = 0; i < lines.Count; i++) {
             var tuple = lines[i];
             var text = tuple.Item1;
@@ -148,7 +150,7 @@ public class Label : UiElement {
             var textOffset = Vector2.UnitY * lineOffsetY;
             if (AlignmentX == TextAlignX.Center) textOffset.X = (absoluteTextSize.X - lineSize.X) / 2;
             if (AlignmentX == TextAlignX.Right) textOffset.X = absoluteTextSize.X - lineSize.X;
-            Raylib.DrawTextEx(font.Font, text, AbsolutePosition + textOrigin + textOffset, FontSize, font.Spacing, TextColor);
+            Raylib.DrawTextEx(font.Font, text, AbsolutePosition + TextOrigin + textOffset, FontSize, font.Spacing, TextColor);
         }
         base.Render();
     }

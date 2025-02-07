@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using Microsoft.VisualBasic;
 using Raylib_cs;
 using Stasis.Content.Beatmaps;
@@ -22,6 +20,9 @@ public class MenuScene : Scene {
     public Frame MainFrame;
     public TextBox SearchBox;
     public Button ReloadMaps;
+    public Frame SettingsFrame;
+
+    private float settingsTabButtonPlace = 0;
 
     public string LastSearch = "";
 
@@ -74,7 +75,8 @@ public class MenuScene : Scene {
 
     public ScrollContainer MakeMapList() {
         MapGrid = new ScrollContainer() {
-            Size = UDim2.Fill,
+            Size = new UDim2(1f, 0, 0.95f, 0),
+            Position = new UDim2(0, 0, 0.05f, 0),
             ClipContents = true,
         };
 
@@ -101,6 +103,340 @@ public class MenuScene : Scene {
         LoadMapButtons(ref MapList);            
     }
 
+    public TabContainerTab MakeSettingsTab(string name) {
+        var tab = new TabContainerTab() {
+            Size = new UDim2(1, 0, 0.95f, 0),
+            Position = new UDim2(0, 0, 0.05f, 0),
+            Color = MainFrame.Color,
+            SwapTo = new Button() {
+                Position = new UDim2(0, settingsTabButtonPlace, 0, 2),
+                Size = new UDim2(0, 200, 0.045f, 0),
+                NormalFrame = new Frame() {
+                    BorderWidth = 0.5f,
+                    Color = new Color(22, 22, 22, 255),
+                },
+                HoveringFrame = new Frame() {
+                    BorderWidth = 0.5f,
+                    Color = new Color(32, 32, 32, 255),
+                },
+                Label = new Label() {
+                    Size = UDim2.Fill,
+                    AlignmentX = TextAlignX.Center,
+                    AlignmentY = TextAlignY.Middle,
+                    OneLine = true,
+                    Text = name,
+                    FontSize = 24,
+                    Font = Global.UIFont,
+                }
+            }
+        };
+
+        var titleFrame = new Frame() {
+            Color = MainFrame.Color,
+            BorderWidth = 0.5f,
+            Size = new UDim2(1, -2.5f, 0, 50),
+            Position = new UDim2(0, 0, 0, 0),
+        };
+        var titleLabel = new Label() {
+            AlignmentX = TextAlignX.Center,
+            AlignmentY = TextAlignY.Top,
+            FontSize = 48,
+            Size = UDim2.Fill,
+            Font = Global.UIFont,
+            Text = name,
+            OneLine = true,
+        };
+        titleFrame.AddChild(titleLabel);
+        tab.AddChild(titleFrame);
+
+        settingsTabButtonPlace += 201;
+
+        return tab;
+    }
+
+    public Frame MakeSettingsContainerFrame() {
+        var frame = new Frame() {
+            Size = new UDim2(1, -2.5f, 1, -55),
+            Position = new UDim2(0, 0, 0, 52.5f),
+            Color = MainFrame.Color,
+            BorderWidth = 0.5f,
+        };
+        return frame;
+    }
+
+    public void MakeSettingSpinbox(ref Frame parent, float defaultValue, string name, int y, SpinBox.ValueChangedEvent valueChanged) {
+        var label = new Label() {
+            Size = new UDim2(1, 0, 0, 1),
+            Position = new UDim2(0, 10, 0, y),
+            AlignmentX = TextAlignX.Left,
+            AlignmentY = TextAlignY.Middle,
+            Text = name,
+            FontSize = 32,
+            Font = Global.UIFont,
+            OneLine = true,
+        };
+        label.UpdateAbsoluteValues(parent.AbsoluteSize, parent.AbsolutePosition);
+
+        var spinBox = new SpinBox() {
+            Size = new UDim2(0, 100, 0, label.FontSize),
+            Position = new UDim2(0, 250, 0, 0),
+            Step = 0.01f,
+            Anchor = UiElementAnchor.MiddleLeft,
+            NormalFrame = new Frame() {
+                Color = new Color(9, 9, 9, 255),
+                BorderWidth = 0.5f,
+                Roundness = 0.5f,
+            },
+            FocusedFrame = new Frame() {
+                Color = new Color(15, 15, 15, 255),
+                BorderWidth = 0.5f,
+                Roundness = 0.5f,
+            },
+            Text = new Label() {
+                OneLine = true,
+                FontSize = 18,
+                Size = UDim2.Fill,
+                Font = Global.UIFont,
+            },
+            Placeholder = new Label() {
+                OneLine = true,
+                FontSize = 18,
+                Size = UDim2.Fill,
+                Font = Global.UIFont,
+                Text = "Enter Value",
+            },
+            Value = defaultValue,
+        };
+        spinBox.ValueChanged += valueChanged;
+
+        label.AddChild(spinBox);
+
+        parent.AddChild(label);
+    }
+
+    public void MakeSettingsToggle(ref Frame parent, bool defaultValue, string name, int y, Button.ButtonToggleEvent valueChanged) {
+        var label = new Label() {
+            Size = new UDim2(1, 0, 0, 1),
+            Position = new UDim2(0, 10, 0, y),
+            AlignmentX = TextAlignX.Left,
+            AlignmentY = TextAlignY.Middle,
+            Text = name,
+            FontSize = 32,
+            Font = Global.UIFont,
+            OneLine = true,
+        };
+        label.UpdateAbsoluteValues(parent.AbsoluteSize, parent.AbsolutePosition);
+
+        var button = new Button() {
+            Size = new UDim2(0, 100, 0, label.FontSize),
+            Position = new UDim2(0, 250, 0, 0),
+            Anchor = UiElementAnchor.MiddleLeft,
+            ToggledValue = defaultValue,
+            Toggle = true,
+            NormalFrame = new Frame() {
+                Color = new Color(9, 9, 9, 255),
+                BorderWidth = 0.5f,
+                Roundness = 0.5f,
+            },
+            HoveringFrame = new Frame() {
+                Color = new Color(16, 16, 16, 255),
+                BorderWidth = 0.5f,
+                Roundness = 0.5f,
+            },
+            PressedFrame = new Frame() {
+                Color = new Color(22, 22, 22, 255),
+                BorderWidth = 0.5f,
+                Roundness = 0.5f,
+            },
+            Label = new Label() {
+                OneLine = true,
+                Size = UDim2.Fill,
+                FontSize = 18,
+                Font = Global.UIFont,
+                Text = defaultValue ? "Enabled" : "Disabled",
+            },
+        };
+        button.Toggled += (b) => {
+            if(button.ToggledValue) button.Label.Text = "Enabled";
+            else button.Label.Text = "Disabled";
+            valueChanged(b);
+        };
+
+        label.AddChild(button);
+
+        parent.AddChild(label);
+    }
+
+    public TabContainerTab MakeNoteSettings() {
+        var tab = MakeSettingsTab("Note Settings");
+        var container = MakeSettingsContainerFrame();
+        MakeSettingSpinbox(ref container, Global.Settings.Note.ApproachTime, "Approach Time", 20, UpdateApproachTime);
+        MakeSettingSpinbox(ref container, Global.Settings.Note.ApproachDistance, "Approach Distance", 60, UpdateApproachDistance);
+        MakeSettingsToggle(ref container, Global.Settings.Note.Pushback, "Pushback", 100, UpdatePushback);
+        tab.AddChild(container);
+        return tab;
+    }
+
+    void SaveSettings() {
+        Global.Settings.Save("Assets/settings.json");
+    }
+
+    public void UpdateApproachTime(float value) {
+        Global.Settings.Note.ApproachTime = value;
+        SaveSettings();
+    }
+
+    public void UpdateApproachDistance(float value) {
+        Global.Settings.Note.ApproachDistance = value;
+        SaveSettings();
+    }
+
+    public void UpdatePushback(bool value) {
+        Global.Settings.Note.Pushback = value;
+        SaveSettings();
+    }
+
+
+    public TabContainerTab MakeCursorSettings() {
+        var tab = MakeSettingsTab("Cursor Settings");
+        var container = MakeSettingsContainerFrame();
+
+        MakeSettingSpinbox(ref container, Global.Settings.Cursor.Sensitivity, "Sensitivity", 20, UpdateSensitivity);
+        MakeSettingSpinbox(ref container, Global.Settings.Cursor.Scale, "Scale", 60, UpdateCursorScale);
+        MakeSettingsToggle(ref container, Global.Settings.Cursor.Clamped, "Clamped", 100, UpdateClamped);
+
+        tab.AddChild(container);
+        return tab;
+    }
+
+    public void UpdateSensitivity(float value) {
+        Global.Settings.Cursor.Sensitivity = value;
+        SaveSettings();
+    }
+
+    public void UpdateCursorScale(float value) {
+        Global.Settings.Cursor.Scale = value;
+        SaveSettings();
+    }
+
+    public void UpdateClamped(bool value) {
+        Global.Settings.Cursor.Clamped = value;
+        SaveSettings();
+    }
+
+    public TabContainerTab MakeCameraSettings() {
+        var tab = MakeSettingsTab("Camera Settings");
+        var container = MakeSettingsContainerFrame();
+
+        MakeSettingSpinbox(ref container, Global.Settings.Camera.FOV, "FOV", 20, UpdateFOV);
+        MakeSettingSpinbox(ref container, Global.Settings.Camera.CameraParallax, "Camera Parallax", 60, UpdateCameraParallax);
+        MakeSettingSpinbox(ref container, Global.Settings.Camera.GridParallax, "Grid Parallax", 100, UpdateGridParallax);
+
+        tab.AddChild(container);
+        return tab;
+    }
+
+    public void UpdateFOV(float value) {
+        Global.Settings.Camera.FOV = value;
+        SaveSettings();
+    }
+
+    public void UpdateCameraParallax(float value) {
+        Global.Settings.Camera.CameraParallax = value;
+        SaveSettings();
+    }
+
+    public void UpdateGridParallax(float value) {
+        Global.Settings.Camera.GridParallax = value;
+        SaveSettings();
+    }
+
+    public TabContainerTab MakeAudioSettings() {
+        var tab = MakeSettingsTab("Audio Settings");
+        var container = MakeSettingsContainerFrame();
+
+        MakeSettingSpinbox(ref container, Global.Settings.Audio.Volume, "Music Volume", 20, UpdateVolume);
+        MakeSettingSpinbox(ref container, Global.Settings.Audio.FXVolume, "Effects Volume", 60, UpdateFXVolume);
+
+        tab.AddChild(container);
+        return tab;
+    }
+
+    public void UpdateVolume(float value) {
+        Global.Settings.Audio.Volume = value;
+        SaveSettings();
+    }
+
+    public void UpdateFXVolume(float value) {
+        Global.Settings.Audio.FXVolume = value;
+        SaveSettings();
+    }
+
+    // public TabContainerTab Make_Settings() {
+    //     var tab = new TabContainerTab() {
+    //         Size = new UDim2(1, 0, 0.95f, 0),
+    //         Position = new UDim2(0, 0, 0.05f, 0),
+    //         Color = MainFrame.Color,
+    //         SwapTo = new Button() {
+    //             Position = new UDim2(0, 201, 0, 2),
+    //             Size = new UDim2(0, 200, 0.045f, 0),
+    //             NormalFrame = new Frame() {
+    //                 BorderWidth = 0.5f,
+    //                 Color = new Color(22, 22, 22, 255),
+    //             },
+    //             HoveringFrame = new Frame() {
+    //                 BorderWidth = 0.5f,
+    //                 Color = new Color(32, 32, 32, 255),
+    //             },
+    //             Label = new Label() {
+    //                 Size = UDim2.Fill,
+    //                 AlignmentX = TextAlignX.Center,
+    //                 AlignmentY = TextAlignY.Middle,
+    //                 OneLine = true,
+    //                 Text = "_ Settings",
+    //                 FontSize = 24,
+    //                 Font = Global.UIFont,
+    //             }
+    //         }
+    //     };
+    //     return tab;
+    // }
+
+    public TabContainerTab MakeSettings() {
+        var frame = new TabContainerTab() {
+            Size = new UDim2(0.95f, -5, 1f, 0),
+            Position = new UDim2(0.05f, 5, 0, 0),
+            Color = MainFrame.Color,
+            SwapTo = new Button() {
+                Size = new UDim2(0.05f, 0, 0.082f, 0),
+                Position = new UDim2(0, 0, 0.082f, 0),
+                NormalFrame = new Frame() {
+                    Color = new Color(8, 8, 8, 255),
+                },
+                HoveringFrame = new Frame() {
+                    Color = new Color(12, 12, 12, 255),
+                },
+                Children = [
+                    new ImageFrame() {
+                        Size = UDim2.Fill,
+                        ImagePath = "Assets/Menu/SettingsButton.png",
+                    }
+                ]
+            },
+        };
+
+        frame.AddChild(new TabContainer() {
+            Tabs = [
+                MakeNoteSettings(),
+                MakeCursorSettings(),
+                MakeCameraSettings(),
+                MakeAudioSettings(),
+            ]
+        });
+
+        return frame;
+    }
+
 
     #pragma warning disable CS8618
     public MenuScene() {
@@ -111,8 +447,8 @@ public class MenuScene : Scene {
 
         MetaFrame = new Frame() {
             Color = Raylib.ColorFromNormalized(new Vector4(0.03f, 0.03f, 0.03f, 1f)),
-            Size = new UDim2(0.95f, 0, 0.07f, 0),
-            Position = new UDim2(0.05f, 0, -0.02f, 0),
+            Size = new UDim2(1, 0, 0.07f, 0),
+            Position = new UDim2(0, 0, -0.02f, 0),
             Roundness = 0.5f,
         };
 
@@ -202,8 +538,8 @@ public class MenuScene : Scene {
         MainTabContainer = new TabContainer() {
             Tabs = [
                 new TabContainerTab() {
-                    Size = new UDim2(0.95f, 0, 0.95f, 0),
-                    Position = new UDim2(0.05f, 0, 0.05f, 0),
+                    Size = new UDim2(0.95f, 0, 1f, 0),
+                    Position = new UDim2(0.05f, 0, 0, 0),
                     Color = MainFrame.Color,
                     SwapTo = new Button() {
                         Size = new UDim2(0.05f, 0, 0.082f, 0),
@@ -221,37 +557,16 @@ public class MenuScene : Scene {
                         ]
                     },
                 },
-
-                new TabContainerTab() {
-                    Size = new UDim2(0.95f, 0, 0.95f, 0),
-                    Position = new UDim2(0.05f, 0, 0.05f, 0),
-                    Color = MainFrame.Color,
-                    SwapTo = new Button() {
-                        Size = new UDim2(0.05f, 0, 0.082f, 0),
-                        Position = new UDim2(0, 0, 0.082f, 0),
-                        NormalFrame = new Frame() {
-                            Color = new Color(8, 8, 8, 255),
-                        },
-                        HoveringFrame = new Frame() {
-                            Color = new Color(12, 12, 12, 255),
-                        },
-                        Children = [
-                            new ImageFrame() {
-                                Size = UDim2.Fill,
-                                ImagePath = "Assets/Menu/SettingsButton.png",
-                            }
-                        ]
-                    },
-                }
+                MakeSettings(),
             ]
         };
 
         MainTabContainer.Tabs[0].AddChild(MapGrid);
+        MainTabContainer.Tabs[0].AddChild(MetaFrame);
 
         Root.AddChild(MainFrame);
         Root.AddChild(leftFrame);
         Root.AddChild(MainTabContainer);
-        Root.AddChild(MetaFrame);
         Root.AddChild(Global.BasicFPSLabel);
 
         SetRPC();

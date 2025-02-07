@@ -44,7 +44,7 @@ public class TextBox : UiElement {
 
     public override void Update(double dt) {
         base.Update(dt);
-
+        Text.OneLine = true;
         timer += (float)dt;
         if(timer > CaretTimer) {
             timer = 0;
@@ -90,8 +90,8 @@ public class TextBox : UiElement {
         if(caretVisible && State == TextBoxState.Focused) {
             var textSize = Text.lines[0].Item2;
             Raylib.DrawLineEx(
-                new Vector2(Text.AbsolutePosition.X+textSize.X + 3, NormalFrame.AbsolutePosition.Y + 3),
-                new Vector2(Text.AbsolutePosition.X+textSize.X + 3, NormalFrame.AbsolutePosition.Y + NormalFrame.AbsoluteSize.Y - 3),
+                new Vector2(Text.AbsolutePosition.X + textSize.X + Text.TextOrigin.X + 3, NormalFrame.AbsolutePosition.Y + 3),
+                new Vector2(Text.AbsolutePosition.X+textSize.X + Text.TextOrigin.X + 3, NormalFrame.AbsolutePosition.Y + NormalFrame.AbsoluteSize.Y - 3),
                 0.5f, Text.TextColor);
         }
         base.Render();
