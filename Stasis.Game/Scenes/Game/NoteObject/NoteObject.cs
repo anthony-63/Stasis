@@ -1,6 +1,7 @@
 using System.Numerics;
 using Raylib_cs;
 using Stasis.Content.Beatmaps;
+using Stasis.Engine;
 using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.NoteObject;
@@ -42,7 +43,9 @@ public class NoteObject {
 
     public bool IsVisible(float time, float speed, float approachTime, bool pushback) {
         if(Hit) return false;
-        if(Time > Note.Time && !pushback && GetZ(time, speed) > 0.2) return false;
+        if(time > Note.Time && !pushback && GetZ(time, speed) > 0.1) {
+            return false;
+        }
         return CalculateTime(time, speed, approachTime) <= 1f && InHitWindow(time, speed);
     }
 
