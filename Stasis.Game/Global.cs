@@ -6,6 +6,8 @@ using Stasis.Engine.Discord;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Menu;
 using Stasis.Game.Scenes.Game.Player;
+using System.Numerics;
+using Stasis.Engine;
 
 namespace Stasis.Game;
 
@@ -21,7 +23,7 @@ public static class Global {
     public static Settings Settings = new();
 
     public static Color[] Colors = [Color.White, Color.Pink];
-    public static string UIFont = "Assets/Game/font.ttf";
+    public static string UIFont = GetAsset("Assets/Game/font.ttf");
 
     public static Mods Mods = new();
 
@@ -32,6 +34,23 @@ public static class Global {
 
     public static string GetMapHash(IBeatmapSet map) {
         return Util.GetSHA256(map.Title + string.Concat(map.Difficulties[0].Notes.Select(x => x.X + x.Y + x.Time) ?? []));
+    }
+
+    public static string GetAsset(string path) {
+        if(!File.Exists(path)) {
+            Logger.Info("Downloading ", path);
+            Raylib.BeginDrawing();
+            Raylib.ClearBackground(Color.Black);
+            Raylib.DrawTextEx(Raylib.LoadFontEx(UIFont, 50, [], 0), "Downloading " + path, new Vector2(20, 20), 50, 1, Color.Green);
+            Raylib.EndDrawing();
+            using var client = new HttpClient();
+            using var s = client.GetStreamAsync("https://github.com/anthony-63/StasisDefaultAssets/raw/refs/heads/master/" + path.Replace("Assets/", ""));
+            Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
+            using var fs = new FileStream(path, FileMode.CreateNew);
+
+            s.Result.CopyTo(fs);
+        }
+        return path;
     }
 
     public static string GetModText(Mods mods) {

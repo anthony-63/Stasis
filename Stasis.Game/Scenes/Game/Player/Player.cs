@@ -11,9 +11,9 @@ namespace Stasis.Game.Scenes.Game.Player;
 public class Player {
     public Score Score = new();
     public Camera Camera = new(new Vector3(0, 0, 7), Global.Settings.Camera.FOV);
-    public Cursor Cursor = new(Vector3.Zero, new Vector3(90, 0, 180), Vector2.One * Global.Settings.Cursor.Scale, "Assets/Game/Cursor.png");
+    public Cursor Cursor = new(Vector3.Zero, new Vector3(90, 0, 180), Vector2.One * Global.Settings.Cursor.Scale, Global.GetAsset("Assets/Game/Cursor.png"));
     
-    public AudioFX HitFX = new("Assets/Game/hit.mp3", Global.Settings.Audio.FXVolume);
+    public AudioFX HitFX = new(Global.GetAsset("Assets/Game/hit.mp3"), Global.Settings.Audio.FXVolume);
 
     public void StartRender() {
         Camera.Start();

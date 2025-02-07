@@ -15,7 +15,7 @@ namespace Stasis.Game.Scenes.Game;
 
 public class GameScene : Scene {
     public Player.Player Player = new();
-    public Sprite Grid = Sprite.MakePlane(new Vector3(0, 0, 0), new Vector3(90, 0, 180), new Vector2(6, 6), "Assets/Game/Grid.png");
+    public Sprite Grid = Sprite.MakePlane(new Vector3(0, 0, 0), new Vector3(90, 0, 180), new Vector2(6, 6), Global.GetAsset("Assets/Game/Grid.png"));
 
     public SyncAudioPlayer Music = new(Global.SelectedMap?.AudioData ?? null, Global.Settings.Audio.Volume, Global.Mods.Speed);
 

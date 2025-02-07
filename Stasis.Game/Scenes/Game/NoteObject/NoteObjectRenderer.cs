@@ -15,7 +15,7 @@ public class NoteObjectRenderer {
 
     public NoteObjectRenderer(GameScene game) {
         Game = game;
-        MultiMesh = new MultiMesh("Assets/Game/Mesh.obj");
+        MultiMesh = new MultiMesh(Global.GetAsset("Assets/Game/Mesh.obj"));
     }
 
     public void RenderNotes(Cursor cursor) {

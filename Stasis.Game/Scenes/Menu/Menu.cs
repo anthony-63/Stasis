@@ -419,7 +419,7 @@ public class MenuScene : Scene {
                 Children = [
                     new ImageFrame() {
                         Size = UDim2.Fill,
-                        ImagePath = "Assets/Menu/SettingsButton.png",
+                        ImagePath = Global.GetAsset("Assets/Menu/SettingsButton.png"),
                     }
                 ]
             },
@@ -552,7 +552,7 @@ public class MenuScene : Scene {
                         Children = [
                             new ImageFrame() {
                                 Size = UDim2.Fill,
-                                ImagePath = "Assets/Menu/PlayButton.png",
+                                ImagePath = Global.GetAsset("Assets/Menu/PlayButton.png"),
                             }
                         ]
                     },

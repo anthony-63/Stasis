@@ -36,7 +36,7 @@ public class MapInfoScene : Scene {
         };
 
         if(Global.SelectedMap?.Cover is null || Global.SelectedMap?.Cover.Length <= 0) {
-            image.ImagePath = "Assets/Game/cat.png";
+            image.ImagePath = Global.GetAsset("Assets/Game/cat.png");
         } else {
             image.ImageData = Global.SelectedMap?.Cover ?? [];
         }
