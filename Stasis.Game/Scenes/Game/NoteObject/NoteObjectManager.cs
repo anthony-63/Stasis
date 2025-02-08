@@ -43,7 +43,7 @@ public class NoteObjectManager {
         Skippable = NextNote?.Time - (music?.Time ?? 0f) > 4f;
     }
 
-    public void SkipToNote(ref SyncAudioPlayer music) {
+    public void SkipToNote(SyncAudioPlayer music) {
         music?.Seek(Math.Max((NextNote?.Time ?? 0) - 2f, 0));
         Logger.Info(music?.Time ?? 0);
     }

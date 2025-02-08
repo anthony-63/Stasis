@@ -8,6 +8,7 @@ using Stasis.Game.Scenes.Menu;
 using Stasis.Game.Scenes.Game.Player;
 using System.Numerics;
 using Stasis.Engine;
+using Stasis.Content.Replays;
 
 namespace Stasis.Game;
 
@@ -31,6 +32,8 @@ public static class Global {
     public static bool EnableDebugStats = false;
 
     public static RPCClient Discord = new();
+
+    public static Replay? Replay = null;
 
     public static string GetMapHash(IBeatmapSet map) {
         return Util.GetSHA256(map.Title + string.Concat(map.Difficulties[0].Notes.Select(x => x.X + x.Y + x.Time) ?? []));

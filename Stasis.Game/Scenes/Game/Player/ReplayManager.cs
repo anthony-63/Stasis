@@ -1,0 +1,52 @@
+using Stasis.Content.Replays;
+using Stasis.Engine;
+using Stasis.Engine.Audio;
+
+namespace Stasis.Game.Scenes.Game.Player;
+
+public class ReplayManager(Replay replay) {
+    public Replay Replay = replay;
+    int frameIndex = 0;
+
+    double frameTimer = 0;
+
+    public const int REPLAY_FRAME_PER_SECOND = 60;
+    double replaySecPerFrame = 1.0/REPLAY_FRAME_PER_SECOND;
+
+    public ReplayManager() : this(new Replay()) {}
+
+    public void Save(string scoreDir, SyncAudioPlayer? music, Score score) {
+        Replay.SaveFrame(new(), music?.Time ?? 0, score.Failed);
+
+        var basePath = scoreDir + "/" + Util.GetSHA256(Global.SelectedMap?.Title + string.Concat(Replay.Frames.Select(x => x.CursorPosition.X + x.CursorPosition.Y + x.Time) ?? []));
+        var time = DateTime.Now.ToFileTime();
+        var replayPath = basePath + "/" + time.ToString() + ".sr";
+        Logger.Info(replayPath);
+        Replay.Export(replayPath);
+    }
+
+    public void PlayFrame(Cursor cursor, SyncAudioPlayer? music, Score score) {
+        if(Replay.Frames.Count < frameIndex) return;
+        
+        var currentFrame = Replay.Frames[frameIndex];
+
+        if(currentFrame.Meta == ReplayFrameMeta.FAILED) score.Failed = true;
+        cursor.Position = currentFrame.CursorPosition;
+        
+        if((music?.Time ?? 0) > currentFrame.Time) {
+            frameIndex++;
+        }
+    }
+
+    public void UpdateFrameMaker(double dt,Cursor cursor, SyncAudioPlayer? music, Score score) {
+        frameTimer += dt;
+        if(frameTimer > replaySecPerFrame) {
+            MakeFrame(cursor, music, score);
+            frameTimer = 0;
+        }
+    }
+
+    public void MakeFrame(Cursor cursor, SyncAudioPlayer? music, Score score) {
+        Replay.SaveFrame(cursor.Position, music?.Time ?? 0, score.Failed);
+    }
+}

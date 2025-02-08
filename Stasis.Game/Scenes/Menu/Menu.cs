@@ -26,7 +26,7 @@ public class MenuScene : Scene {
 
     public string LastSearch = "";
 
-    public void LoadMapButtons(ref GridContainer mapGrid) {
+    public void LoadMapButtons(GridContainer mapGrid) {
         foreach(IBeatmapSet map in MapLoader.Maps) {
             var testFrame = new Frame {
                 Color = Raylib.ColorFromNormalized(new Vector4(0.1f, 0.1f, 0.1f, 1f)),
@@ -86,7 +86,7 @@ public class MenuScene : Scene {
             Size = UDim2.Fill,
         };
 
-        LoadMapButtons(ref MapList);
+        LoadMapButtons(MapList);
 
         MapList.UpdateAbsoluteValues(new Vector2(Raylib.GetRenderWidth(), Raylib.GetRenderHeight()), new Vector2(0, 0));
         MapGrid.AddChild(MapList);
@@ -100,7 +100,7 @@ public class MenuScene : Scene {
             button.Unload();
         }
         MapList.Children.Clear();
-        LoadMapButtons(ref MapList);            
+        LoadMapButtons(MapList);            
     }
 
     public TabContainerTab MakeSettingsTab(string name) {
@@ -164,7 +164,7 @@ public class MenuScene : Scene {
         return frame;
     }
 
-    public void MakeSettingSpinbox(ref Frame parent, float defaultValue, string name, int y, SpinBox.ValueChangedEvent valueChanged) {
+    public void MakeSettingSpinbox(Frame parent, float defaultValue, string name, int y, SpinBox.ValueChangedEvent valueChanged) {
         var label = new Label() {
             Size = new UDim2(1, 0, 0, 1),
             Position = new UDim2(0, 10, 0, y),
@@ -214,7 +214,7 @@ public class MenuScene : Scene {
         parent.AddChild(label);
     }
 
-    public void MakeSettingsToggle(ref Frame parent, bool defaultValue, string name, int y, Button.ButtonToggleEvent valueChanged) {
+    public void MakeSettingsToggle(Frame parent, bool defaultValue, string name, int y, Button.ButtonToggleEvent valueChanged) {
         var label = new Label() {
             Size = new UDim2(1, 0, 0, 1),
             Position = new UDim2(0, 10, 0, y),
@@ -270,9 +270,9 @@ public class MenuScene : Scene {
     public TabContainerTab MakeNoteSettings() {
         var tab = MakeSettingsTab("Note Settings");
         var container = MakeSettingsContainerFrame();
-        MakeSettingSpinbox(ref container, Global.Settings.Note.ApproachTime, "Approach Time", 20, UpdateApproachTime);
-        MakeSettingSpinbox(ref container, Global.Settings.Note.ApproachDistance, "Approach Distance", 60, UpdateApproachDistance);
-        MakeSettingsToggle(ref container, Global.Settings.Note.Pushback, "Pushback", 100, UpdatePushback);
+        MakeSettingSpinbox(container, Global.Settings.Note.ApproachTime, "Approach Time", 20, UpdateApproachTime);
+        MakeSettingSpinbox(container, Global.Settings.Note.ApproachDistance, "Approach Distance", 60, UpdateApproachDistance);
+        MakeSettingsToggle(container, Global.Settings.Note.Pushback, "Pushback", 100, UpdatePushback);
         tab.AddChild(container);
         return tab;
     }
@@ -301,9 +301,9 @@ public class MenuScene : Scene {
         var tab = MakeSettingsTab("Cursor Settings");
         var container = MakeSettingsContainerFrame();
 
-        MakeSettingSpinbox(ref container, Global.Settings.Cursor.Sensitivity, "Sensitivity", 20, UpdateSensitivity);
-        MakeSettingSpinbox(ref container, Global.Settings.Cursor.Scale, "Scale", 60, UpdateCursorScale);
-        MakeSettingsToggle(ref container, Global.Settings.Cursor.Clamped, "Clamped", 100, UpdateClamped);
+        MakeSettingSpinbox(container, Global.Settings.Cursor.Sensitivity, "Sensitivity", 20, UpdateSensitivity);
+        MakeSettingSpinbox(container, Global.Settings.Cursor.Scale, "Scale", 60, UpdateCursorScale);
+        MakeSettingsToggle(container, Global.Settings.Cursor.Clamped, "Clamped", 100, UpdateClamped);
 
         tab.AddChild(container);
         return tab;
@@ -328,9 +328,9 @@ public class MenuScene : Scene {
         var tab = MakeSettingsTab("Camera Settings");
         var container = MakeSettingsContainerFrame();
 
-        MakeSettingSpinbox(ref container, Global.Settings.Camera.FOV, "FOV", 20, UpdateFOV);
-        MakeSettingSpinbox(ref container, Global.Settings.Camera.CameraParallax, "Camera Parallax", 60, UpdateCameraParallax);
-        MakeSettingSpinbox(ref container, Global.Settings.Camera.GridParallax, "Grid Parallax", 100, UpdateGridParallax);
+        MakeSettingSpinbox(container, Global.Settings.Camera.FOV, "FOV", 20, UpdateFOV);
+        MakeSettingSpinbox(container, Global.Settings.Camera.CameraParallax, "Camera Parallax", 60, UpdateCameraParallax);
+        MakeSettingSpinbox(container, Global.Settings.Camera.GridParallax, "Grid Parallax", 100, UpdateGridParallax);
 
         tab.AddChild(container);
         return tab;
@@ -355,8 +355,8 @@ public class MenuScene : Scene {
         var tab = MakeSettingsTab("Audio Settings");
         var container = MakeSettingsContainerFrame();
 
-        MakeSettingSpinbox(ref container, Global.Settings.Audio.Volume, "Music Volume", 20, UpdateVolume);
-        MakeSettingSpinbox(ref container, Global.Settings.Audio.FXVolume, "Effects Volume", 60, UpdateFXVolume);
+        MakeSettingSpinbox(container, Global.Settings.Audio.Volume, "Music Volume", 20, UpdateVolume);
+        MakeSettingSpinbox(container, Global.Settings.Audio.FXVolume, "Effects Volume", 60, UpdateFXVolume);
 
         tab.AddChild(container);
         return tab;
@@ -372,35 +372,18 @@ public class MenuScene : Scene {
         SaveSettings();
     }
 
-    // public TabContainerTab Make_Settings() {
-    //     var tab = new TabContainerTab() {
-    //         Size = new UDim2(1, 0, 0.95f, 0),
-    //         Position = new UDim2(0, 0, 0.05f, 0),
-    //         Color = MainFrame.Color,
-    //         SwapTo = new Button() {
-    //             Position = new UDim2(0, 201, 0, 2),
-    //             Size = new UDim2(0, 200, 0.045f, 0),
-    //             NormalFrame = new Frame() {
-    //                 BorderWidth = 0.5f,
-    //                 Color = new Color(22, 22, 22, 255),
-    //             },
-    //             HoveringFrame = new Frame() {
-    //                 BorderWidth = 0.5f,
-    //                 Color = new Color(32, 32, 32, 255),
-    //             },
-    //             Label = new Label() {
-    //                 Size = UDim2.Fill,
-    //                 AlignmentX = TextAlignX.Center,
-    //                 AlignmentY = TextAlignY.Middle,
-    //                 OneLine = true,
-    //                 Text = "_ Settings",
-    //                 FontSize = 24,
-    //                 Font = Global.UIFont,
-    //             }
-    //         }
-    //     };
-    //     return tab;
-    // }
+    public TabContainerTab MakeMiscSettings() {
+        var tab = MakeSettingsTab("Miscellaneous");
+        var container = MakeSettingsContainerFrame();
+        MakeSettingsToggle(container, Global.Settings.Misc.EnableReplays, "Enable Replays", 20, UpdateEnableReplay);
+        tab.AddChild(container);
+        return tab;
+    }
+
+    public void UpdateEnableReplay(bool value) {
+        Global.Settings.Cursor.Clamped = value;
+        SaveSettings();
+    }
 
     public TabContainerTab MakeSettings() {
         var frame = new TabContainerTab() {
@@ -431,6 +414,7 @@ public class MenuScene : Scene {
                 MakeCursorSettings(),
                 MakeCameraSettings(),
                 MakeAudioSettings(),
+                MakeMiscSettings(),
             ]
         });
 

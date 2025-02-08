@@ -20,13 +20,14 @@ public class DebugStats : Label {
         Font = Global.UIFont;
     }
 
-    public void Update(int allocatedInstances, int startProcess, float time, int visibleCount, float health, float healthStep) {
+    public void Update(int allocatedInstances, int startProcess, float time, int visibleCount, float health, float healthStep, int replayFrames) {
         Text =
         $"audio_time: {time}\n" +
         $"visible_note_count: {visibleCount}\n" +
         $"allocated_instances: {allocatedInstances}\n" +
         $"start_process: {startProcess}\n" +
         $"health: {health}\n" + 
-        $"health_step: {healthStep}";
+        $"health_step: {healthStep}\n" + 
+        $"replay_frames: {replayFrames}";
     }
 }

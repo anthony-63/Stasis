@@ -52,7 +52,7 @@ public class GameScene : Scene {
         }
 
         if(Raylib.IsKeyDown(KeyboardKey.Space) && (NoteManager?.Skippable ?? false)) {
-            if(Music is not null) NoteManager.SkipToNote(ref Music);
+            if(Music is not null) NoteManager.SkipToNote(Music);
         }
 
         if(Ending) {
@@ -65,7 +65,7 @@ public class GameScene : Scene {
 
         if(!Music?.Playing ?? false ) Music?.Play(-2f);
         else Music?.Update();
-        Player.Update(ref Grid);
+        Player.Update(dt, Grid, Music);
         NoteManager?.Update(Player.Cursor);
         HUD.Update(
             dt, 
@@ -76,21 +76,27 @@ public class GameScene : Scene {
             NoteManager?.StartProcess ?? 0,
             NoteRenderer.ToRender.Count,
             Player.Score.Health,
-            Player.Score.HealthStep
+            Player.Score.HealthStep,
+            Player.ReplayManager.Replay.Frames.Count
         );
     }
 
-    public static void GoToMenu(Window window, Player.Player player) {
-        player.Score.Serialize();
+    public void GoToMenu(Window window) {
+        if(Global.Replay is null) {
+            string dir = Player.Score.Serialize();
+            if(Global.Settings.Misc.EnableReplays) Player.ReplayManager.Save(dir, Music, Player.Score);
+        }
+        Global.Replay = null;
+
         window.SceneHandler.RemoveSceneByType<GameScene>();
-        window.SceneHandler.AddScene(new MapInfoScene());
+        window.SceneHandler.AddScene(new MapInfoScene()); 
         InputManager.ShowCursor();
     }
 
     public void UpdateEndSequence(Window window, double dt) {
         FadeFrame.Color = Raylib.ColorAlpha(FadeFrame.Color, EndTimer);
         EndTimer += (float)dt;
-        if(EndTimer >= 1f) GoToMenu(window, Player);
+        if(EndTimer >= 1f) GoToMenu(window);
     }
 
     public override void Render() {

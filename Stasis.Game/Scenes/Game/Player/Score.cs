@@ -40,7 +40,7 @@ public class Score {
 
     public double Accuracy => Hits + Misses > 0 ? Hits / (double)(Misses + Hits) * 100.0 : 100.0;
         
-    public void Serialize() {
+    public string Serialize() {
         var mapHash = Global.GetMapHash(Global.SelectedMap ?? new BeatmapSet());
         var dirs = mapHash.Chunk(16).Select(x => new string(x)).ToList();
         dirs.Reverse();
@@ -53,7 +53,7 @@ public class Score {
             parent = toCreate;
             if(d.Equals(last)) {
                 var time = DateTime.Now.ToFileTime();
-                var file = File.Create(toCreate + "/" + time.ToString());
+                var file = File.Create(toCreate + "/" + time.ToString() + ".ss");
                 file.Write(BitConverter.GetBytes(Failed));
                 file.Write(BitConverter.GetBytes(Misses));
                 file.Write(BitConverter.GetBytes(Hits));
@@ -68,14 +68,15 @@ public class Score {
                 file.Flush();
                 file.Close();
 
-                var hashComputer = File.Open(toCreate + "/" + time.ToString(), FileMode.Open);
+                var hashComputer = File.Open(toCreate + "/" + time.ToString() + ".ss", FileMode.Open);
                 var folderPath = toCreate + "/" + Convert.ToHexString(SHA256.Create().ComputeHash(hashComputer));
                 hashComputer.Close();
                 Logger.Info(folderPath);
                 Directory.CreateDirectory(folderPath);
                 File.Move(file.Name, folderPath + "/" + Path.GetFileName(file.Name));
+                return folderPath;
             }
         }
+        return "";
     }
-
 }

@@ -14,6 +14,7 @@ public static class LeaderboardLoader {
         public int timeStart;
         public int timeEnd;
         public bool Valid = true;
+        public string? ReplayPath = null;
     }
     
     static LeaderboardEntry ReadEntry(string path) {
@@ -23,15 +24,19 @@ public static class LeaderboardLoader {
         hashComputer.Close();
         var entry = new LeaderboardEntry();
 
+        var replayDir = Directory.GetDirectories(path);
+        if(replayDir.Length > 0) {
+            entry.ReplayPath = Directory.GetFiles(replayDir[0])[0];
+        }
+
         if(Path.GetFileName(path) != folderPath) {
             Logger.Warn("INVALID SCORE HASH: ", Path.GetFileName(path), " != ", folderPath);
             entry.Valid = false;
             return entry;
         }
 
-
         var file = File.Open(filePath, FileMode.Open);
-        entry.time = DateTime.FromFileTime(long.Parse(Path.GetFileName(filePath)));
+        entry.time = DateTime.FromFileTime(long.Parse(Path.GetFileName(filePath).Replace(".ss", "")));
 
         var buf = new byte[4];
         var buf8 = new byte[8];

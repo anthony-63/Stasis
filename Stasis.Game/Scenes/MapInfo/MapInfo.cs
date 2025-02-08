@@ -1,5 +1,6 @@
 using Raylib_cs;
 using Stasis.Content.Beatmaps;
+using Stasis.Content.Replays;
 using Stasis.Engine;
 using Stasis.Engine.Scene;
 using Stasis.Engine.UI;
@@ -46,7 +47,7 @@ public class MapInfoScene : Scene {
         return cover;
     }
 
-    void MakeInfoLabel(ref Frame parent, string name, string? value, float padding, float y) {
+    void MakeInfoLabel(Frame parent, string name, string? value, float padding, float y) {
         var Info = new Label() {
             Text = name + ": ",
             TextColor = Color.SkyBlue,
@@ -112,6 +113,38 @@ public class MapInfoScene : Scene {
                 Roundness = 0.5f,
                 BorderWidth = 2,
             };
+            
+            string replayText;
+            if(e.ReplayPath is not null) replayText = "Press to Show Replay";
+            else replayText = "No Replay Found";
+
+            var hoveringReplayFrame = new Frame() {
+                Color = new Color(5, 5, 5, 155),
+                Size = UDim2.Fill,
+                Roundness = 0.5f,
+            };
+
+            hoveringReplayFrame.AddChild(new Label() {
+                FontSize = 32,
+                Text = replayText,
+                Size = UDim2.Fill,
+                OneLine = true,
+                AlignmentX = TextAlignX.Center,
+                AlignmentY = TextAlignY.Middle,
+                Font = Global.UIFont,
+            });
+
+            var replayButton = new Button() {
+                Size = UDim2.Fill,
+                NormalFrame = new Frame() {
+                    Visible = true,
+                    Color = new Color(0, 0, 0, 0),
+                },
+                HoveringFrame = hoveringReplayFrame,
+                PressedFrame = hoveringReplayFrame,
+            };
+
+            if(e.ReplayPath is not null) replayButton.PressedOnce += () => PlayReplay(e.ReplayPath);
 
             var failFrame = new Frame() {
                 Size = UDim2.Fill,
@@ -200,6 +233,7 @@ public class MapInfoScene : Scene {
             entry.AddChild(playerName);
             entry.AddChild(mods);
             entry.AddChild(failFrame);
+            entry.AddChild(replayButton);
             gridContainer.AddChild(entry);
         }
 
@@ -434,10 +468,10 @@ public class MapInfoScene : Scene {
         var mapLength = TimeSpan.FromSeconds(Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0);
         var mapLengthString = String.Format("{0:D1}:{1:D2}", mapLength.Minutes, mapLength.Seconds);
 
-        MakeInfoLabel(ref MainFrame, "Title", Global.SelectedMap?.Title, 3, initial + toIncrease * 0);
-        MakeInfoLabel(ref MainFrame, "Mapper", String.Join(" & ", Global.SelectedMap?.Mappers.ToArray() ?? ["None"]), 3, initial + toIncrease * 1);
-        MakeInfoLabel(ref MainFrame, "Length", mapLengthString, 3, initial + toIncrease * 2);
-        MakeInfoLabel(ref MainFrame, "Note Count", Global.SelectedMap?.Difficulties[0].Notes.Length.ToString(), 3, initial + toIncrease * 3);
+        MakeInfoLabel(MainFrame, "Title", Global.SelectedMap?.Title, 3, initial + toIncrease * 0);
+        MakeInfoLabel(MainFrame, "Mapper", String.Join(" & ", Global.SelectedMap?.Mappers.ToArray() ?? ["None"]), 3, initial + toIncrease * 1);
+        MakeInfoLabel(MainFrame, "Length", mapLengthString, 3, initial + toIncrease * 2);
+        MakeInfoLabel(MainFrame, "Note Count", Global.SelectedMap?.Difficulties[0].Notes.Length.ToString(), 3, initial + toIncrease * 3);
 
         Root.AddChild(MainFrame);
         Root.AddChild(Leaderboard);
@@ -471,6 +505,15 @@ public class MapInfoScene : Scene {
         if(Raylib.IsKeyDown(KeyboardKey.D)) {
             Global.EnableDebugStats = true;
         }
+        Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
+        Window?.SceneHandler.AddScene(new GameScene());
+    }
+
+    private void PlayReplay(string replayPath) {
+        if(Raylib.IsKeyDown(KeyboardKey.D)) {
+            Global.EnableDebugStats = true;
+        }
+        Global.Replay = new Replay(replayPath);
         Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
         Window?.SceneHandler.AddScene(new GameScene());
     }

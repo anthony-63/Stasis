@@ -14,7 +14,15 @@ public class Cursor {
 
     public Sprite Sprite;
 
-    public Vector2 Position = Vector2.Zero;
+    private Vector2 position = Vector2.Zero;
+
+    public Vector2 Position {
+        get => position;
+        set {
+            position = value;
+            Sprite.Position = new Vector3(value.X, 0f, value.Y);
+        } 
+    }
 
     public Vector2 ClampedPosition = Vector2.Zero;
 
@@ -26,7 +34,7 @@ public class Cursor {
         Sprite.Render();
     }
 
-    public void ApplyParallax(ref Camera camera, ref Sprite grid) {
+    public void ApplyParallax(Camera camera, Sprite grid) {
         grid.Position.X = -ClampedPosition.X * (Global.Settings.Camera.GridParallax / 50f);
         grid.Position.Z = -ClampedPosition.Y * (Global.Settings.Camera.GridParallax / 50f);
 
@@ -48,7 +56,5 @@ public class Cursor {
 
         ClampedPosition = Vector2.Clamp(Position, negClamp, posClamp);
         if(Global.Settings.Cursor.Clamped) Position = ClampedPosition;
-    
-        Sprite.Position = new Vector3(Position.X, 0f, Position.Y);
     }
 }

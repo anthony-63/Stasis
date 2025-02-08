@@ -47,7 +47,8 @@ public class HUDRoot: UiRoot {
         int startProcess,
         int visibleCount,
         float health,
-        float healthStep
+        float healthStep,
+        int replayFrames
     ) {
         Timer.Update(currentTime, skippable);
         Health.Update(score);
@@ -57,7 +58,7 @@ public class HUDRoot: UiRoot {
         ScoreValue.Update(score);
         Combo.Update(score);
         Multiplier.Update(score);
-        if(Global.EnableDebugStats) DebugStats.Update(allocatedInstances, startProcess, currentTime, visibleCount, health, healthStep);
+        if(Global.EnableDebugStats) DebugStats.Update(allocatedInstances, startProcess, currentTime, visibleCount, health, healthStep, replayFrames);
         base.Update(dt);
     }
 }

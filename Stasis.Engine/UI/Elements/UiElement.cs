@@ -98,6 +98,9 @@ public class UiElement {
     public virtual void SetAbsoluteValues(Vector2 position, Vector2 size) {
         absolutePosition = position;
         absoluteSize = size;
+        foreach (var element in Children) {
+            element.UpdateAbsoluteValues(absoluteSize, absolutePosition);
+        }
     }
     
     public virtual void SetClipDim() {

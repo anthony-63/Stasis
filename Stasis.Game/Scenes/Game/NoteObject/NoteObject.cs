@@ -1,7 +1,6 @@
 using System.Numerics;
 using Raylib_cs;
 using Stasis.Content.Beatmaps;
-using Stasis.Engine;
 using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.NoteObject;
