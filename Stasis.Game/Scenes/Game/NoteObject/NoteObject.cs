@@ -6,8 +6,8 @@ using Stasis.Game.Scenes.Game.Player;
 namespace Stasis.Game.Scenes.Game.NoteObject;
 
 public class NoteObject {
-    public static float HitWindow = 0.055f;
-    public static float AABB = (1.75f + 0.525f) / 2.0f;
+    public const float HIT_WINDOW = 0.055f;
+    public const float AABB = 1.1375f;
 
     public Note Note;
 
@@ -37,7 +37,7 @@ public class NoteObject {
     }
 
     public bool InHitWindow(float time, float speed) {
-        return (time - Note.Time) <= HitWindow * speed;
+        return (time - Note.Time) <= HIT_WINDOW * speed;
     }
 
     public bool IsVisible(float time, float speed, float approachTime, bool pushback) {
