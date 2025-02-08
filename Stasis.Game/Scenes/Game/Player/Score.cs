@@ -44,7 +44,7 @@ public class Score {
 
     public string Serialize() {
         var mapHash = Global.GetMapHash(Global.SelectedMap ?? new BeatmapSet());
-        var dirs = mapHash.Chunk(16).Select(x => new string(x)).ToList();
+        var dirs = mapHash.Chunk(32).Select(x => new string(x)).ToList();
         dirs.Reverse();
         string last = dirs.Last();
 
