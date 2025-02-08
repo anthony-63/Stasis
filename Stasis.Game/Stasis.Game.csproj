@@ -5,7 +5,8 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <PublishAot>true</PublishAot>
+    <!-- <PublishAot>true</PublishAot> -->
+    <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <OutputType>Exe</OutputType>
@@ -19,4 +20,7 @@
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
   </PropertyGroup>
+  <ItemGroup>
+    <TrimmerRootAssembly Include="$(TargetName)" />
+  </ItemGroup>
 </Project>
