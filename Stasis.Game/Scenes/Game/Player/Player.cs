@@ -1,11 +1,7 @@
 using System.Numerics;
-using Raylib_cs;
 using Stasis.Content.Replays;
-using Stasis.Engine;
 using Stasis.Engine.Audio;
 using Stasis.Engine.GFX;
-using Stasis.Game.Scenes.Game.HUD;
-using Stasis.Game.Scenes.Game.NoteObject;
 
 namespace Stasis.Game.Scenes.Game.Player;
 
@@ -67,7 +63,7 @@ public class Player {
             if(Global.Settings.Misc.EnableReplays) ReplayManager.UpdateFrameMaker(dt, Cursor, music, Score);
             Cursor.ProcessInput();
         }
-        else ReplayManager.PlayFrame(Cursor, music, this);
+        else ReplayManager.PlayFrame(Cursor, music, this, grid);
 
         Cursor.ApplyParallax(Camera, grid);
     }

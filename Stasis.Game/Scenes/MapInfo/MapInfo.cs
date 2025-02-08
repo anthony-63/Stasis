@@ -115,7 +115,8 @@ public class MapInfoScene : Scene {
             };
             
             string replayText;
-            if(e.ReplayPath is not null) replayText = "Press to Show Replay";
+            if(e.Replay is not null && e.ReplayValid) replayText = "Press to Show Replay";
+            else if(!e.ReplayValid) replayText = "Invalid Replay";
             else replayText = "No Replay Found";
 
             var hoveringReplayFrame = new Frame() {
@@ -144,7 +145,7 @@ public class MapInfoScene : Scene {
                 PressedFrame = hoveringReplayFrame,
             };
 
-            if(e.ReplayPath is not null) replayButton.PressedOnce += () => PlayReplay(e.ReplayPath);
+            if(e.Replay is not null && e.ReplayValid) replayButton.PressedOnce += () => PlayReplay(e.Replay, e.Mods);
 
             var failFrame = new Frame() {
                 Size = UDim2.Fill,
@@ -203,7 +204,7 @@ public class MapInfoScene : Scene {
                 AlignmentX = TextAlignX.Left,
                 AlignmentY = TextAlignY.Bottom,
                 OneLine = true,
-                Text = Global.GetModText(e.Mods),
+                Text = Global.GetModText(e.Mods, true),
             };
 
             string from = (DateTime.Now - e.time) switch {
@@ -509,11 +510,12 @@ public class MapInfoScene : Scene {
         Window?.SceneHandler.AddScene(new GameScene());
     }
 
-    private void PlayReplay(string replayPath) {
+    private void PlayReplay(Replay replay, Mods mods) {
+        Global.Mods = mods;
         if(Raylib.IsKeyDown(KeyboardKey.D)) {
             Global.EnableDebugStats = true;
         }
-        Global.Replay = new Replay(replayPath);
+        Global.Replay = replay;
         Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
         Window?.SceneHandler.AddScene(new GameScene());
     }

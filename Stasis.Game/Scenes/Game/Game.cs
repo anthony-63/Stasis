@@ -84,7 +84,9 @@ public class GameScene : Scene {
     public void GoToMenu(Window window) {
         if(Global.Replay is null) {
             string dir = Player.Score.Serialize();
-            if(Global.Settings.Misc.EnableReplays) Player.ReplayManager.Save(dir, Music, Player.Score);
+            if(Global.Settings.Misc.EnableReplays) {
+                Player.ReplayManager.Save(dir, Player.Score.Hash, Music, Player.Score);
+            }
         }
         Global.Replay = null;
 

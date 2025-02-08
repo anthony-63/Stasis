@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Stasis.Content.Beatmaps;
+using Stasis.Content.Replays;
 using Stasis.Engine;
 using Stasis.Game.Scenes.Game.Player;
 
@@ -14,19 +15,23 @@ public static class LeaderboardLoader {
         public int timeStart;
         public int timeEnd;
         public bool Valid = true;
-        public string? ReplayPath = null;
+        public Replay? Replay = null;
+        public bool ReplayValid = false;
     }
     
     static LeaderboardEntry ReadEntry(string path) {
         var filePath = Directory.GetFiles(path)[0];
         var hashComputer = File.Open(filePath, FileMode.Open);
-        var folderPath = Convert.ToHexString(SHA256.Create().ComputeHash(hashComputer));
+        byte[] hash = SHA256.Create().ComputeHash(hashComputer);
+        var folderPath = Convert.ToHexString(hash);
         hashComputer.Close();
         var entry = new LeaderboardEntry();
 
         var replayDir = Directory.GetDirectories(path);
         if(replayDir.Length > 0) {
-            entry.ReplayPath = Directory.GetFiles(replayDir[0])[0];
+            entry.Replay = new Replay(Directory.GetFiles(replayDir[0])[0]);
+            var replayHash = Util.GetSHA256(Global.SelectedMap?.Title + string.Concat(entry.Replay.Frames.Select(x => x.CursorPosition.X + x.CursorPosition.Y + x.Time) ?? []));
+            entry.ReplayValid = entry.Replay.Hash.SequenceEqual(hash) && (Path.GetFileName(replayDir[0]) == replayHash);
         }
 
         if(Path.GetFileName(path) != folderPath) {
@@ -54,7 +59,7 @@ public static class LeaderboardLoader {
         entry.Score.ScoreValue = BitConverter.ToInt32(buf);
         entry.Mods.NoFail = file.ReadByte() == 1;
         file.ReadExactly(buf);
-        entry.Mods.Speed = BitConverter.ToInt32(buf);
+        entry.Mods.Speed = BitConverter.ToSingle(buf);
         file.ReadExactly(buf);
         entry.timeStart = BitConverter.ToInt32(buf);
         file.ReadExactly(buf);
