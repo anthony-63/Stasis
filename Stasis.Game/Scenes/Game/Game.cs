@@ -36,11 +36,11 @@ public class GameScene : Scene {
         InputManager.HideCursor();
 
         var modText = Global.GetModText(Global.Mods);
-        Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
-            Details = "Playing Map" + (modText == "" ? "" : " with " + modText),
-            State = Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 127)] ?? "",
-            Timestamps = DiscordRPC.Timestamps.FromTimeSpan(TimeSpan.FromSeconds(Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0)),
-        });
+        // Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
+        //     Details = "Playing Map" + (modText == "" ? "" : " with " + modText),
+        //     State = Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 127)] ?? "",
+        //     Timestamps = DiscordRPC.Timestamps.FromTimeSpan(TimeSpan.FromSeconds(Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0)),
+        // });
     }
 
     public override void Update(double dt) {

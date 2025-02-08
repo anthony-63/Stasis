@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
-using DiscordRPC;
 using Stasis.Content.Settings;
 using Stasis.Engine;
 using Stasis.Engine.Scene;
@@ -17,12 +16,12 @@ public class LoadingScene : Scene {
     public void CreateDirectories() {
         Directory.CreateDirectory("Assets/Scores");
         Directory.CreateDirectory("Assets/Maps");
-        if(!File.Exists("Assets/settings.json")) Global.Settings.Save("Assets/settings.json");
+        if(!File.Exists("Assets/settings.toml")) Global.Settings.Save("Assets/settings.toml");
     }
 
     public override void Update(double dt) {
         CreateDirectories();
-        Global.Settings = Settings.Load("Assets/settings.json");
+        Global.Settings = Settings.Load("Assets/settings.toml");
 
         Global.SelectedMap = null;
         MapLoader.LoadMaps("Assets/Maps");

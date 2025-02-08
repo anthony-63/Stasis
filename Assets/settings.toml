@@ -1,0 +1,17 @@
+[note]
+approach_time = 0.400000006
+approach_distance = 14.0
+pushback = false
+[cursor]
+clamped = false
+sensitivity = 0.5
+scale = 0.5
+[audio]
+volume = 0.100000001
+fxvolume = 0.200000003
+[camera]
+grid_parallax = 10.0
+camera_parallax = 10.0
+fov = 70.0
+[misc]
+enable_replays = true

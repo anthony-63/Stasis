@@ -9,6 +9,6 @@ public class Program {
         var window = new Window(1280, 720, "Stasis");
         window.SceneHandler.AddScene(new LoadingScene());
         window.Run();
-        Global.Settings.Save("Assets/settings.json");
+        Global.Settings.Save("Assets/settings.toml");
     }
 }

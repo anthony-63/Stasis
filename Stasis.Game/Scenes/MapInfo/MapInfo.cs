@@ -482,11 +482,11 @@ public class MapInfoScene : Scene {
         Root.AddChild(NoFailMod);
         Root.AddChild(Global.BasicFPSLabel);
 
-        Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
-            Details = "Viewing map",
-            State = Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 127)] ?? "",
-            Timestamps = DiscordRPC.Timestamps.Now,
-        });
+        // Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
+        //     Details = "Viewing map",
+        //     State = Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 127)] ?? "",
+        //     Timestamps = DiscordRPC.Timestamps.Now,
+        // });
     }
 
     private void GoToMenu() {

@@ -1,28 +1,26 @@
-using DiscordRPC;
-using DiscordRPC.Logging;
 using Stasis.Engine;
 
 namespace Stasis.Engine.Discord;
 
 public class RPCClient {
-    DiscordRpcClient client;
+    // DiscordRpcClient client;
 
     public RPCClient() {
-        client = new DiscordRpcClient("1332446528475758656");
-        client.Logger = new ConsoleLogger() { Level = LogLevel.Warning, Coloured = true };
+        // client = new DiscordRpcClient("1332446528475758656");
+        // client.Logger = new ConsoleLogger() { Level = LogLevel.Warning, Coloured = true };
 
-        client.OnReady += (sender, e) => {
-            Logger.Info("Discord RPC Ready: ", e.User.Username);
-        };
+        // client.OnReady += (sender, e) => {
+        //     Logger.Info("Discord RPC Ready: ", e.User.Username);
+        // };
 
-        client.OnPresenceUpdate += (sender, e) => {
-            Logger.Info("Discord Presence Change: ", e.Presence);
-        };
+        // client.OnPresenceUpdate += (sender, e) => {
+        //     Logger.Info("Discord Presence Change: ", e.Presence);
+        // };
 
-        client.Initialize();
+        // client.Initialize();
     }
 
-    public void SetPresence(RichPresence presence) {
-        client.SetPresence(presence);
-    }
+    // public void SetPresence(RichPresence presence) {
+    //     client.SetPresence(presence);
+    // }
 }

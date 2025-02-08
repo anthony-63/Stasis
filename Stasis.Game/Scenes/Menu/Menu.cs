@@ -278,7 +278,7 @@ public class MenuScene : Scene {
     }
 
     void SaveSettings() {
-        Global.Settings.Save("Assets/settings.json");
+        Global.Settings.Save("Assets/settings.toml");
     }
 
     public void UpdateApproachTime(float value) {
@@ -558,11 +558,11 @@ public class MenuScene : Scene {
     #pragma warning restore CS8618
 
     public void SetRPC() {
-        Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
-            Details = "In Menu",
-            State = "Listening to PLACEHOLDER",
-            Timestamps = DiscordRPC.Timestamps.Now,
-        });
+        // Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
+        //     Details = "In Menu",
+        //     State = "Listening to PLACEHOLDER",
+        //     Timestamps = DiscordRPC.Timestamps.Now,
+        // });
     }
 
     private void SelectMap(IBeatmapSet map) {

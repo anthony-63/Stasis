@@ -1,3 +1,5 @@
+using Tomlyn.Model;
+
 namespace Stasis.Content.Settings;
 
 public class AudioSettings {

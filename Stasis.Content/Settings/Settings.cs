@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Tomlyn;
 
 namespace Stasis.Content.Settings;
 
@@ -11,14 +12,13 @@ public class Settings {
     public MiscSettings Misc { get; set; } = new();
     
     public void Save(string output) {
-        string json = JsonSerializer.Serialize(this);
-        if(File.Exists(output)) File.Delete(output);
-        File.WriteAllText(output, json);
+        var text = Toml.FromModel(this);
+        File.WriteAllText(output, text);
     }
 
     public static Settings Load(string input) {
         try {
-            return JsonSerializer.Deserialize<Settings>(File.ReadAllText(input)) ?? new Settings();
+            return Toml.Parse(File.ReadAllText(input)).ToModel<Settings>() ?? new Settings();
         } catch {
             return new Settings();
         }

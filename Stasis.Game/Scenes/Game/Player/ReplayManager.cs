@@ -13,8 +13,6 @@ public class ReplayManager(Replay replay) {
     public const int REPLAY_FRAME_PER_SECOND = 144;
     double replaySecPerFrame = 1.0/REPLAY_FRAME_PER_SECOND;
 
-    bool didHitreg = false;
-
     public ReplayManager() : this(new Replay()) {}
 
     public void Save(string scoreDir, SyncAudioPlayer? music, Score score) {
