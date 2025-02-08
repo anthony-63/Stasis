@@ -19,12 +19,14 @@ public class ReplayFrame {
 
 public class Replay {
     public List<ReplayFrame> Frames = new();
+    public byte[] Hash = [];
 
-    public void Export(string path) {
+    public void Export(string path, byte[] scoreHash) {
         if(!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
-        var stream = new FileStream(path, FileMode.CreateNew);
+        using var stream = new FileStream(path, FileMode.CreateNew);
 
         stream.Write(BitConverter.GetBytes((long)Frames.Count));
+        stream.Write(scoreHash);
         foreach(ReplayFrame frame in Frames) {
             stream.Write(BitConverter.GetBytes(frame.CursorPosition.X));
             stream.Write(BitConverter.GetBytes(frame.CursorPosition.Y));
@@ -77,6 +79,9 @@ public class Replay {
         var dataBuffer8 = new byte[8];
         stream.Read(dataBuffer8);
         var frameCount = BitConverter.ToInt64(dataBuffer8);
+        Hash = new byte[32];
+        stream.Read(Hash);
+
         Frames = [];
         for(int i = 0; i < frameCount; i++) {
             Frames.Add(GetFrame(stream));

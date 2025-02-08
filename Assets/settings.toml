@@ -3,7 +3,7 @@ approach_time = 0.400000006
 approach_distance = 14.0
 pushback = false
 [cursor]
-clamped = false
+clamped = true
 sensitivity = 0.5
 scale = 0.5
 [audio]

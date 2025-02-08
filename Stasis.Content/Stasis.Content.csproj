@@ -2,9 +2,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Stasis.Engine\Stasis.Engine.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Tomlyn" Version="0.18.0" />
-  </ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -12,4 +9,7 @@
     <IsAotCompatable>true</IsAotCompatable>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Tomlyn" Version="0.18.0" />
+  </ItemGroup>
 </Project>
