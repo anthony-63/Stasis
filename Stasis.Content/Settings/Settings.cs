@@ -14,7 +14,6 @@ public class Settings {
     public void Save(string output) {
         var text = Toml.FromModel(this);
         if(File.Exists(output)) File.Delete(output);
-        Logger.Info(text);
         File.WriteAllText(output, text);
     }
 

@@ -565,7 +565,7 @@ public class MenuScene : Scene {
         // });
     }
 
-    private void SelectMap(IBeatmapSet map) {
+    public void SelectMap(IBeatmapSet map) {
         Global.SelectedMap = map;
         Global.LoadedMenu = this;
         Window?.SceneHandler.RemoveSceneByType<MenuScene>();
@@ -578,6 +578,10 @@ public class MenuScene : Scene {
     }
 
     public override void Update(double dt) {
+        if(Raylib.IsKeyPressed(KeyboardKey.F2)) {
+            SelectMap(MapLoader.Maps[Global.Random.Next(MapLoader.Maps.Count)]);
+        }
+        
         if(Raylib.IsFileDropped()) {
             var files = Raylib.GetDroppedFiles();
             foreach(string file in files) {

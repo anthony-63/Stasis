@@ -38,6 +38,7 @@ public static class Global {
     public static string GetMapHash(IBeatmapSet map) {
         return Util.GetSHA256(map.Title + string.Concat(map.Difficulties[0].Notes.Select(x => x.X + x.Y + x.Time) ?? []));
     }
+    public static Random Random = new Random();
 
     public static string GetAsset(string path) {
         if(!File.Exists(path)) {

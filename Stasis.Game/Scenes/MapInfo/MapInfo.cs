@@ -526,6 +526,11 @@ public class MapInfoScene : Scene {
     }
 
     public override void Update(double dt) {
+        if(Raylib.IsKeyPressed(KeyboardKey.F2)) {
+            Global.SelectedMap = MapLoader.Maps[Global.Random.Next(MapLoader.Maps.Count)];
+            Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
+            Window?.SceneHandler.AddScene(new MapInfoScene());
+        }
         Global.Mods.Speed = SpeedMod.Value;
         Root.Update(dt);
     }
