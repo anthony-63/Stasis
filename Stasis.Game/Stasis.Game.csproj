@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <ItemGroup>
     <ProjectReference Include="..\Stasis.Content\Stasis.Content.csproj" />
     <ProjectReference Include="..\Stasis.Engine\Stasis.Engine.csproj" />

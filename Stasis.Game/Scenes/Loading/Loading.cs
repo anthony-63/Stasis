@@ -17,6 +17,7 @@ public class LoadingScene : Scene {
         Directory.CreateDirectory("Assets/Scores");
         Directory.CreateDirectory("Assets/Maps");
         if(!File.Exists("Assets/settings.toml")) Global.Settings.Save("Assets/settings.toml");
+        else Global.Settings = Settings.Load("Assets/settings.toml");
     }
 
     public override void Update(double dt) {
