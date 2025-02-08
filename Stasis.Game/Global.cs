@@ -56,10 +56,10 @@ public static class Global {
         return path;
     }
 
-    public static string GetModText(Mods mods) {
+    public static string GetModText(Mods mods, bool alwaysIncldueSpeed = false) {
         List<string> modList = [];
 
-        if(mods.Speed != 1f) modList.Add(Global.Mods.Speed.ToString("0.00") + "x");
+        if(mods.Speed != 1f || alwaysIncldueSpeed) modList.Add(mods.Speed.ToString("0.00") + "x");
         if(mods.NoFail) modList.Add("No Fail");
         if(mods.VisualMap) modList.Add("Visual Mode");
         return string.Join(", ", modList);
