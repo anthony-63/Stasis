@@ -18,7 +18,7 @@ public class Health : ProgressBar {
         Background = new() {
             Roundness = 1.5f,
             BorderWidth = 5f,
-            BorderColor = Color.DarkGray,
+            BorderColor = Color.Gray,
             Size = UDim2.Fill,
             Color = Color.Red,
         };
@@ -37,6 +37,9 @@ public class Health : ProgressBar {
         };
 
         modLabel.Text = Global.GetModText(Global.Mods);
+        var addComma = modLabel.Text.Length > 0;
+        modLabel.Text += (addComma ? ", " : "") + (Global.Replay is not null ? "Replay" : "");
+
         AddChild(modLabel);
     }
 

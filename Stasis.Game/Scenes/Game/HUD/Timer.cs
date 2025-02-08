@@ -14,7 +14,7 @@ public class Timer : ProgressBar {
         Anchor = UiElementAnchor.BottomLeft;
         Size = new UDim2(1, 0, 0, Height);
         Position = new UDim2(0, 0, 1, 0);
-        Foreground.Color = Color.SkyBlue;
+        Foreground.Color = Global.Replay is null ? Color.SkyBlue : Raylib.GetColor(0xF5A976ff);
         Background.Color = Color.DarkGray;
 
         Skip = new() {
