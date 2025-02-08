@@ -10,8 +10,10 @@ public class ReplayManager(Replay replay) {
 
     double frameTimer = 0;
 
-    public const int REPLAY_FRAME_PER_SECOND = 60;
+    public const int REPLAY_FRAME_PER_SECOND = 144;
     double replaySecPerFrame = 1.0/REPLAY_FRAME_PER_SECOND;
+
+    bool didHitreg = false;
 
     public ReplayManager() : this(new Replay()) {}
 
@@ -25,14 +27,21 @@ public class ReplayManager(Replay replay) {
         Replay.Export(replayPath);
     }
 
-    public void PlayFrame(Cursor cursor, SyncAudioPlayer? music, Score score) {
+    public void PlayFrame(Cursor cursor, SyncAudioPlayer? music, Player player) {
         if(Replay.Frames.Count < frameIndex) return;
         
         var currentFrame = Replay.Frames[frameIndex];
+        if(currentFrame.Meta == ReplayFrameMeta.HIT) {
+            player.Hit(0);
+            frameIndex++;
+        }
+        else if(currentFrame.Meta == ReplayFrameMeta.MISS) {
+            player.Miss(0);
+            frameIndex++;
+        }
+        else if(currentFrame.Meta == ReplayFrameMeta.FAILED) player.Score.Failed = true;
+        else cursor.Position = currentFrame.CursorPosition;
 
-        if(currentFrame.Meta == ReplayFrameMeta.FAILED) score.Failed = true;
-        cursor.Position = currentFrame.CursorPosition;
-        
         if((music?.Time ?? 0) > currentFrame.Time) {
             frameIndex++;
         }

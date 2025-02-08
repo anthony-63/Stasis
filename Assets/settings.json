@@ -1,1 +1,1 @@
-{"Note":{"ApproachTime":0.38,"ApproachDistance":14,"Pushback":false},"Cursor":{"Clamped":true,"Sensitivity":0.5,"Scale":0.5},"Audio":{"Volume":0.1,"FXVolume":0.2},"Camera":{"GridParallax":10,"CameraParallax":10,"FOV":70},"Misc":{"EnableReplays":true}}
+{"Note":{"ApproachTime":0.38,"ApproachDistance":13,"Pushback":false},"Cursor":{"Clamped":true,"Sensitivity":0.5,"Scale":0.5},"Audio":{"Volume":0.1,"FXVolume":0.2},"Camera":{"GridParallax":0,"CameraParallax":7,"FOV":70},"Misc":{"EnableReplays":true}}

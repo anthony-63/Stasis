@@ -27,7 +27,7 @@ public class Player {
         Cursor.Render();
     }
 
-    public void Hit(int _) {
+    public void Hit(float time) {
         Score.Hits++;
         Score.ScoreValue += 25 * Score.Multipier;
         Score.Miniplier = Math.Min(8, Score.Miniplier + 1);
@@ -41,10 +41,13 @@ public class Player {
 
         Score.HealthStep = Math.Max(Score.HealthStep / 1.45f, 15f);
         Score.Health = Math.Min(Score.Health + Score.HealthStep / 1.75f, 100f);
+        
+        if(Global.Replay is null && Global.Settings.Misc.EnableReplays) ReplayManager.Replay.SaveFrame(ReplayFrameMeta.HIT, time);
+
         HitFX.Play();
     }
 
-    public void Miss(int _) {
+    public void Miss(float time) {
         Score.Misses++;
 
         Score.Miniplier = 0;
@@ -55,6 +58,8 @@ public class Player {
         Score.HealthStep += 1.2f;
         Score.Health = Math.Max(Score.Health - Score.HealthStep, 0);
         if(Score.Health <= 0 && !Global.Mods.NoFail) Score.Failed = true;
+
+        if(Global.Replay is null && Global.Settings.Misc.EnableReplays) ReplayManager.Replay.SaveFrame(ReplayFrameMeta.MISS, time);
     }
 
     public void Update(double dt, Sprite grid, SyncAudioPlayer? music) {
@@ -62,7 +67,7 @@ public class Player {
             if(Global.Settings.Misc.EnableReplays) ReplayManager.UpdateFrameMaker(dt, Cursor, music, Score);
             Cursor.ProcessInput();
         }
-        else ReplayManager.PlayFrame(Cursor, music, Score);
+        else ReplayManager.PlayFrame(Cursor, music, this);
 
         Cursor.ApplyParallax(Camera, grid);
     }

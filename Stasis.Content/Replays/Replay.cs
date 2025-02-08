@@ -7,6 +7,8 @@ namespace Stasis.Content.Replays;
 public enum ReplayFrameMeta {
     NORMAL,
     FAILED,
+    HIT,
+    MISS,
 }
 
 public class ReplayFrame {
@@ -57,6 +59,14 @@ public class Replay {
             CursorPosition = cursorPosition,
             Time = time,
             Meta = failed ? ReplayFrameMeta.FAILED : ReplayFrameMeta.NORMAL,
+        });
+    }
+
+    public void SaveFrame(ReplayFrameMeta meta, float time) {
+        Frames.Add(new ReplayFrame() {
+            CursorPosition = new(),
+            Time = time,
+            Meta = meta,
         });
     }
 

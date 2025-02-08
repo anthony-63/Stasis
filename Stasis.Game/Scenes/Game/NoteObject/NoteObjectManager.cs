@@ -18,7 +18,7 @@ public class NoteObjectManager {
 
     GameScene Game;
 
-    public delegate void NoteEventHandler(int idx);
+    public delegate void NoteEventHandler(float time);
     public NoteEventHandler? Hit;
     public NoteEventHandler? Miss;
 
@@ -27,7 +27,7 @@ public class NoteObjectManager {
     public NoteObjectManager(GameScene game, Player.Player player) {
         Game = game;
         LoadNotes();
-        if(!Global.Mods.VisualMap) {
+        if(!Global.Mods.VisualMap && Global.Replay is null) {
             Hit += player.Hit;
             Miss += player.Miss;
         }
@@ -79,14 +79,14 @@ public class NoteObjectManager {
                 OrderedNotes[i].Processed = true;
                 didHitreg = true;
 
-                Hit?.Invoke(OrderedNotes[i].Index);
+                Hit?.Invoke(music.Time);
             }
 
             if(!OrderedNotes[i].Hit && !OrderedNotes[i].InHitWindow(music.Time, music.Speed)) {
                 OrderedNotes[i].Processed = true;
                 didHitreg = true;
 
-                Miss?.Invoke(OrderedNotes[i].Index);
+                Miss?.Invoke(music.Time);
             }
 
             if(didHitreg && OrderedNotes[i].Index < OrderedNotes.Length - 1) {
