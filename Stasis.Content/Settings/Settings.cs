@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Stasis.Engine;
 using Tomlyn;
 
 namespace Stasis.Content.Settings;
@@ -8,11 +9,12 @@ public class Settings {
     public CursorSettings Cursor { get; set; } = new();
     public AudioSettings Audio { get; set; } = new();
     public CameraSettings Camera { get; set; } = new();
-
     public MiscSettings Misc { get; set; } = new();
     
     public void Save(string output) {
         var text = Toml.FromModel(this);
+        if(File.Exists(output)) File.Delete(output);
+        Logger.Info(text);
         File.WriteAllText(output, text);
     }
 
