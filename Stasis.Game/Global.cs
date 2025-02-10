@@ -63,6 +63,8 @@ public static class Global {
         if(mods.Speed != 1f || alwaysIncldueSpeed) modList.Add(mods.Speed.ToString("0.00") + "x");
         if(mods.NoFail) modList.Add("No Fail");
         if(mods.VisualMap) modList.Add("Visual Mode");
+        if(Replay is not null) modList.Add("Replay");
+
         return string.Join(", ", modList);
     }
 

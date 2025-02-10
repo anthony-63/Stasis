@@ -4,7 +4,7 @@ approach_distance = 14.0
 pushback = false
 [cursor]
 clamped = true
-sensitivity = 0.5
+sensitivity = 0.75999999
 scale = 0.5
 [audio]
 volume = 0.100000001

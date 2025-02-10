@@ -37,9 +37,7 @@ public class Health : ProgressBar {
         };
 
         modLabel.Text = Global.GetModText(Global.Mods);
-        var addComma = modLabel.Text.Length > 0;
-        modLabel.Text += (addComma ? ", " : "") + (Global.Replay is not null ? "Replay" : "");
-
+        
         AddChild(modLabel);
     }
 
