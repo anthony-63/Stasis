@@ -14,6 +14,7 @@ public class Window {
         Raylib.InitWindow(width, height, title);
         Raylib.SetWindowIcon(icon);
         Logger.Info("Initialized Window");
+        Rlgl.EnableBackfaceCulling();
         InputManager.BindKey([KeyboardKey.LeftAlt, KeyboardKey.Enter], InputType.PressedOnce, Raylib.ToggleBorderlessWindowed);
     }
 
