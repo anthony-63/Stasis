@@ -1,5 +1,5 @@
 [note]
-approach_time = 0.400000006
+approach_time = 0.379999995
 approach_distance = 14.0
 pushback = false
 [cursor]
@@ -10,8 +10,8 @@ scale = 0.5
 volume = 0.100000001
 fxvolume = 0.200000003
 [camera]
-grid_parallax = 10.0
-camera_parallax = 10.0
+grid_parallax = 0.0
+camera_parallax = 7.0
 fov = 70.0
 [misc]
 enable_replays = true

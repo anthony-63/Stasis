@@ -50,9 +50,9 @@ void main() {
     public int InstanceCount => Instances.Length;
     int Index = 0;
 
-    public MultiMesh(string meshPath) {
+    public MultiMesh(string meshPath, int maxInstanceCount) {
         var model = Raylib.LoadModel(meshPath);
-        Instances = new Matrix4x4[4];
+        Instances = new Matrix4x4[maxInstanceCount];
         Material = Raylib.LoadMaterialDefault();
 
         Shader shader = Raylib.LoadShaderFromMemory(_vs_shader, _fs_shader);
@@ -70,20 +70,12 @@ void main() {
     }
 
     public void AddInstance(Matrix4x4 transform, Color color) {
-        if(Index + 1 >= Instances.Length) {
-            Array.Resize(ref Instances, Instances.Length * 2);
-        }
-
         float final = (color.R << 16) | (color.G << 8) | color.B;
         Instances[Index++] = transform * Matrix4x4.CreateScale(final, color.A / 255f, 1f);
     }
 
     public void Render() {
         Raylib.DrawMeshInstanced(Mesh, Material, Instances, Index);
-        if(Instances.Length - Index > Instances.Length / 2) {
-            Array.Resize(ref Instances, Instances.Length / 3);
-        }
-        
         Array.Clear(Instances);
         Index = 0;
     }
