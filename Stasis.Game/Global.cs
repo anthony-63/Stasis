@@ -23,7 +23,6 @@ public static class Global {
 
     public static Settings Settings = new();
 
-    public static Color[] Colors = [Color.White, Color.Pink];
     public static string UIFont = GetAsset("Assets/Game/font.ttf");
 
     public static Mods Mods = new();

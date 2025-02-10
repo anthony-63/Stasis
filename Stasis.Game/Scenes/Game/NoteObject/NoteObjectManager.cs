@@ -102,7 +102,8 @@ public class NoteObjectManager {
 
         for(int i = 0; i < (Global.SelectedMap?.Difficulties[0].Notes.Length ?? 0); i++) {
             var noteData = Global.SelectedMap?.Difficulties[0].Notes[i] ?? new Note();
-            OrderedNotes[i] = new NoteObject(noteData, i, Global.Colors[i % Global.Colors.Length]);
+            var color = Raylib.GetColor((Global.Settings.Note.Colors[i % Global.Settings.Note.Colors.Length] << 8) | 0xff);
+            OrderedNotes[i] = new NoteObject(noteData, i, color);
         }
         NextNote = OrderedNotes[0];
 
