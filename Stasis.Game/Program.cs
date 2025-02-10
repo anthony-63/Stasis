@@ -1,4 +1,5 @@
-﻿using Stasis.Engine;
+﻿using Raylib_cs;
+using Stasis.Engine;
 using Stasis.Game.Scenes.Loading;
 
 namespace Stasis.Game;
@@ -6,7 +7,7 @@ namespace Stasis.Game;
 public class Program {
     static void Main(string[] args) {
         Logger.Init("Stasis.log");
-        var window = new Window(1280, 720, "Stasis");
+        var window = new Window(1280, 720, "Stasis", Raylib.LoadImage(Global.GetAsset("Assets/Game/Icon.ico")));
         window.SceneHandler.AddScene(new LoadingScene());
         window.Run();
         Global.Settings.Save("Assets/settings.toml");

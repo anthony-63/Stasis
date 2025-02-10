@@ -5,7 +5,7 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.NoteObject;
 
-public class NoteObject {
+public struct NoteObject {
     public const float HIT_WINDOW = 0.055f;
     public const float AABB = 1.1375f;
 

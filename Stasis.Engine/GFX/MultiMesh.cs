@@ -79,7 +79,7 @@ void main() {
     }
 
     public void Render() {
-        Raylib.DrawMeshInstanced(Mesh, Material, Instances, InstanceCount);
+        Raylib.DrawMeshInstanced(Mesh, Material, Instances, Index);
         if(Instances.Length - Index > Instances.Length / 2) {
             Array.Resize(ref Instances, Instances.Length / 3);
         }

@@ -2,6 +2,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Stasis.Content\Stasis.Content.csproj" />
     <ProjectReference Include="..\Stasis.Engine\Stasis.Engine.csproj" />
+    <AdditionalFiles Include="..\Assets\Game\Icon.ico">
+      <ApplicationIcon>..\Assets\Game\Icon.ico</ApplicationIcon>
+    </AdditionalFiles>
   </ItemGroup>
 
   <PropertyGroup>
@@ -21,6 +24,6 @@
     <DebugType>None</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <TrimmerRootAssembly Include="$(TargetName)" />
+    <TrimmerRootAssembly Include="Stasis.Game" />
   </ItemGroup>
 </Project>

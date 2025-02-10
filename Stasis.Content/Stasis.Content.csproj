@@ -10,6 +10,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <TrimmerRootAssembly Include="Stasis.Content" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Tomlyn" Version="0.18.0" />
   </ItemGroup>
 </Project>
