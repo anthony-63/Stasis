@@ -1,13 +1,17 @@
 use sdl3::event::Event;
 
+use super::state::{State, StateSwapper};
+
 pub struct Window {
     window: sdl3::video::Window,
     context: sdl3::Sdl,
     video: sdl3::VideoSubsystem,
+    swapper: StateSwapper,
 }
 
 impl Window {
-    pub fn new(title: &str, width: u32, height: u32) -> Self {
+    pub fn new<T>(title: &str, width: u32, height: u32, initial_state: T) -> Self
+    where T: State + 'static {
         let context = sdl3::init().expect("Failed to initialize SDL3");
         let video = context.video().expect("Failed to initialize SDL3 Video");
 
@@ -15,6 +19,7 @@ impl Window {
             context,
             window: video.window(title, width, height).build().expect("Failed to create SDL3 Window"),
             video,
+            swapper: StateSwapper::new(initial_state),
         }
     }
 
@@ -29,7 +34,8 @@ impl Window {
                     _ => {},
                 }
             }
-
+            self.swapper.update(0.);
+            self.swapper.render();
         }
     }
 }

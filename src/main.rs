@@ -1,7 +1,22 @@
 mod core;
-use core::window::*;
+mod scenes;
+use core::window::Window;
+
+use scenes::loading::LoadingScene;
+use tracing_subscriber::{fmt, layer::SubscriberExt, Registry};
 
 fn main() {
-    let mut window = Window::new("Stasis", 1280, 720);
+    let file_appender = tracing_appender::rolling::never("./", "stasis.log");
+    let (file_out, _guard) = tracing_appender::non_blocking(file_appender);
+
+    let (stdout, _guard) = tracing_appender::non_blocking(std::io::stdout());
+
+    let subscriber = Registry::default()
+        .with(fmt::Layer::default().with_writer(stdout))
+        .with(fmt::Layer::default().with_writer(file_out).with_ansi(false));
+    
+    tracing::subscriber::set_global_default(subscriber).unwrap();
+
+    let mut window = Window::new("Stasis", 1280, 720, LoadingScene::new());
     window.run();
 }
