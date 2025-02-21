@@ -1,7 +1,7 @@
 
 use tracing::info;
 
-use crate::core::state::State;
+use crate::core::scene::Scene;
 
 pub struct LoadingScene {
 
@@ -13,8 +13,8 @@ impl LoadingScene {
     }
 }
 
-impl State for LoadingScene {
-    fn update(&mut self, _dt: f64) -> Option<Box<dyn State + 'static>> {
+impl Scene for LoadingScene {
+    fn update(&mut self, _dt: f64) -> Option<Box<dyn Scene + 'static>> {
         None
     }
 
