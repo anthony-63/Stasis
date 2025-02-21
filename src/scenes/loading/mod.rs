@@ -1,7 +1,4 @@
-
-use tracing::info;
-
-use crate::core::scene::Scene;
+use crate::core::{gfx::{color::Color, Graphics}, scene::Scene};
 
 pub struct LoadingScene {
 
@@ -18,7 +15,7 @@ impl Scene for LoadingScene {
         None
     }
 
-    fn render(&mut self) {
-        
+    fn render(&mut self, gfx: &mut Graphics) {
+        gfx.set_clear_color(Color::from_frgb(0.3, 0.2, 0.5));
     }
 }

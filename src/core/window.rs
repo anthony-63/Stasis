@@ -1,9 +1,9 @@
 use sdl3::event::Event;
 
-use super::scene::{Scene, SceneSwapper};
+use super::{gfx::Graphics, scene::{Scene, SceneSwapper}};
 
 pub struct Window {
-    window: sdl3::video::Window,
+    gfx: Graphics,
     context: sdl3::Sdl,
     video: sdl3::VideoSubsystem,
     swapper: SceneSwapper,
@@ -14,17 +14,18 @@ impl Window {
     where T: Scene + 'static {
         let context = sdl3::init().expect("Failed to initialize SDL3");
         let video = context.video().expect("Failed to initialize SDL3 Video");
-
+        let window = video.window(title, width, height).build().expect("Failed to create SDL3 Window");
+        let gfx = Graphics::new(window);
+        
         return Self {
             context,
-            window: video.window(title, width, height).build().expect("Failed to create SDL3 Window"),
+            gfx,
             video,
             swapper: SceneSwapper::new(initial_scene),
         }
     }
 
     pub fn run(&mut self) {
-        let mut canvas = self.window.clone().into_canvas();
         let mut event_pump = self.context.event_pump().map_err(|e| e.to_string()).unwrap();
 
         'running: loop {
@@ -35,7 +36,8 @@ impl Window {
                 }
             }
             self.swapper.update(0.);
-            self.swapper.render();
+            self.swapper.render(&mut self.gfx);
+            self.gfx.render();
         }
     }
 }
