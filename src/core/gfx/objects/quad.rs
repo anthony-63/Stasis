@@ -1,15 +1,18 @@
+use tracing::info;
+
 use crate::core::gfx::{color::Color, Graphics};
 
-use super::{create_buffer_with_data, get_local_coords3, BasicVertex};
+use super::{create_buffer_with_data, get_local_coords3, set_buffer_data, BasicVertex};
 
 pub struct QuadObject {
-    x: f32,
-    y: f32,
-    w: f32,
-    h: f32,
-    color: Color,
-
-    buffers: Option<QuadBuffers>
+    pub x: f32,
+    pub y: f32,
+    pub w: f32,
+    pub h: f32,
+    pub color: Color,
+    
+    pub should_update: bool,
+    buffers: Option<QuadBuffers>,
 }
 
 impl QuadObject {
@@ -17,12 +20,18 @@ impl QuadObject {
         Self {
             x, y, w, h, color,
             buffers: None,
+            should_update: false
         }
+    }
+
+    pub fn update(&mut self) {
+        self.should_update = true;
     }
 }
 
 pub struct QuadsContainer {
     pub quads: Vec<QuadObject>,
+    quad_id: usize,
     transfer_buffer: sdl3::gpu::TransferBuffer,
 }
 
@@ -30,6 +39,7 @@ impl QuadsContainer {
     pub fn new(gpu: sdl3::gpu::Device) -> Self {
         Self {
             quads: vec![],
+            quad_id: 0,
             transfer_buffer: 
                 gpu.create_transfer_buffer()
                     .with_size((size_of::<BasicVertex>() * 4 + size_of::<u16>() * 6) as u32)
@@ -44,6 +54,9 @@ impl QuadsContainer {
                 quad.buffers = Some(
                     QuadBuffers::setup(quad, self.transfer_buffer.clone(), gpu, copy_pass)
                 );
+            } else if quad.should_update {
+                quad.buffers.as_ref().unwrap().update(quad, self.transfer_buffer.clone(), gpu, copy_pass);
+                quad.should_update = false;
             }
         }
     }
@@ -65,6 +78,12 @@ impl QuadsContainer {
             );
             render_pass.draw_indexed_primitives(6, 1, 0, 0, 0);
         }
+    }
+
+    pub fn add_quad(&mut self, obj: QuadObject) -> usize {
+        self.quads.push(obj);
+        self.quad_id += 1;
+        return self.quad_id - 1;
     }
 
     pub fn clear(&mut self) {
@@ -92,5 +111,15 @@ impl QuadBuffers {
         return Self {
             vbo, ibo,
         }
+    }
+
+    pub fn update(&self, obj: &QuadObject, transfer_buffer: sdl3::gpu::TransferBuffer, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) {
+        let vertices = [
+            BasicVertex::new(get_local_coords3([obj.x, obj.y, 0.]), obj.color.clone()),
+            BasicVertex::new(get_local_coords3([obj.x + obj.w, obj.y, 0.]), obj.color.clone()),
+            BasicVertex::new(get_local_coords3([obj.x + obj.w, obj.y + obj.h, 0.]), obj.color.clone()),
+            BasicVertex::new(get_local_coords3([obj.x, obj.y + obj.h, 0.]), obj.color.clone()),
+        ];
+        set_buffer_data(gpu, &self.vbo, &transfer_buffer, copy_pass, &vertices).unwrap();
     }
 }

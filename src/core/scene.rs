@@ -4,7 +4,7 @@ use super::gfx::Graphics;
 
 pub trait Scene {
     fn init(&mut self, gfx: &mut Graphics);
-    fn update(&mut self, dt: f64) -> Option<Box<dyn Scene + 'static>>;
+    fn update(&mut self, gfx: &mut Graphics, dt: f64) -> Option<Box<dyn Scene + 'static>>;
 }
 
 pub struct SceneSwapper {
@@ -24,9 +24,7 @@ impl SceneSwapper {
     }
 
     pub fn update(&mut self, gfx: &mut Graphics, dt: f64) {
-        self.current_scene.update(dt);
-
-        if let Some(new_scene) = self.current_scene.update(dt) {
+        if let Some(new_scene) = self.current_scene.update(gfx, dt) {
             info!("Swapping Scene");
             gfx.reset();
             self.current_scene = new_scene;

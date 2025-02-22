@@ -1,11 +1,15 @@
 mod core;
 mod scenes;
 use core::window::Window;
+use std::fs;
 
 use scenes::loading::LoadingScene;
 use tracing_subscriber::{fmt, layer::SubscriberExt, Registry};
 
 fn main() {
+    if fs::exists("stasis.log").unwrap() {
+        fs::remove_file("stasis.log").unwrap();
+    }
     let file_appender = tracing_appender::rolling::never("./", "stasis.log");
     let (file_out, _guard) = tracing_appender::non_blocking(file_appender);
 

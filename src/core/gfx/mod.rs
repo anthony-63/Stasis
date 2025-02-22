@@ -18,8 +18,12 @@ impl Graphics {
         }
     }
 
-    pub fn add_quad(&mut self, quad: QuadObject) {
-        self.pipeline.quads.quads.push(quad);
+    pub fn add_quad(&mut self, quad: QuadObject) -> usize {
+        return self.pipeline.quads.add_quad(quad);
+    }
+
+    pub fn get_quads(&mut self) -> &mut Vec<QuadObject> {
+        return &mut self.pipeline.quads.quads;
     }
 
     pub fn set_clear_color(&mut self, color: Color) {

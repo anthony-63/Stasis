@@ -1,3 +1,5 @@
+use std::time::SystemTime;
+
 use sdl3::event::Event;
 
 use super::{gfx::Graphics, scene::{Scene, SceneSwapper}};
@@ -28,7 +30,14 @@ impl Window {
 
         self.swapper.init(&mut self.gfx);
 
+        let mut current_time =  SystemTime::now();
+        let mut last_time: SystemTime;
+
         'running: loop {
+            last_time = current_time;
+            current_time = SystemTime::now();
+            let dt = current_time.duration_since(last_time).unwrap().as_secs_f64();
+
             for ev in event_pump.poll_iter() {
                 match ev {
                     Event::Quit { .. } => break 'running,
@@ -36,7 +45,7 @@ impl Window {
                 }
             }
             self.gfx.update();
-            self.swapper.update(&mut self.gfx, 0.);
+            self.swapper.update(&mut self.gfx, dt);
             self.gfx.render();
         }
     }

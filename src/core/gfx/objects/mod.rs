@@ -5,7 +5,7 @@ use super::color::Color;
 pub mod quad;
 
 #[repr(packed)]
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct BasicVertex {
     pub vertex: [f32; 3],
     pub color: [f32; 4],
@@ -73,4 +73,36 @@ pub fn create_buffer_with_data<T: Copy>(
     );
 
     Ok(buffer)
+}
+
+pub fn set_buffer_data<T: Copy>(
+    gpu: &Device,
+    buffer: &Buffer,
+    transfer_buffer: &TransferBuffer,
+    copy_pass: &CopyPass,
+    data: &[T],
+) -> Result<(), Error> {
+    // Figure out the length of the data in bytes
+    let len_bytes = data.len() * std::mem::size_of::<T>();
+
+    let mut map = transfer_buffer.map::<T>(gpu, true);
+    let mem = map.mem_mut();
+    for (index, &value) in data.iter().enumerate() {
+        mem[index] = value;
+    }
+
+    map.unmap();
+
+    copy_pass.upload_to_gpu_buffer(
+        TransferBufferLocation::new()
+            .with_offset(0)
+            .with_transfer_buffer(transfer_buffer),
+        BufferRegion::new()
+            .with_offset(0)
+            .with_size(len_bytes as u32)
+            .with_buffer(buffer),
+        true,
+    );
+
+    Ok(())
 }
