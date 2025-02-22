@@ -25,6 +25,7 @@ impl ShaderCompiler {
         };
         
         let mut options = CompileOptions::new().unwrap();
+        options.set_source_language(shaderc::SourceLanguage::HLSL);
         options.add_macro_definition("EP", Some("main"));
         
         let bin = self.compiler.compile_into_spirv(text, realkind, "shader.hlsl", "main", Some(&options)).unwrap();

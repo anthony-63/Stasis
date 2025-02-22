@@ -5,7 +5,6 @@ use super::{gfx::Graphics, scene::{Scene, SceneSwapper}};
 pub struct Window {
     gfx: Graphics,
     context: sdl3::Sdl,
-    video: sdl3::VideoSubsystem,
     swapper: SceneSwapper,
 }
 
@@ -16,17 +15,18 @@ impl Window {
         let video = context.video().expect("Failed to initialize SDL3 Video");
         let window = video.window(title, width, height).build().expect("Failed to create SDL3 Window");
         let gfx = Graphics::new(window);
-        
+
         return Self {
             context,
             gfx,
-            video,
             swapper: SceneSwapper::new(initial_scene),
         }
     }
 
     pub fn run(&mut self) {
         let mut event_pump = self.context.event_pump().map_err(|e| e.to_string()).unwrap();
+
+        self.swapper.init(&mut self.gfx);
 
         'running: loop {
             for ev in event_pump.poll_iter() {
@@ -35,8 +35,8 @@ impl Window {
                     _ => {},
                 }
             }
-            self.swapper.update(0.);
-            self.swapper.render(&mut self.gfx);
+            self.gfx.update();
+            self.swapper.update(&mut self.gfx, 0.);
             self.gfx.render();
         }
     }

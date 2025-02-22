@@ -1,5 +1,6 @@
+#[derive(Clone)]
 pub struct Color {
-    r: u8, g: u8, b: u8, a: u8,
+    pub r: u8, pub g: u8, pub b: u8, pub a: u8,
 }
 
 impl Color {
@@ -32,6 +33,10 @@ impl Color {
             b: (b * 255.0) as u8,
             a: (a * 255.0) as u8,
         }
+    }
+
+    pub fn get_floats(&self) -> [f32; 4] {
+        [self.r as f32 / 255., self.g as f32 / 255., self.b as f32 / 255., self.a as f32 / 255.]
     }
 
     pub fn sdl_color(&self) -> sdl3::pixels::Color {
