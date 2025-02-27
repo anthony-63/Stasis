@@ -1,29 +1,40 @@
 use color::Color;
-use objects::quad::QuadObject;
+use objects::{quad::QuadObject, textured_quad::TexturedQuadObject};
 use pipeline::GraphicsPipeline;
 
-pub mod pipeline;
 pub mod color;
-pub mod shader_compiler;
 pub mod objects;
+pub mod pipeline;
+pub mod shader_compiler;
 
 pub struct Graphics {
     pipeline: GraphicsPipeline,
+
+    z_index: f32,
 }
 
 impl Graphics {
     pub fn new(window: sdl3::video::Window) -> Self {
-        return Self {
+        Self {
             pipeline: GraphicsPipeline::new(window),
+            z_index: 1.,
         }
     }
 
     pub fn add_quad(&mut self, quad: QuadObject) -> usize {
-        return self.pipeline.quads.add_quad(quad);
+        self.z_index -= 0.00001;
+        let id = self.pipeline.quads.add_quad(quad, self.z_index);
+        id
+    }
+
+    pub fn add_textured_quad(&mut self, quad: TexturedQuadObject) -> usize {
+        self.z_index -= 0.00001;
+        let id = self.pipeline.textured_quads.add_quad(quad, self.z_index);
+        id
     }
 
     pub fn get_quads(&mut self) -> &mut Vec<QuadObject> {
-        return &mut self.pipeline.quads.quads;
+        &mut self.pipeline.quads.quads
     }
 
     pub fn set_clear_color(&mut self, color: Color) {
@@ -44,3 +55,4 @@ impl Graphics {
         self.pipeline.reset();
     }
 }
+

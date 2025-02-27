@@ -1,6 +1,5 @@
-use tracing::info;
 
-use crate::core::{gfx::{color::Color, objects::quad::QuadObject, Graphics}, scene::Scene};
+use crate::core::{gfx::{color::Color, objects::{quad::QuadObject, textured_quad::TexturedQuadObject}, Graphics}, scene::Scene};
 
 pub struct LoadingScene {
     test_quad_id: usize,
@@ -18,17 +17,21 @@ impl LoadingScene {
 
 impl Scene for LoadingScene {
     fn init(&mut self, gfx: &mut Graphics) {
-        self.test_quad_id = gfx.add_quad(QuadObject::new(10., 10., 200., 200., Color::from_rgb(255, 0, 0)));
         gfx.set_clear_color(Color::from_frgb(0.3, 0.2, 0.5));
+
+        gfx.add_quad(QuadObject::new(30., 30., 50., 50., Color::from_rgb(255, 0, 0)));
+        self.test_quad_id = gfx.add_quad(QuadObject::new(40., 40., 50., 50., Color::from_rgba(255, 255, 0, 100)));
+        gfx.add_textured_quad(TexturedQuadObject::new(50., 50., 100., 100., "Assets/Game/cat.png"));
     }
 
     fn update(&mut self, gfx: &mut Graphics, dt: f64) -> Option<Box<dyn Scene + 'static>> {
         let quads = gfx.get_quads();
         self.timer += dt;
-        quads[self.test_quad_id].color.r = ((self.timer * 63.75) % 255.) as u8;
-        quads[self.test_quad_id].color.g = ((self.timer * 127.5) % 255.) as u8;
-        quads[self.test_quad_id].color.b = ((self.timer * 191.25) % 255.) as u8;
-        quads[self.test_quad_id].update();
+
+        // quads[self.test_quad_id].color.r = ((self.timer * 63.75) % 255.) as u8;
+        // quads[self.test_quad_id].color.g = ((self.timer * 127.5) % 255.) as u8;
+        // quads[self.test_quad_id].color.b = ((self.timer * 191.25) % 255.) as u8;
+        // quads[self.test_quad_id].update();
         
         None
     }

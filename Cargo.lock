@@ -155,13 +155,32 @@ checksum = "5a2d2f3481209a6b42eec2fbb49063fb4e8d35b57023401495d4fe0f85c817f0"
 
 [[package]]
 name = "sdl3"
-version = "0.14.11"
+version = "0.14.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ab9fa9ed6942a7b0125ae65b98c9c5f69244783ec4bd1aa15c6650e4cc426e9"
+checksum = "e55f9adf2ac7e868746564d885f677fa797106f7c5deffa348dad3ef6e659300"
 dependencies = [
  "bitflags",
  "lazy_static",
  "libc",
+ "sdl3-image-sys",
+ "sdl3-sys",
+]
+
+[[package]]
+name = "sdl3-image-src"
+version = "3.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d46a2ad6d4ccc39d245efc2e3a0ef2d0bbe82d9d90b8d5400a65a38877650e54"
+
+[[package]]
+name = "sdl3-image-sys"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "092be577d79ecad9a13a0deb759b615e96cae97fcabc489f79b168d5ad8f1b24"
+dependencies = [
+ "cmake",
+ "rpkg-config",
+ "sdl3-image-src",
  "sdl3-sys",
 ]
 
@@ -249,6 +268,7 @@ name = "stasis"
 version = "0.1.0"
 dependencies = [
  "sdl3",
+ "sdl3-image-sys",
  "shaderc",
  "tracing",
  "tracing-appender",

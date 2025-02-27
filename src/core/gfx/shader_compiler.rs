@@ -23,12 +23,16 @@ impl ShaderCompiler {
             ShaderKind::Fragment => shaderc::ShaderKind::Fragment,
             ShaderKind::Compute => shaderc::ShaderKind::Compute,
         };
-        
+
         let mut options = CompileOptions::new().unwrap();
         options.set_source_language(shaderc::SourceLanguage::HLSL);
         options.add_macro_definition("EP", Some("main"));
-        
-        let bin = self.compiler.compile_into_spirv(text, realkind, "shader.hlsl", "main", Some(&options)).unwrap();
-        return bin.as_binary_u8().to_vec();
+
+        let bin = self
+            .compiler
+            .compile_into_spirv(text, realkind, "shader.hlsl", "main", Some(&options))
+            .unwrap();
+        bin.as_binary_u8().to_vec()
     }
 }
+
