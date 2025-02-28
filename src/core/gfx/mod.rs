@@ -47,6 +47,10 @@ impl Graphics {
         self.pipeline.end_upload();
     }
 
+    pub fn resize(&mut self, w: i32, h: i32) {
+        self.pipeline.resize(w as u32, h as u32);
+    }
+ 
     pub fn render(&mut self) {
         self.pipeline.render();
     }

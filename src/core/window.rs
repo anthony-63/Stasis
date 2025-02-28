@@ -40,7 +40,15 @@ impl Window {
 
             for ev in event_pump.poll_iter() {
                 if let Event::Quit { .. } = ev { break 'running }
+                if let Event::Window { win_event, .. } = ev {
+                    match win_event {
+                        sdl3::event::WindowEvent::Resized(w, h) => self.gfx.resize(w, h),
+                        _ => {}
+                    }
+                } 
             }
+
+
             self.gfx.update();
             self.swapper.update(&mut self.gfx, dt);
             self.gfx.render();

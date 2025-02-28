@@ -86,7 +86,7 @@ impl GraphicsPipeline {
             include_str!("../../shaders/basic.hlsl.frag"),
             super::shader_compiler::ShaderKind::Fragment,
         );
-
+        
         let vertex = load_shader(
             gpu.clone(),
             &vertex_source,
@@ -254,6 +254,20 @@ impl GraphicsPipeline {
     pub fn end_upload(&mut self) {
         self.gpu.end_copy_pass(self.copy_pass.take().unwrap());
         self.copy_cmd_buffer.take().unwrap().submit().unwrap();
+    }
+
+    pub fn resize(&mut self, w: u32, h: u32) {
+        self.depth_texture = self.gpu.create_texture(
+            sdl3::gpu::TextureCreateInfo::new()
+                .with_type(sdl3::gpu::TextureType::_2D)
+                .with_width(w)
+                .with_height(h)
+                .with_layer_count_or_depth(1)
+                .with_num_levels(1)
+                .with_sample_count(sdl3::gpu::SampleCount::NoMultiSampling)
+                .with_format(sdl3::gpu::TextureFormat::D16Unorm)
+                .with_usage(sdl3::gpu::TextureUsage::Sampler | sdl3::gpu::TextureUsage::DepthStencilTarget),
+        ).unwrap()
     }
 
     pub fn update_object_list(&mut self) {
