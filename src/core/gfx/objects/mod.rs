@@ -2,6 +2,8 @@ use std::path::Path;
 
 use sdl3::{gpu::{Buffer, BufferRegion, BufferUsageFlags, CopyPass, Device, Texture, TextureCreateInfo, TextureFormat, TextureRegion, TextureTransferInfo, TextureType, TextureUsage, TransferBuffer, TransferBufferLocation, TransferBufferUsage}, image, iostream::IOStream, surface::Surface, sys::gpu::SDL_SetGPUTextureName, Error};
 use tracing::info;
+use crate::core::{Vector2, Vector3};
+
 use super::color::Color;
 
 pub mod quad;
@@ -26,12 +28,12 @@ impl ColorVertex {
 #[repr(packed)]
 #[derive(Copy, Clone, Debug)]
 pub struct TexturedVertex {
-    pub vertex: [f32; 3],
-    pub coord: [f32; 2],
+    pub vertex: Vector3,
+    pub coord: Vector2,
 }
 
 impl TexturedVertex {
-    pub fn new(vertex: [f32; 3], coord: [f32; 2]) -> Self {
+    pub fn new(vertex: Vector3, coord: Vector2) -> Self {
         Self {
             vertex,
             coord,
@@ -44,14 +46,14 @@ const LEFT: f32 = 0.;
 const TOP: f32 = 0.;
 const BOTTOM: f32 = 1080.;
 
-pub fn get_local_coords2(c: [f32; 2]) -> [f32; 2] {
+pub fn get_local_coords2(c: Vector2) -> Vector2 {
     [
         (2.) / (RIGHT - LEFT) * c[0] - 1.,
         (2.) / (TOP - BOTTOM) * c[1] + 1.,
     ]
 }
 
-pub fn get_local_coords3(c: [f32; 3]) -> [f32; 3] {
+pub fn get_local_coords3(c: Vector3) -> Vector3 {
     [
         (2.) / (RIGHT - LEFT) * c[0] - 1.,
         (2.) / (TOP - BOTTOM) * c[1] + 1.,

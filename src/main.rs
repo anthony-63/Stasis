@@ -1,5 +1,7 @@
 mod core;
 mod scenes;
+mod content;
+
 use core::window::Window;
 use std::fs;
 
