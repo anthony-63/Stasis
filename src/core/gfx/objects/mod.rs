@@ -12,12 +12,12 @@ pub mod textured_quad;
 #[repr(packed)]
 #[derive(Copy, Clone, Debug)]
 pub struct ColorVertex {
-    pub vertex: [f32; 3],
+    pub vertex: Vector3,
     pub color: [f32; 4],
 }
 
 impl ColorVertex {
-    pub fn new(vertex: [f32; 3], color: Color) -> Self {
+    pub fn new(vertex: Vector3, color: Color) -> Self {
         Self {
             vertex,
             color: color.get_floats(),
@@ -26,7 +26,7 @@ impl ColorVertex {
 }
 
 #[repr(packed)]
-#[derive(Copy, Clone, Debug)]
+#[derive(Clone, Debug, Copy)]
 pub struct TexturedVertex {
     pub vertex: Vector3,
     pub coord: Vector2,
@@ -47,18 +47,18 @@ const TOP: f32 = 0.;
 const BOTTOM: f32 = 1080.;
 
 pub fn get_local_coords2(c: Vector2) -> Vector2 {
-    [
-        (2.) / (RIGHT - LEFT) * c[0] - 1.,
-        (2.) / (TOP - BOTTOM) * c[1] + 1.,
-    ]
+    Vector2::new(
+        (2.) / (RIGHT - LEFT) * c.x - 1.,
+        (2.) / (TOP - BOTTOM) * c.y + 1.,
+    )
 }
 
 pub fn get_local_coords3(c: Vector3) -> Vector3 {
-    [
-        (2.) / (RIGHT - LEFT) * c[0] - 1.,
-        (2.) / (TOP - BOTTOM) * c[1] + 1.,
-        c[2],
-    ]
+    Vector3::new(
+        (2.) / (RIGHT - LEFT) * c.x - 1.,
+        (2.) / (TOP - BOTTOM) * c.y + 1.,
+        c.z,
+    )
 }
 
 pub fn create_buffer_with_data<T: Copy>(

@@ -1,6 +1,8 @@
 
 use sdl3::gpu::TransferBuffer;
 
+use crate::core::{Vector2, Vector3};
+
 use super::{
     create_buffer_with_data, create_texture_from_image, get_local_coords3, set_buffer_data, TexturedVertex
 };
@@ -166,10 +168,10 @@ impl TexturedQuadBuffers {
         copy_pass: &sdl3::gpu::CopyPass,
     ) -> Self {
         let vertices = [
-            TexturedVertex::new(get_local_coords3([obj.x, obj.y, obj.z]), [0., 0.]),
-            TexturedVertex::new(get_local_coords3([obj.x + obj.w, obj.y, obj.z]), [4., 0.]),
-            TexturedVertex::new(get_local_coords3([obj.x + obj.w, obj.y + obj.h, obj.z]), [4., 4.]),
-            TexturedVertex::new(get_local_coords3([obj.x, obj.y + obj.h, obj.z]), [0., 4.]),
+            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y, obj.z)), Vector2::new(0., 0.)),
+            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y, obj.z)), Vector2::new(4., 0.)),
+            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y + obj.h, obj.z)), Vector2::new(4., 4.)),
+            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y + obj.h, obj.z)), Vector2::new(0., 4.)),
         ];
 
         let indices: &[u16] = &[0, 1, 2, 0, 2, 3];
@@ -203,13 +205,13 @@ impl TexturedQuadBuffers {
         copy_pass: &sdl3::gpu::CopyPass,
     ) {
         let vertices = [
-            TexturedVertex::new(get_local_coords3([obj.x, obj.y, 0.]), [0., 0.]),
-            TexturedVertex::new(get_local_coords3([obj.x + obj.w, obj.y, 0.]), [4., 0.]),
+            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y, 0.)), Vector2::new(0., 0.)),
+            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y, 0.)), Vector2::new(4., 0.)),
             TexturedVertex::new(
-                get_local_coords3([obj.x + obj.w, obj.y + obj.h, 0.]),
-                [4., 4.],
+                get_local_coords3(Vector3::new(obj.x + obj.w, obj.y + obj.h, 0.)),
+                Vector2::new(4., 4.),
             ),
-            TexturedVertex::new(get_local_coords3([obj.x, obj.y + obj.h, 0.]), [0., 4.]),
+            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y + obj.h, 0.)), Vector2::new(0., 4.)),
         ];
         set_buffer_data(
             gpu,

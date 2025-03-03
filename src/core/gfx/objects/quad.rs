@@ -1,5 +1,5 @@
 
-use crate::core::gfx::color::Color;
+use crate::core::{gfx::color::Color, Vector3};
 
 use super::{create_buffer_with_data, get_local_coords3, set_buffer_data, ColorVertex};
 
@@ -104,10 +104,10 @@ pub struct QuadBuffers {
 impl QuadBuffers {
     pub fn setup(obj: &QuadObject, transfer_buffer: sdl3::gpu::TransferBuffer, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) -> Self {
         let vertices = [
-            ColorVertex::new(get_local_coords3([obj.x, obj.y, obj.z]), obj.color.clone()),
-            ColorVertex::new(get_local_coords3([obj.x + obj.w, obj.y, obj.z]), obj.color.clone()),
-            ColorVertex::new(get_local_coords3([obj.x + obj.w, obj.y + obj.h, obj.z]), obj.color.clone()),
-            ColorVertex::new(get_local_coords3([obj.x, obj.y + obj.h, obj.z]), obj.color.clone()),
+            ColorVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y, obj.z)), obj.color.clone()),
+            ColorVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y, obj.z)), obj.color.clone()),
+            ColorVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y + obj.h, obj.z)), obj.color.clone()),
+            ColorVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y + obj.h, obj.z)), obj.color.clone()),
         ];
 
         let indices: &[u16] = &[0, 1, 2, 0, 2, 3];
@@ -121,10 +121,10 @@ impl QuadBuffers {
 
     pub fn update(&self, obj: &QuadObject, transfer_buffer: sdl3::gpu::TransferBuffer, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) {
         let vertices = [
-            ColorVertex::new(get_local_coords3([obj.x, obj.y, 0.]), obj.color.clone()),
-            ColorVertex::new(get_local_coords3([obj.x + obj.w, obj.y, 0.]), obj.color.clone()),
-            ColorVertex::new(get_local_coords3([obj.x + obj.w, obj.y + obj.h, 0.]), obj.color.clone()),
-            ColorVertex::new(get_local_coords3([obj.x, obj.y + obj.h, 0.]), obj.color.clone()),
+            ColorVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y, 0.)), obj.color.clone()),
+            ColorVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y, 0.)), obj.color.clone()),
+            ColorVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y + obj.h, 0.)), obj.color.clone()),
+            ColorVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y + obj.h, 0.)), obj.color.clone()),
         ];
         set_buffer_data(gpu, &self.vbo, &transfer_buffer, copy_pass, &vertices).unwrap();
     }

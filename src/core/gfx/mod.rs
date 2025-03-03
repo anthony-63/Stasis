@@ -6,6 +6,7 @@ pub mod color;
 pub mod objects;
 pub mod pipeline;
 pub mod shader_compiler;
+pub mod text;
 
 pub struct Graphics {
     pipeline: GraphicsPipeline,

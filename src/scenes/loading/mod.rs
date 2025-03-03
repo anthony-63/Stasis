@@ -25,7 +25,7 @@ impl Scene for LoadingScene {
         self.test_quad_id = gfx.add_quad(QuadObject::new(40., 40., 50., 50., Color::from_rgba(255, 255, 0, 100)));
         gfx.add_textured_quad(TexturedQuadObject::new(50., 50., 100., 100., "Assets/Game/cat.png"));
 
-        let maps = MapLoader::load_all_from_dir("Assets/Maps".into());
+        // let maps: Vec<crate::content::maps::beatmapset::BeatmapSet> = MapLoader::load_all_from_dir("Assets/Maps".into());
     }
 
     fn update(&mut self, gfx: &mut Graphics, dt: f64) -> Option<Box<dyn Scene + 'static>> {
