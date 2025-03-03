@@ -8,6 +8,7 @@ use super::color::Color;
 
 pub mod quad;
 pub mod textured_quad;
+pub mod text;
 
 #[repr(packed)]
 #[derive(Copy, Clone, Debug)]
@@ -132,6 +133,53 @@ pub fn set_buffer_data<T: Copy>(
     Ok(())
 }
 
+fn create_texture_from_data(
+    gpu: &Device,
+    data: &[u8],
+    width: u32,
+    height: u32,
+    copy_pass: &CopyPass
+) -> Result<(Texture<'static>, Vec<u8>), Error> {
+    let size_bytes = 4 * width * height;
+
+    info!("Loading texture: 'custom data' with size: {}", size_bytes);
+    
+    let texture = gpu.create_texture(
+        TextureCreateInfo::new()
+        .with_format(TextureFormat::R8g8b8a8Unorm)
+        .with_type(TextureType::_2D)
+        .with_width(width)
+            .with_height(height)
+            .with_layer_count_or_depth(1)
+            .with_num_levels(1)
+            .with_usage(TextureUsage::Sampler | TextureUsage::ColorTarget)
+        )?;
+        
+    let transfer_buffer = gpu
+        .create_transfer_buffer()
+        .with_size(size_bytes)
+        .with_usage(TransferBufferUsage::Upload)
+        .build()?;
+    
+    let mut buffer_mem = transfer_buffer.map::<u8>(gpu, false);
+    buffer_mem.mem_mut().copy_from_slice(data);
+    buffer_mem.unmap();
+
+    copy_pass.upload_to_gpu_texture(
+        TextureTransferInfo::new()
+            .with_offset(0)
+            .with_transfer_buffer(&transfer_buffer),
+        TextureRegion::new()
+            .with_texture(&texture)
+            .with_width(width)
+            .with_height(height)
+            .with_depth(1),
+        false,
+    );
+    
+    Ok((texture, data.to_vec()))
+}
+
 fn create_texture_from_image(
     gpu: &Device,
     image_path: impl AsRef<Path>,
@@ -164,13 +212,11 @@ fn create_texture_from_image(
         .build()?;
     
     let mut buffer_mem = transfer_buffer.map::<u8>(gpu, false);
-    let mut alphaplus = 0;
-    for (i, _) in pixels.iter().enumerate().step_by(3) {
+    for (alphaplus, (i, _)) in pixels.iter().enumerate().step_by(3).enumerate() {
         buffer_mem.mem_mut()[i + alphaplus] = pixels[i];
         buffer_mem.mem_mut()[i + 1 + alphaplus] = pixels[i + 1];
         buffer_mem.mem_mut()[i + 2 + alphaplus] = pixels[i + 2];
         buffer_mem.mem_mut()[i + 3 + alphaplus] = 255;
-        alphaplus += 1;
     }
     buffer_mem.unmap();
 

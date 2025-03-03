@@ -45,10 +45,8 @@ impl Window {
                 } 
             }
 
-
             self.gfx.update();
             self.swapper.update(&mut self.gfx, dt);
-            self.gfx.render();
-        }
+            self.gfx.render();        }
     }
 }

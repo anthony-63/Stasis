@@ -8,10 +8,10 @@ use super::beatmap::NoteData;
 #[derive(Clone, Default)]
 pub enum AudioType {
     #[default]
-    NONE,
-    MP3,
-    WAV,
-    OGG,
+    None,
+    Mp3,
+    Wav,
+    Ogg,
 }
 
 impl AudioType {
@@ -26,19 +26,19 @@ impl AudioType {
 
     pub fn get_type(buffer: &Vec<u8>) -> Self {
         if Self::compare_bytes(buffer, 0, vec![0x4f,0x67,0x67,0x53]) {
-            return Self::OGG;
+            return Self::Ogg;
         } else if Self::compare_bytes(buffer, 0, vec![0x52,0x49,0x46,0x46]) &&
                     Self::compare_bytes(buffer, 8, vec![0x57,0x41,0x56,0x45]) {
-            return Self::WAV;
+            return Self::Wav;
         } else if Self::compare_bytes(buffer, 0, vec![0xff,0xfb]) ||
                     Self::compare_bytes(buffer, 0, vec![0xff, 0xf3]) ||
                     Self::compare_bytes(buffer, 0, vec![0xff, 0xfa]) ||
                     Self::compare_bytes(buffer, 0, vec![0xff, 0xf2]) ||
                     Self::compare_bytes(buffer, 0, vec![0x49, 0x44, 0x33]) {
-            return Self::MP3;
+            return Self::Mp3;
         }
 
-        Self::NONE
+        Self::None
     }
 }
 

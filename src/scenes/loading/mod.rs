@@ -1,7 +1,6 @@
 
-use crate::core::{gfx::{color::Color, objects::{quad::QuadObject, textured_quad::TexturedQuadObject}, Graphics}, scene::Scene};
+use crate::core::{gfx::{objects::{text::TextObject, textured_quad::TexturedQuadObject}, Graphics}, scene::Scene};
 
-use super::menu::MenuScene;
 
 pub struct LoadingScene {
     test_quad_id: usize,
@@ -19,11 +18,14 @@ impl LoadingScene {
 
 impl Scene for LoadingScene {
     fn init(&mut self, gfx: &mut Graphics) {
-        gfx.set_clear_color(Color::from_frgb(0.3, 0.2, 0.5));
+        // gfx.set_clear_color(Color::from_frgb(0.3, 0.2, 0.5));
 
-        gfx.add_quad(QuadObject::new(30., 30., 50., 50., Color::from_rgb(255, 0, 0)));
-        self.test_quad_id = gfx.add_quad(QuadObject::new(40., 40., 50., 50., Color::from_rgba(255, 255, 0, 100)));
-        gfx.add_textured_quad(TexturedQuadObject::new(50., 50., 100., 100., "Assets/Game/cat.png"));
+        // self.test_quad_id = gfx.add_quad(QuadObject::new(40., 40., 50., 50., Color::from_rgba(255, 255, 0, 255)));
+        gfx.add_textured_quad(TexturedQuadObject::new(50., 50., 500., 500., "Assets/Game/cat.png"));
+        gfx.add_text(TextObject::new(50., 40., "this is some test text, getting there".into(), 32., "Assets/Game/font.ttf"));
+        gfx.add_text(TextObject::new(50., 60., "hi, getting there".into(), 32., "Assets/Game/font.ttf"));
+        // gfx.add_quad(QuadObject::new(30., 30., 50., 50., Color::from_rgb(255, 0, 0)));
+        
 
         // let maps: Vec<crate::content::maps::beatmapset::BeatmapSet> = MapLoader::load_all_from_dir("Assets/Maps".into());
     }
@@ -37,6 +39,7 @@ impl Scene for LoadingScene {
         // quads[self.test_quad_id].color.b = ((self.timer * 191.25) % 255.) as u8;
         // quads[self.test_quad_id].update();
         
-        Some(Box::new(MenuScene::new()))
+        None
+        // Some(Box::new(MenuScene::new()))
     }
 }

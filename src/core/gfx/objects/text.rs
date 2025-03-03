@@ -1,39 +1,54 @@
 
+
+use rusttype::{point, Font, Scale};
 use sdl3::gpu::TransferBuffer;
+use tracing::info;
 
 use crate::core::{Vector2, Vector3};
 
 use super::{
-    create_buffer_with_data, create_texture_from_image, get_local_coords3, set_buffer_data, TexturedVertex
+    create_buffer_with_data, create_texture_from_data, get_local_coords3, set_buffer_data, TexturedVertex
 };
 
-pub struct TexturedQuadObject {
+pub struct CachedFont<'a> {
+    size: f32,
+    path: String,
+    font: rusttype::Font<'a>,
+}
+
+pub struct TextObject {
     pub x: f32,
     pub y: f32,
-    pub w: f32,
-    pub h: f32,
+    
+    pub text: String,
+    pub font_size: f32,
+
+    w: f32,
+    h: f32,
 
     z: f32,
 
     texture: Option<sdl3::gpu::Texture<'static>>,
-    texture_path: String,
+    font_path: String,
 
     pub should_update: bool,
     buffers: Option<TexturedQuadBuffers>,
 }
 
-impl TexturedQuadObject {
-    pub fn new(x: f32, y: f32, w: f32, h: f32, image_path: &str) -> Self {
+impl TextObject {
+    pub fn new(x: f32, y: f32, text: String, font_size: f32, font_path: &str) -> Self {
         Self {
             x,
             y,
-            w,
-            h,
+            text,
+            w: 0.,
+            h: 0.,
+            font_size,
             z: 0.0,
             buffers: None,
             should_update: false,
             texture: None,
-            texture_path: image_path.to_string(),
+            font_path: font_path.to_string(),
         }
     }
 
@@ -42,20 +57,23 @@ impl TexturedQuadObject {
     }
 }
 
-pub struct TexturedQuadsContainer {
-    pub quads: Vec<TexturedQuadObject>,
-    quad_id: usize,
+pub struct TextObjectContainer<'a> {
+    pub texts: Vec<TextObject>,
+    text_id: usize,
+
+    cached_fonts: Vec<CachedFont<'a>>,
 
     sampler: Option<sdl3::gpu::Sampler>,
     transfer_buffer: sdl3::gpu::TransferBuffer,
 }
 
-impl TexturedQuadsContainer {
+impl TextObjectContainer<'_> {
     pub fn new(gpu: &sdl3::gpu::Device) -> Self {
         Self {
-            quads: vec![],
-            quad_id: 0,
+            texts: vec![],
+            text_id: 0,
             sampler: None,
+            cached_fonts: vec![],
             transfer_buffer: gpu.create_transfer_buffer()
                 .with_size((size_of::<TexturedVertex>() * 4 + size_of::<u16>() * 6) as u32)
                 .with_usage(sdl3::gpu::TransferBufferUsage::Upload)
@@ -79,27 +97,89 @@ impl TexturedQuadsContainer {
             );
         }
 
-        for quad in self.quads.iter_mut() {
-            if quad.texture.is_none() {
-                let texture_result =
-                    create_texture_from_image(gpu, quad.texture_path.clone(), copy_pass).unwrap();
-                quad.texture = Some(texture_result.0);
+        for text in self.texts.iter_mut() {
+            if text.texture.is_none() {
+                let font;
+                if let Some(cached) = self.cached_fonts.iter().find(|f| f.size == text.font_size && f.path == text.font_path) {
+                    info!("Loading cached font: '{}' ({}px)", cached.path, cached.size);
+                    font = cached.font.clone();
+                } else {
+                    info!("Loading new font: '{}' ({}px)", text.font_path, text.font_size);
+                    font = Font::try_from_vec(std::fs::read(text.font_path.clone()).expect("Failed to open font file")).expect("Error constructing Font");
+                    self.cached_fonts.push(CachedFont {
+                        font: font.clone(),
+                        path: text.font_path.clone(),
+                        size: text.font_size,
+                    })
+                }
+
+                let scale = Scale::uniform(text.font_size);
+                let text_str = &text.text;
+                let color = (255, 0, 0);
+                let v_metrics = font.v_metrics(scale);
+                let glyphs: Vec<_> = font
+                    .layout(text_str, scale, point(0., 0. + v_metrics.ascent))
+                    .collect();
+
+                // work out the layout size
+                let glyphs_height = (v_metrics.ascent - v_metrics.descent).ceil() as u32;
+                let glyphs_width = {
+                    let min_x = glyphs
+                        .first()
+                        .map(|g| g.pixel_bounding_box().unwrap().min.x)
+                        .unwrap();
+                    let max_x = glyphs
+                        .last()
+                        .map(|g| g.pixel_bounding_box().unwrap().max.x)
+                        .unwrap();
+                    (max_x - min_x) as u32
+                } + glyphs_height;
+
+                let mut data = vec![[0_u8; 4]; (glyphs_width * glyphs_height) as usize];
+
+                for glyph in &glyphs {
+                    if let Some(bounding_box) = glyph.pixel_bounding_box() {
+                        glyph.draw(|x, y, v| {
+                            let pos = (((y + bounding_box.min.y as u32) * glyphs_width) + (x + bounding_box.min.x as u32)) as usize;
+                            // info!("{}", pos);
+                            data[pos][0] = color.0;
+                            data[pos][1] = color.1;
+                            data[pos][2] = color.2;
+                            data[pos][3] = (v * 255.) as u8;
+                        });
+                    }
+                }
+
+                let mut data_flattened = vec![0_u8; (glyphs_width * glyphs_height) as usize * 4];
+
+                for (i, pixel) in data.iter().enumerate() {
+                    let real_index = i * 4;
+                    data_flattened[real_index] = pixel[0];
+                    data_flattened[real_index + 1] = pixel[1];
+                    data_flattened[real_index + 2] = pixel[2];
+                    data_flattened[real_index + 3] = pixel[3];
+                }
+
+                text.w = glyphs_width as f32;
+                text.h = glyphs_height as f32;
+                let texture_result = create_texture_from_data(gpu, &data_flattened, glyphs_width, glyphs_height, copy_pass).unwrap();
+                text.texture = Some(texture_result.0);
             }
-            if quad.buffers.is_none() {
-                quad.buffers = Some(TexturedQuadBuffers::setup(
-                    quad,
+            if text.buffers.is_none() {
+                text.buffers = Some(TexturedQuadBuffers::setup(
+                    text,
                     &self.transfer_buffer,
                     gpu,
                     copy_pass,
                 ));
-            } else if quad.should_update {
-                quad.buffers.as_ref().unwrap().update(
-                    quad,
+            } else if text.should_update {
+                text.buffers.as_ref().unwrap().update(
+                    text,
                     &self.transfer_buffer,
                     gpu,
                     copy_pass,
                 );
-                quad.should_update = false;
+                text.should_update = false;
             }
         }
     }
@@ -110,44 +190,43 @@ impl TexturedQuadsContainer {
         render_pass: &sdl3::gpu::RenderPass,
     ) {
         render_pass.bind_graphics_pipeline(&pipeline);
-
-        for quad in self.quads.iter() {
-            if quad.buffers.is_none() {
+        for text in self.texts.iter() {
+            if text.buffers.is_none() {
                 continue;
             }
             render_pass.bind_vertex_buffers(
                 0,
                 &[
                     sdl3::gpu::BufferBinding::new()
-                        .with_buffer(&quad.buffers.as_ref().unwrap().vbo),
+                        .with_buffer(&text.buffers.as_ref().unwrap().vbo),
                 ],
             );
             render_pass.bind_index_buffer(
                 &sdl3::gpu::BufferBinding::new()
-                    .with_buffer(&quad.buffers.as_ref().unwrap().ibo),
+                    .with_buffer(&text.buffers.as_ref().unwrap().ibo),
                     sdl3::gpu::IndexElementSize::_16Bit
             );
             render_pass.bind_fragment_sampler(
                 0,
                 &[sdl3::gpu::TextureSamplerBinding::new()
-                    .with_texture(quad.texture.as_ref().unwrap())
+                    .with_texture(text.texture.as_ref().unwrap())
                     .with_sampler(self.sampler.as_ref().unwrap())],
             );
             render_pass.draw_indexed_primitives(6, 1, 0, 0, 0);
         }
     }
 
-    pub fn add_quad(&mut self, obj: TexturedQuadObject, z: f32) -> usize {
+    pub fn add_text(&mut self, obj: TextObject, z: f32) -> usize {
         let mut t = obj;
         t.z = z;
-        self.quads.push(t);
+        self.texts.push(t);
 
-        self.quad_id += 1;
-        self.quad_id - 1
+        self.text_id += 1;
+        self.text_id - 1
     }
 
     pub fn clear(&mut self) {
-        self.quads.clear();
+        self.texts.clear();
     }
 }
 
@@ -158,7 +237,7 @@ pub struct TexturedQuadBuffers {
 
 impl TexturedQuadBuffers {
     pub fn setup(
-        obj: &TexturedQuadObject,
+        obj: &TextObject,
         transfer_buffer: &TransferBuffer,
         gpu: &sdl3::gpu::Device,
         copy_pass: &sdl3::gpu::CopyPass,
@@ -195,7 +274,7 @@ impl TexturedQuadBuffers {
 
     pub fn update(
         &self,
-        obj: &TexturedQuadObject,
+        obj: &TextObject,
         transfer_buffer: &TransferBuffer,
         gpu: &sdl3::gpu::Device,
         copy_pass: &sdl3::gpu::CopyPass,

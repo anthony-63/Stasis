@@ -1,12 +1,11 @@
 use color::Color;
-use objects::{quad::QuadObject, textured_quad::TexturedQuadObject};
+use objects::{quad::QuadObject, text::TextObject, textured_quad::TexturedQuadObject};
 use pipeline::GraphicsPipeline;
 
 pub mod color;
 pub mod objects;
 pub mod pipeline;
 pub mod shader_compiler;
-pub mod text;
 
 pub struct Graphics {
     pipeline: GraphicsPipeline,
@@ -23,15 +22,21 @@ impl Graphics {
     }
 
     pub fn add_quad(&mut self, quad: QuadObject) -> usize {
-        self.z_index -= 0.00001;
+        self.z_index -= 0.0001;
         
         self.pipeline.quads.add_quad(quad, self.z_index)
     }
 
     pub fn add_textured_quad(&mut self, quad: TexturedQuadObject) -> usize {
-        self.z_index -= 0.00001;
+        self.z_index -= 0.0001;
         
         self.pipeline.textured_quads.add_quad(quad, self.z_index)
+    }
+
+    pub fn add_text(&mut self, text: TextObject) -> usize {
+        self.z_index -= 0.0001;
+        
+        self.pipeline.text_objects.add_text(text, self.z_index)
     }
 
     pub fn get_quads(&mut self) -> &mut Vec<QuadObject> {
