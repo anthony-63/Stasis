@@ -1,4 +1,3 @@
-use std::{path::{Path, PathBuf}, sync::{Arc, Mutex}};
 
 use tracing::info;
 
@@ -15,20 +14,18 @@ impl MapLoader {
 
         let mut maps = vec![];
 
-        for (_, filename) in map_folders.into_iter().enumerate() {
+        for filename in map_folders.into_iter() {
             let file: std::fs::DirEntry = filename.unwrap();
 
             if file.path().is_dir() {
                 maps.push(BeatmapSet::from_folder(file.path().to_str().unwrap().to_string()));
-            } else {
-                if file.path().to_string_lossy().ends_with(".sspm") {
-                    let parsed = SSPMParser::sspm_to_folder(file.path().to_str().unwrap(), true);
+            } else if file.path().to_string_lossy().ends_with(".sspm") {
+                let parsed = SSPMParser::sspm_to_folder(file.path().to_str().unwrap(), true);
 
-                    if parsed {
-                        maps.push(BeatmapSet::from_folder(file.path().with_extension("").to_str().unwrap().to_string()));
-                    }
-                    continue
+                if parsed {
+                    maps.push(BeatmapSet::from_folder(file.path().with_extension("").to_str().unwrap().to_string()));
                 }
+                continue
             }
         }
         maps

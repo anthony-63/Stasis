@@ -24,14 +24,14 @@ impl Graphics {
 
     pub fn add_quad(&mut self, quad: QuadObject) -> usize {
         self.z_index -= 0.00001;
-        let id = self.pipeline.quads.add_quad(quad, self.z_index);
-        id
+        
+        self.pipeline.quads.add_quad(quad, self.z_index)
     }
 
     pub fn add_textured_quad(&mut self, quad: TexturedQuadObject) -> usize {
         self.z_index -= 0.00001;
-        let id = self.pipeline.textured_quads.add_quad(quad, self.z_index);
-        id
+        
+        self.pipeline.textured_quads.add_quad(quad, self.z_index)
     }
 
     pub fn get_quads(&mut self) -> &mut Vec<QuadObject> {

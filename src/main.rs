@@ -2,12 +2,10 @@ mod core;
 mod scenes;
 mod content;
 
-use core::{gfx::text::ttf::{self, TtfFont}, window::Window};
+use core::window::Window;
 use std::fs;
 
 use scenes::loading::LoadingScene;
-use sdl3::{event::Event, pixels::Color, render::FPoint};
-use tracing::info;
 use tracing_subscriber::{fmt, layer::SubscriberExt, Registry};
 
 fn main() {

@@ -1,4 +1,4 @@
-use crate::core::{gfx::{color::Color, objects::{quad::QuadObject, textured_quad::TexturedQuadObject}, Graphics}, scene::Scene};
+use crate::core::{gfx::{color::Color, Graphics}, scene::Scene};
 
 pub struct MenuScene {
 }

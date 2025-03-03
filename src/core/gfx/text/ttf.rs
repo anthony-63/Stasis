@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io::{Cursor, Read, Seek}, path::PathBuf, ptr::read};
+use std::{collections::HashMap, io::{Cursor, Read, Seek}, path::PathBuf};
 
 use byteorder::{BigEndian, ReadBytesExt};
 use tracing::{error, info};
@@ -56,7 +56,7 @@ impl TtfFont {
         let offset_table = Self::load_offset_table(&mut buffer);
 
         info!("loading header");
-        buffer.set_position(offset_table["head".into()] as u64);
+        buffer.set_position(offset_table["head"] as u64);
 
         _ = buffer.seek(std::io::SeekFrom::Current(18));
         let _units_per_em = buffer.read_u16::<BigEndian>().unwrap();
@@ -65,16 +65,16 @@ impl TtfFont {
         let bytes_per_loc: usize = if buffer.read_u16::<BigEndian>().unwrap() == 0 { 2 } else { 4 };
 
         info!("loading maxp");
-        buffer.set_position(offset_table["maxp".into()] as u64);
+        buffer.set_position(offset_table["maxp"] as u64);
         _ = buffer.read_u32::<BigEndian>();
 
         let glyph_len = buffer.read_u16::<BigEndian>().unwrap();
 
         info!("loading glyph locations");
-        let locations = Self::load_glyph_locations(&mut buffer, glyph_len as usize, bytes_per_loc, offset_table["loca".into()], offset_table["glyf".into()]);
+        let locations = Self::load_glyph_locations(&mut buffer, glyph_len as usize, bytes_per_loc, offset_table["loca"], offset_table["glyf"]);
         
         info!("loading cmap");
-        let cmap = Self::load_cmap(&mut buffer, offset_table["cmap".into()]);
+        let cmap = Self::load_cmap(&mut buffer, offset_table["cmap"]);
         
         info!("loading ghlyhs(finally)");
         let glyphs = GlyphInfo::load_all(&mut buffer, cmap, locations);
@@ -105,10 +105,8 @@ impl TtfFont {
                     cmap_subtable_offset = offset;
                     unicode_version_id = plat_spec_id as i32;
                 }
-            } else if plat_id == 3 && unicode_version_id == -1 {
-                if plat_spec_id == 1 || plat_spec_id == 10 {
-                    cmap_subtable_offset = offset;
-                }
+            } else if plat_id == 3 && unicode_version_id == -1 && (plat_spec_id == 1 || plat_spec_id == 10) {
+                cmap_subtable_offset = offset;
             }
         }
 
@@ -237,11 +235,11 @@ impl TtfFont {
         info!("table count: {}", table_count);
 
         for _ in 0..table_count {
-            let mut str_buffer = vec![0; 4 as usize];
-            _ = buffer.read_exact(&mut str_buffer).unwrap();
+            let mut str_buffer = vec![0; 4_usize];
+            buffer.read_exact(&mut str_buffer).unwrap();;
             let tag = String::from_utf8(str_buffer).unwrap();
 
-            let _hecksum = buffer.read_u32::<BigEndian>().unwrap();
+            let _checksum = buffer.read_u32::<BigEndian>().unwrap();
             let offset = buffer.read_u32::<BigEndian>().unwrap();
             let _length = buffer.read_u32::<BigEndian>().unwrap();
 
@@ -303,7 +301,7 @@ impl GlyphInfo {
         let instruction_length = buffer.read_u16::<BigEndian>().unwrap_or(0);
         for _ in 0..instruction_length { _ = buffer.read_u8(); }
 
-        let mut flags = vec![0 as u8; point_len];
+        let mut flags = vec![0_u8; point_len];
 
         let mut iterator = 0..point_len;
         while let Some(i) = iterator.next() {
@@ -323,7 +321,7 @@ impl GlyphInfo {
         Self::read_coords_simple(&mut points, buffer, &flags, true);
         Self::read_coords_simple(&mut points, buffer, &flags, false);
 
-        return Self {
+        Self {
             max_x, max_y, min_x, min_y,
             advance_width: 0,
             end_indices,
@@ -372,5 +370,5 @@ impl GlyphInfo {
 }
 
 fn is_bit_set(byte: u8, i: usize) -> bool {
-    return ((byte >> i) & 1) == 1;
+    ((byte >> i) & 1) == 1
 }

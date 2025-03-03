@@ -41,10 +41,7 @@ impl Window {
             for ev in event_pump.poll_iter() {
                 if let Event::Quit { .. } = ev { break 'running }
                 if let Event::Window { win_event, .. } = ev {
-                    match win_event {
-                        sdl3::event::WindowEvent::Resized(w, h) => self.gfx.resize(w, h),
-                        _ => {}
-                    }
+                    if let sdl3::event::WindowEvent::Resized(w, h) = win_event { self.gfx.resize(w, h) }
                 } 
             }
 

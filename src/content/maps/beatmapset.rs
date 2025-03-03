@@ -1,9 +1,9 @@
 use std::{hash::Hasher, path::Path};
 
 use gxhash::GxHasher;
-use tracing::{error, info, warn};
+use tracing::warn;
 
-use super::{beatmap::Beatmap, sspm::AudioType};
+use super::beatmap::Beatmap;
 
 const STAGE2_MAP_SEED: i64 = 1775906128188434359;
 
@@ -53,7 +53,7 @@ impl BeatmapSet {
         
         let mut difficulties: Vec<Beatmap> = vec![];
         for difficulty in meta["_difficulties"].members() {
-            difficulties.push(Beatmap::from_file(format!("{}/{}", folder_path, difficulty.to_string())));
+            difficulties.push(Beatmap::from_file(format!("{}/{}", folder_path, difficulty)));
         }
 
         let music_path = meta["_music"].to_string();
@@ -77,7 +77,7 @@ impl BeatmapSet {
 
         let hash = hasher.finish();
         
-        difficulties.as_mut_slice().into_iter().for_each(|diff| {
+        difficulties.as_mut_slice().iter_mut().for_each(|diff| {
             diff.id = hash.to_string() + "/" + &diff.name;
         });
         

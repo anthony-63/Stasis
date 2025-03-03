@@ -21,24 +21,24 @@ impl AudioType {
                 return false;
             }
         }
-        return true;
+        true
     }
 
     pub fn get_type(buffer: &Vec<u8>) -> Self {
-        if Self::compare_bytes(&buffer, 0, vec![0x4f,0x67,0x67,0x53]) {
+        if Self::compare_bytes(buffer, 0, vec![0x4f,0x67,0x67,0x53]) {
             return Self::OGG;
-        } else if Self::compare_bytes(&buffer, 0, vec![0x52,0x49,0x46,0x46]) &&
-                    Self::compare_bytes(&buffer, 8, vec![0x57,0x41,0x56,0x45]) {
+        } else if Self::compare_bytes(buffer, 0, vec![0x52,0x49,0x46,0x46]) &&
+                    Self::compare_bytes(buffer, 8, vec![0x57,0x41,0x56,0x45]) {
             return Self::WAV;
-        } else if Self::compare_bytes(&buffer, 0, vec![0xff,0xfb]) ||
-                    Self::compare_bytes(&buffer, 0, vec![0xff, 0xf3]) ||
-                    Self::compare_bytes(&buffer, 0, vec![0xff, 0xfa]) ||
-                    Self::compare_bytes(&buffer, 0, vec![0xff, 0xf2]) ||
-                    Self::compare_bytes(&buffer, 0, vec![0x49, 0x44, 0x33]) {
+        } else if Self::compare_bytes(buffer, 0, vec![0xff,0xfb]) ||
+                    Self::compare_bytes(buffer, 0, vec![0xff, 0xf3]) ||
+                    Self::compare_bytes(buffer, 0, vec![0xff, 0xfa]) ||
+                    Self::compare_bytes(buffer, 0, vec![0xff, 0xf2]) ||
+                    Self::compare_bytes(buffer, 0, vec![0x49, 0x44, 0x33]) {
             return Self::MP3;
         }
 
-        return Self::NONE;
+        Self::NONE
     }
 }
 
@@ -61,7 +61,7 @@ pub fn get_difficulty_title(v: usize) -> String {
         5 => String::from("BRRR"),
         _ => {
             error!("Invalid difficulty level: {}", v);
-            return String::new()
+            String::new()
         }
     }
 }
@@ -220,7 +220,7 @@ impl SSPMParser {
             std::fs::remove_file(path).unwrap();
         }
 
-        return true;
+        true
     }
 
     fn magic_exists(&mut self) -> bool {
@@ -229,17 +229,17 @@ impl SSPMParser {
         let mut magic_buffer: [u8; 4] = [0; 4];
         self.buffer.read_exact(&mut magic_buffer).unwrap();
 
-        return magic_buffer == [b'S', b'S', b'+', b'm'];
+        magic_buffer == [b'S', b'S', b'+', b'm']
     }
 
     fn get_version(&mut self) -> usize {
         self.buffer.seek(std::io::SeekFrom::Start(BlockOffsets::Version as u64)).unwrap(); // right after magic
-        return self.buffer.read_u16::<LittleEndian>().unwrap() as usize;
+        self.buffer.read_u16::<LittleEndian>().unwrap() as usize
     }
 
     fn get_note_count(&mut self) -> usize {
         self.buffer.seek(std::io::SeekFrom::Start(BlockOffsets::NoteCount as u64)).unwrap(); // 4 bytes after map length
-        return self.buffer.read_u32::<LittleEndian>().unwrap() as usize;
+        self.buffer.read_u32::<LittleEndian>().unwrap() as usize
     }
 
     fn get_data_offsets(&mut self) -> DataOffsets {
@@ -258,7 +258,7 @@ impl SSPMParser {
         let cover_offset = self.buffer.read_u64::<LittleEndian>().unwrap();
         let cover_length = self.buffer.read_u64::<LittleEndian>().unwrap();
 
-        return DataOffsets {
+        DataOffsets {
             audio_offset,
             audio_length,
             cover_offset,
@@ -275,7 +275,7 @@ impl SSPMParser {
 
     fn get_difficulty(&mut self) -> String {
         self.buffer.seek(std::io::SeekFrom::Start(BlockOffsets::Difficulty as u64)).unwrap();
-        return get_difficulty_title(self.buffer.read_u8().unwrap() as usize);
+        get_difficulty_title(self.buffer.read_u8().unwrap() as usize)
     }
 
     fn get_title(&mut self) -> String {
@@ -283,12 +283,12 @@ impl SSPMParser {
         let title_offset = BlockOffsets::IdOffset as u64 + self.buffer.read_u16::<LittleEndian>().unwrap() as u64 + 0x2; // add 2 due to the u16 not taken into account
         self.buffer.seek(std::io::SeekFrom::Start(title_offset)).unwrap();
 
-        return self.read_string();
+        self.read_string()
     }
 
     fn has_cover(&mut self) -> bool {
         self.buffer.seek(std::io::SeekFrom::Start(BlockOffsets::HasCover as u64)).unwrap();
-        return self.buffer.read_u8().unwrap() == 1;
+        self.buffer.read_u8().unwrap() == 1
     }
 
     fn get_mapper(&mut self) -> String {
@@ -301,7 +301,7 @@ impl SSPMParser {
 
         let mut mapper = String::new();
 
-        for (i, _) in (0..self.buffer.read_u16::<LittleEndian>().unwrap()).into_iter().enumerate() {
+        for (i, _) in (0..self.buffer.read_u16::<LittleEndian>().unwrap()).enumerate() {
             if i != 0 {
                 mapper.push_str(" & ");
             }
@@ -309,7 +309,7 @@ impl SSPMParser {
             mapper.push_str(&self.read_string());
         }
 
-        return mapper;
+        mapper
     }
 
     fn get_difficulty_name(&mut self, offset: u64) -> String {
@@ -323,7 +323,7 @@ impl SSPMParser {
         let custom_data_type = self.buffer.read_u8().unwrap();
 
         if custom_data_type == 0x09 {
-            return self.read_string();
+            self.read_string()
         } else if custom_data_type == 0x0b {
             return self.read_string_long();
         } else {
@@ -359,31 +359,31 @@ impl SSPMParser {
             a.time.partial_cmp(&b.time).unwrap()
         });
 
-        return notes;
+        notes
     }
 
     fn get_buffer(&mut self, offset: u64, length: u64) -> Vec<u8> {
         self.buffer.seek(std::io::SeekFrom::Start(offset)).unwrap();
         let mut v= vec![0; length as usize];
-        let mut buffer = v.as_mut_slice();
+        let buffer = v.as_mut_slice();
         for _ in 0..length {
-            _ = self.buffer.read_exact(&mut buffer);
+            _ = self.buffer.read_exact(buffer);
         }
 
-        return buffer.to_vec();
+        buffer.to_vec()
     }
 
     fn read_string(&mut self) -> String {
         let len = self.buffer.read_u16::<LittleEndian>().unwrap();
         let mut str_buffer = vec![0; len as usize];
         self.buffer.read_exact(&mut str_buffer).unwrap();
-        return String::from_utf8(str_buffer).unwrap();
+        String::from_utf8(str_buffer).unwrap()
     }
 
     fn read_string_long(&mut self) -> String {
         let len = self.buffer.read_u32::<LittleEndian>().unwrap();
         let mut str_buffer = vec![0; len as usize];
         self.buffer.read_exact(&mut str_buffer).unwrap();
-        return String::from_utf8(str_buffer).unwrap();
+        String::from_utf8(str_buffer).unwrap()
     }
 }

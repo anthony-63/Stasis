@@ -1,5 +1,5 @@
 
-use crate::{content::maploader::MapLoader, core::{gfx::{color::Color, objects::{quad::QuadObject, textured_quad::TexturedQuadObject}, Graphics}, scene::Scene}};
+use crate::core::{gfx::{color::Color, objects::{quad::QuadObject, textured_quad::TexturedQuadObject}, Graphics}, scene::Scene};
 
 use super::menu::MenuScene;
 
