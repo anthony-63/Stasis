@@ -1,10 +1,10 @@
 use std::path::Path;
 
 use sdl3::{gpu::{Buffer, BufferRegion, BufferUsageFlags, CopyPass, Device, Texture, TextureCreateInfo, TextureFormat, TextureRegion, TextureTransferInfo, TextureType, TextureUsage, TransferBuffer, TransferBufferLocation, TransferBufferUsage}, image, surface::Surface, Error};
-use tracing::info;
+use tracing::{error, info};
 use crate::core::{Vector2, Vector3};
 
-use super::color::Color;
+use super::{color::Color, Graphics};
 
 pub mod quad;
 pub mod textured_quad;
@@ -48,16 +48,18 @@ const TOP: f32 = 0.;
 const BOTTOM: f32 = 1080.;
 
 pub fn get_local_coords2(c: Vector2) -> Vector2 {
+    let window_size = Graphics::window_size();
     Vector2::new(
-        (2.) / (RIGHT - LEFT) * c.x - 1.,
-        (2.) / (TOP - BOTTOM) * c.y + 1.,
+        (2.) / window_size.x * c.x - 1.,
+        (2.) / -window_size.y * c.y + 1.,
     )
 }
 
 pub fn get_local_coords3(c: Vector3) -> Vector3 {
+    let window_size = Graphics::window_size();
     Vector3::new(
-        (2.) / (RIGHT - LEFT) * c.x - 1.,
-        (2.) / (TOP - BOTTOM) * c.y + 1.,
+        (2.) / window_size.x * c.x - 1.,
+        (2.) / -window_size.y * c.y + 1.,
         c.z,
     )
 }
@@ -190,8 +192,8 @@ fn create_texture_from_image(
     
     let (width, height) = image.size();
 
+    let bpp = image.pixel_format().byte_size_per_pixel();
     let size_bytes = 4 * width * height;
-
     info!("Loading texture: '{}' with size: {}", image_path.as_ref().to_str().unwrap(), size_bytes);
     
     let texture = gpu.create_texture(
@@ -212,11 +214,17 @@ fn create_texture_from_image(
         .build()?;
     
     let mut buffer_mem = transfer_buffer.map::<u8>(gpu, false);
-    for (alphaplus, (i, _)) in pixels.iter().enumerate().step_by(3).enumerate() {
-        buffer_mem.mem_mut()[i + alphaplus] = pixels[i];
-        buffer_mem.mem_mut()[i + 1 + alphaplus] = pixels[i + 1];
-        buffer_mem.mem_mut()[i + 2 + alphaplus] = pixels[i + 2];
-        buffer_mem.mem_mut()[i + 3 + alphaplus] = 255;
+    if bpp == 3 {
+        for (alphaplus, (i, _)) in pixels.iter().enumerate().step_by(3).enumerate() {
+            buffer_mem.mem_mut()[i + alphaplus] = pixels[i];
+            buffer_mem.mem_mut()[i + 1 + alphaplus] = pixels[i + 1];
+            buffer_mem.mem_mut()[i + 2 + alphaplus] = pixels[i + 2];
+            buffer_mem.mem_mut()[i + 3 + alphaplus] = 255;
+        }
+    } else if bpp == 4 {
+        buffer_mem.mem_mut().copy_from_slice(pixels);
+    } else {
+        error!("Invalid Pixel Format");
     }
     buffer_mem.unmap();
 

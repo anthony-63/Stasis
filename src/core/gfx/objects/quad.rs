@@ -1,8 +1,11 @@
 
+use std::fmt::Debug;
+
 use crate::core::{gfx::color::Color, Vector3};
 
 use super::{create_buffer_with_data, get_local_coords3, set_buffer_data, ColorVertex};
 
+#[derive(Debug)]
 pub struct QuadObject {
     pub x: f32,
     pub y: f32,
@@ -53,11 +56,7 @@ impl QuadsContainer {
 
     pub fn update(&mut self, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) {
         for quad in self.quads.iter_mut() {
-            if quad.buffers.is_none() {
-                quad.buffers = Some(
-                    QuadBuffers::setup(quad, self.transfer_buffer.clone(), gpu, copy_pass)
-                );
-            } else if quad.should_update {
+            if quad.should_update {
                 quad.buffers.as_ref().unwrap().update(quad, self.transfer_buffer.clone(), gpu, copy_pass);
                 quad.should_update = false;
             }
@@ -83,9 +82,14 @@ impl QuadsContainer {
         }
     }
 
-    pub fn add_quad(&mut self, obj: QuadObject, z: f32) -> usize {
+    pub fn add_quad(&mut self, obj: QuadObject, z: f32, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) -> usize {
         let mut t = obj;
         t.z = z;
+
+        t.buffers = Some(
+            QuadBuffers::setup(&t, self.transfer_buffer.clone(), gpu, copy_pass)
+        );
+
         self.quads.push(t);
         self.quad_id += 1;
         self.quad_id - 1
@@ -99,6 +103,12 @@ impl QuadsContainer {
 pub struct QuadBuffers {
     vbo: sdl3::gpu::Buffer,
     ibo: sdl3::gpu::Buffer,
+}
+
+impl Debug for QuadBuffers {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("QuadBuffers").finish()
+    }
 }
 
 impl QuadBuffers {

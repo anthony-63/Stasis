@@ -20,7 +20,9 @@ impl SceneSwapper {
     }
 
     pub fn init(&mut self, gfx: &mut Graphics) {
+        gfx.begin_upload();
         self.current_scene.init(gfx);
+        gfx.end_upload();
     }
 
     pub fn update(&mut self, gfx: &mut Graphics, dt: f64) {
@@ -28,7 +30,9 @@ impl SceneSwapper {
             info!("Swapping Scene");
             gfx.reset();
             self.current_scene = new_scene;
+            gfx.begin_upload();
             self.current_scene.init(gfx);
+            gfx.end_upload();
         }
     }
 }

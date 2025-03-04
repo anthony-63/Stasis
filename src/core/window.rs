@@ -15,7 +15,7 @@ impl Window {
     where T: Scene + 'static {
         let context = sdl3::init().expect("Failed to initialize SDL3");
         let video = context.video().expect("Failed to initialize SDL3 Video");
-        let window = video.window(title, width, height).resizable().build().expect("Failed to create SDL3 Window");
+        let window = video.window(title, width, height).build().expect("Failed to create SDL3 Window");
         let gfx = Graphics::new(window);
 
         Self {
@@ -47,6 +47,7 @@ impl Window {
 
             self.gfx.update();
             self.swapper.update(&mut self.gfx, dt);
-            self.gfx.render();        }
+            self.gfx.render();
+        }
     }
 }

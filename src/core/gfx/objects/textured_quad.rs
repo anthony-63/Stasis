@@ -80,19 +80,7 @@ impl TexturedQuadsContainer {
         }
 
         for quad in self.quads.iter_mut() {
-            if quad.texture.is_none() {
-                let texture_result =
-                    create_texture_from_image(gpu, quad.texture_path.clone(), copy_pass).unwrap();
-                quad.texture = Some(texture_result.0);
-            }
-            if quad.buffers.is_none() {
-                quad.buffers = Some(TexturedQuadBuffers::setup(
-                    quad,
-                    &self.transfer_buffer,
-                    gpu,
-                    copy_pass,
-                ));
-            } else if quad.should_update {
+            if quad.should_update {
                 quad.buffers.as_ref().unwrap().update(
                     quad,
                     &self.transfer_buffer,
@@ -137,9 +125,20 @@ impl TexturedQuadsContainer {
         }
     }
 
-    pub fn add_quad(&mut self, obj: TexturedQuadObject, z: f32) -> usize {
+    pub fn add_quad(&mut self, obj: TexturedQuadObject, z: f32, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) -> usize {
         let mut t = obj;
         t.z = z;
+
+        let texture_result =
+            create_texture_from_image(gpu, t.texture_path.clone(), copy_pass).unwrap();
+        t.texture = Some(texture_result.0);
+        t.buffers = Some(TexturedQuadBuffers::setup(
+            &t,
+            &self.transfer_buffer,
+            gpu,
+            copy_pass,
+        ));
+
         self.quads.push(t);
 
         self.quad_id += 1;

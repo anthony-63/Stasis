@@ -1,9 +1,11 @@
 use tracing::{debug, error, info, warn};
 
+use crate::core::Vector2;
+
 use super::{
     color::Color,
     objects::{quad::QuadsContainer, text::TextObjectContainer, textured_quad::TexturedQuadsContainer, ColorVertex, TexturedVertex},
-    shader_compiler::ShaderCompiler,
+    shader_compiler::ShaderCompiler, WINDOW_SIZE,
 };
 
 pub struct GraphicsPipeline {
@@ -38,6 +40,10 @@ impl GraphicsPipeline {
         let shader_compiler = ShaderCompiler::new();
 
         let (width, height) = window.size();
+
+        unsafe {
+            WINDOW_SIZE = Some(Vector2::new(width as f32, height as f32));
+        }
 
         Self {
             basic_pipeline: Self::make_basic_pipeline(
@@ -356,6 +362,11 @@ impl GraphicsPipeline {
                             .with_src_alpha_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha)
                             .with_src_color_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha))
      */
+
+    pub fn window_size(&self) -> Vector2 {
+        let sz = self.window.size();
+        return Vector2::new(sz.0 as f32, sz.1 as f32)
+    }
 
     pub fn begin_upload(&mut self) {
         self.copy_cmd_buffer = Some(self.gpu.acquire_command_buffer().unwrap());
