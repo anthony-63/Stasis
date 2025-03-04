@@ -55,6 +55,74 @@ impl TextObject {
         }
     }
 
+    pub fn upload_text(&mut self, cached_fonts: &mut Vec<CachedFont>, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) {
+        let font;
+
+        if let Some(cached) = cached_fonts.iter().find(|f| f.size == self.font_size && f.path == self.font_path) {
+            font = cached.font.clone();
+        } else {
+            info!("Loading new font: '{}' ({}px)", self.font_path, self.font_size);
+            font = Font::try_from_vec(std::fs::read(self.font_path.clone()).expect("Failed to open font file")).expect("Error constructing Font");
+            cached_fonts.push(CachedFont {
+                font: font.clone(),
+                path: self.font_path.clone(),
+                size: self.font_size,
+            })
+        }
+
+        let scale = Scale::uniform(self.font_size);
+        let text_str = &self.text;
+        let color = (self.color.r, self.color.g, self.color.b);
+        let v_metrics = font.v_metrics(scale);
+        let glyphs: Vec<_> = font
+            .layout(text_str, scale, point(0., 0. + v_metrics.ascent))
+            .collect();
+
+        // work out the layout size
+        let glyphs_height = (v_metrics.ascent - v_metrics.descent).ceil() as u32;
+        let glyphs_width = {
+            let min_x = glyphs
+                .first()
+                .map(|g| g.pixel_bounding_box().unwrap().min.x)
+                .unwrap();
+            let max_x = glyphs
+                .last()
+                .map(|g| g.pixel_bounding_box().unwrap().max.x)
+                .unwrap();
+            (max_x - min_x) as u32
+        } + glyphs_height;
+
+        let mut data = vec![[0_u8; 4]; (glyphs_width * glyphs_height) as usize];
+
+        for glyph in &glyphs {
+            if let Some(bounding_box) = glyph.pixel_bounding_box() {
+                glyph.draw(|x, y, v| {
+                    let pos = (((y + bounding_box.min.y as u32) * glyphs_width) + (x + bounding_box.min.x as u32)) as usize;
+                    // info!("{}", pos);
+                    data[pos][0] = color.0;
+                    data[pos][1] = color.1;
+                    data[pos][2] = color.2;
+                    data[pos][3] = (v * 255.) as u8;
+                });
+            }
+        }
+
+        let mut data_flattened = vec![0_u8; (glyphs_width * glyphs_height) as usize * 4];
+
+        for (i, pixel) in data.iter().enumerate() {
+            let real_index = i * 4;
+            data_flattened[real_index] = pixel[0];
+            data_flattened[real_index + 1] = pixel[1];
+            data_flattened[real_index + 2] = pixel[2];
+            data_flattened[real_index + 3] = pixel[3];
+        }
+
+        self.w = glyphs_width as f32;
+        self.h = glyphs_height as f32;
+        let texture_result = create_texture_from_data(gpu, &data_flattened, glyphs_width, glyphs_height, copy_pass).unwrap();
+        self.texture = Some(texture_result.0);
+    }
+
     pub fn update(&mut self) {
         self.should_update = true;
     }
@@ -102,6 +170,7 @@ impl TextObjectContainer<'_> {
 
         for text in self.texts.iter_mut() {
             if text.should_update {
+                text.upload_text(&mut self.cached_fonts, gpu, copy_pass);
                 text.buffers.as_ref().unwrap().update(
                     text,
                     &self.transfer_buffer,
@@ -148,72 +217,8 @@ impl TextObjectContainer<'_> {
     pub fn add_text(&mut self, obj: TextObject, z: f32, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) -> usize {
         let mut text = obj;
         text.z = z;
-    
-        let font;
-        if let Some(cached) = self.cached_fonts.iter().find(|f| f.size == text.font_size && f.path == text.font_path) {
-            info!("Loading cached font: '{}' ({}px)", cached.path, cached.size);
-            font = cached.font.clone();
-        } else {
-            info!("Loading new font: '{}' ({}px)", text.font_path, text.font_size);
-            font = Font::try_from_vec(std::fs::read(text.font_path.clone()).expect("Failed to open font file")).expect("Error constructing Font");
-            self.cached_fonts.push(CachedFont {
-                font: font.clone(),
-                path: text.font_path.clone(),
-                size: text.font_size,
-            })
-        }
-
-        let scale = Scale::uniform(text.font_size);
-        let text_str = &text.text;
-        let color = (text.color.r, text.color.g, text.color.b);
-        let v_metrics = font.v_metrics(scale);
-        let glyphs: Vec<_> = font
-            .layout(text_str, scale, point(0., 0. + v_metrics.ascent))
-            .collect();
-
-        // work out the layout size
-        let glyphs_height = (v_metrics.ascent - v_metrics.descent).ceil() as u32;
-        let glyphs_width = {
-            let min_x = glyphs
-                .first()
-                .map(|g| g.pixel_bounding_box().unwrap().min.x)
-                .unwrap();
-            let max_x = glyphs
-                .last()
-                .map(|g| g.pixel_bounding_box().unwrap().max.x)
-                .unwrap();
-            (max_x - min_x) as u32
-        } + glyphs_height;
-
-        let mut data = vec![[0_u8; 4]; (glyphs_width * glyphs_height) as usize];
-
-        for glyph in &glyphs {
-            if let Some(bounding_box) = glyph.pixel_bounding_box() {
-                glyph.draw(|x, y, v| {
-                    let pos = (((y + bounding_box.min.y as u32) * glyphs_width) + (x + bounding_box.min.x as u32)) as usize;
-                    // info!("{}", pos);
-                    data[pos][0] = color.0;
-                    data[pos][1] = color.1;
-                    data[pos][2] = color.2;
-                    data[pos][3] = (v * 255.) as u8;
-                });
-            }
-        }
-
-        let mut data_flattened = vec![0_u8; (glyphs_width * glyphs_height) as usize * 4];
-
-        for (i, pixel) in data.iter().enumerate() {
-            let real_index = i * 4;
-            data_flattened[real_index] = pixel[0];
-            data_flattened[real_index + 1] = pixel[1];
-            data_flattened[real_index + 2] = pixel[2];
-            data_flattened[real_index + 3] = pixel[3];
-        }
-
-        text.w = glyphs_width as f32;
-        text.h = glyphs_height as f32;
-        let texture_result = create_texture_from_data(gpu, &data_flattened, glyphs_width, glyphs_height, copy_pass).unwrap();
-        text.texture = Some(texture_result.0);
+        
+        text.upload_text(&mut self.cached_fonts, gpu, copy_pass);
 
         text.buffers = Some(TexturedQuadBuffers::setup(
             &text,

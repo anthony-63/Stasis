@@ -143,8 +143,6 @@ fn create_texture_from_data(
     copy_pass: &CopyPass
 ) -> Result<(Texture<'static>, Vec<u8>), Error> {
     let size_bytes = 4 * width * height;
-
-    info!("Loading texture: 'custom data' with size: {}", size_bytes);
     
     let texture = gpu.create_texture(
         TextureCreateInfo::new()

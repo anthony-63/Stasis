@@ -13,11 +13,12 @@ pub struct Window {
 impl Window {
     pub fn new<T>(title: &str, width: u32, height: u32, initial_scene: T) -> Self
     where T: Scene + 'static {
+        sdl3::hint::set(sdl3::hint::names::RENDER_VSYNC, "0");
         let context = sdl3::init().expect("Failed to initialize SDL3");
         let video = context.video().expect("Failed to initialize SDL3 Video");
-        let window = video.window(title, width, height).build().expect("Failed to create SDL3 Window");
+        let window = video.window(title, width, height).fullscreen().build().expect("Failed to create SDL3 Window");
         let gfx = Graphics::new(window);
-
+        
         Self {
             context,
             gfx,
