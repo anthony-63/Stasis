@@ -1,20 +1,29 @@
 
 
-use rusttype::{point, Font, Scale};
-use sdl3::gpu::TransferBuffer;
+use std::ops::Index;
+
+use rusttype::{gpu_cache::{Cache, CacheBuilder}, point, Font, PositionedGlyph, Scale};
+use sdl3::{gpu::TransferBuffer, libc::exit};
 use tracing::info;
 
 use crate::core::{gfx::color::Color, Vector2, Vector3};
 
 use super::{
-    create_buffer_with_data, create_texture_from_data, get_local_coords3, set_buffer_data, TexturedVertex
+    create_buffer_with_data, create_texture_from_data, get_local_coords3, set_buffer_data, update_texture_with_data, TexturedVertex
 };
 
 pub struct CachedFont<'a> {
     size: f32,
+    id: usize,
     path: String,
     font: rusttype::Font<'a>,
+
 }
+
+const TEXTURE_WIDTH: u32 = 2048;
+const TEXTURE_HEIGHT: u32 = 2048;
+
+const MAX_TEXT: usize = 131072;
 
 pub struct TextObject {
     pub x: f32,
@@ -28,14 +37,58 @@ pub struct TextObject {
 
     z: f32,
 
-    texture: Option<sdl3::gpu::Texture<'static>>,
     font_path: String,
 
     color: Color,
 
     pub should_update: bool,
     buffers: Option<TexturedQuadBuffers>,
+
+    verts: Vec<TexturedVertex>,
 }
+
+
+fn layout_paragraph<'a>(
+    font: &Font<'a>,
+    scale: Scale,
+    width: u32,
+    text: &str,
+) -> Vec<PositionedGlyph<'a>> {
+    let mut result = Vec::new();
+    let v_metrics = font.v_metrics(scale);
+    let advance_height = v_metrics.ascent - v_metrics.descent + v_metrics.line_gap;
+    let mut caret = point(0.0, v_metrics.ascent);
+    let mut last_glyph_id = None;
+    for c in text.chars() {
+        if c.is_control() {
+            match c {
+                '\r' => {
+                    caret = point(0.0, caret.y + advance_height);
+                }
+                '\n' => {}
+                _ => {}
+            }
+            continue;
+        }
+        let base_glyph = font.glyph(c);
+        if let Some(id) = last_glyph_id.take() {
+            caret.x += font.pair_kerning(scale, id, base_glyph.id());
+        }
+        last_glyph_id = Some(base_glyph.id());
+        let mut glyph = base_glyph.scaled(scale).positioned(caret);
+        if let Some(bb) = glyph.pixel_bounding_box() {
+            if bb.max.x > width as i32 {
+                caret = point(0.0, caret.y + advance_height);
+                glyph.set_position(caret);
+                last_glyph_id = None;
+            }
+        }
+        caret.x += glyph.unpositioned().h_metrics().advance_width;
+        result.push(glyph);
+    }
+    result
+}
+
 
 impl TextObject {
     pub fn new(x: f32, y: f32, text: String, font_size: f32, color: Color, font_path: &str) -> Self {
@@ -49,25 +102,29 @@ impl TextObject {
             z: 0.0,
             buffers: None,
             should_update: false,
-            texture: None,
             color,
+            verts: vec![],
             font_path: font_path.to_string(),
         }
     }
 
-    pub fn upload_text(&mut self, cached_fonts: &mut Vec<CachedFont>, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) {
+    pub fn upload_text<'a>(&mut self, current_id: &mut usize, cache: &mut Cache<'a>, data: &mut [u8], cache_texture: &sdl3::gpu::Texture<'static>, transfer_buffer: &TransferBuffer, cached_fonts: &mut Vec<CachedFont<'a>>, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) {
         let font;
-
+        let id;
         if let Some(cached) = cached_fonts.iter().find(|f| f.size == self.font_size && f.path == self.font_path) {
             font = cached.font.clone();
+            id = cached.id;
         } else {
             info!("Loading new font: '{}' ({}px)", self.font_path, self.font_size);
             font = Font::try_from_vec(std::fs::read(self.font_path.clone()).expect("Failed to open font file")).expect("Error constructing Font");
+            *current_id += 1;
+            id = *current_id;
             cached_fonts.push(CachedFont {
                 font: font.clone(),
+                id: *current_id,
                 path: self.font_path.clone(),
                 size: self.font_size,
-            })
+            });
         }
 
         let scale = Scale::uniform(self.font_size);
@@ -78,7 +135,6 @@ impl TextObject {
             .layout(text_str, scale, point(0., 0. + v_metrics.ascent))
             .collect();
 
-        // work out the layout size
         let glyphs_height = (v_metrics.ascent - v_metrics.descent).ceil() as u32;
         let glyphs_width = {
             let min_x = glyphs
@@ -90,37 +146,57 @@ impl TextObject {
                 .map(|g| g.pixel_bounding_box().unwrap().max.x)
                 .unwrap();
             (max_x - min_x) as u32
-        } + glyphs_height;
-
-        let mut data = vec![[0_u8; 4]; (glyphs_width * glyphs_height) as usize];
-
-        for glyph in &glyphs {
-            if let Some(bounding_box) = glyph.pixel_bounding_box() {
-                glyph.draw(|x, y, v| {
-                    let pos = (((y + bounding_box.min.y as u32) * glyphs_width) + (x + bounding_box.min.x as u32)) as usize;
-                    // info!("{}", pos);
-                    data[pos][0] = color.0;
-                    data[pos][1] = color.1;
-                    data[pos][2] = color.2;
-                    data[pos][3] = (v * 255.) as u8;
-                });
-            }
-        }
-
-        let mut data_flattened = vec![0_u8; (glyphs_width * glyphs_height) as usize * 4];
-
-        for (i, pixel) in data.iter().enumerate() {
-            let real_index = i * 4;
-            data_flattened[real_index] = pixel[0];
-            data_flattened[real_index + 1] = pixel[1];
-            data_flattened[real_index + 2] = pixel[2];
-            data_flattened[real_index + 3] = pixel[3];
-        }
+        };
 
         self.w = glyphs_width as f32;
         self.h = glyphs_height as f32;
-        let texture_result = create_texture_from_data(gpu, &data_flattened, glyphs_width, glyphs_height, copy_pass).unwrap();
-        self.texture = Some(texture_result.0);
+
+        for glyph in &glyphs {
+            cache.queue_glyph(id, glyph.clone());
+        }
+
+        cache.cache_queued(|r, d| {
+            let glyph_width = r.width() as usize;
+            let glyph_height = r.height() as usize;
+            for y in 0..glyph_height {
+                for x in 0..glyph_width {
+                    let pixel_index = (y * glyph_width + x) as usize;
+                    let alpha = d[pixel_index];
+                    let atlas_index = ((r.min.y as usize + y) * TEXTURE_WIDTH as usize + (r.min.x as usize + x)) as usize;
+    
+                    if atlas_index < data.len() {
+                        let base_index = atlas_index * 4;
+                        data[base_index] = color.0;
+                        data[base_index + 1] = color.1;
+                        data[base_index + 2] = color.2;
+                        data[base_index + 3] = alpha;
+                    }
+                }
+            }
+        }).unwrap();
+        
+        update_texture_with_data(gpu, cache_texture, transfer_buffer, &data, TEXTURE_WIDTH, TEXTURE_HEIGHT, copy_pass);
+
+        let mut x = self.x;
+        
+        self.verts = glyphs
+            .iter()
+            .filter_map(|g| cache.rect_for(id, g).ok().flatten())
+            .flat_map(|(coord, screen)| {
+                let w = screen.width() as f32;
+                let h = screen.height() as f32;
+                let y = self.y - ((h - screen.max.y as f32) - (h - screen.max.y as f32) / 2.);
+
+                let r = [
+                    TexturedVertex::new(get_local_coords3(Vector3::new(x, y, self.z)), Vector2::new(coord.min.x, coord.min.y)),
+                    TexturedVertex::new(get_local_coords3(Vector3::new(x + w, y, self.z)), Vector2::new(coord.max.x, coord.min.y)),
+                    TexturedVertex::new(get_local_coords3(Vector3::new(x + w, y + h, self.z)), Vector2::new(coord.max.x, coord.max.y)),
+                    TexturedVertex::new(get_local_coords3(Vector3::new(x, y + h, self.z)), Vector2::new(coord.min.x, coord.max.y)),
+                ];
+                x += w as f32 + 2.;
+
+                r
+            }).collect();
     }
 
     pub fn update(&mut self) {
@@ -133,6 +209,12 @@ pub struct TextObjectContainer<'a> {
     text_id: usize,
 
     cached_fonts: Vec<CachedFont<'a>>,
+    cache_texture: sdl3::gpu::Texture<'static>,
+    cache_transfer_buffer: sdl3::gpu::TransferBuffer,
+    data: Vec<u8>,
+    cache: Cache<'a>,
+
+    font_id: usize,
 
     sampler: Option<sdl3::gpu::Sampler>,
     transfer_buffer: sdl3::gpu::TransferBuffer,
@@ -143,10 +225,28 @@ impl TextObjectContainer<'_> {
         Self {
             texts: vec![],
             text_id: 0,
+            font_id: 0,
+            data: vec![0 as u8; (TEXTURE_WIDTH * TEXTURE_HEIGHT) as usize * 4],
             sampler: None,
             cached_fonts: vec![],
+            cache_texture: gpu.create_texture(
+                sdl3::gpu::TextureCreateInfo::new()
+                .with_format(sdl3::gpu::TextureFormat::R8g8b8a8Unorm)
+                .with_type(sdl3::gpu::TextureType::_2D)
+                .with_width(TEXTURE_WIDTH)
+                .with_height(TEXTURE_HEIGHT)
+                .with_layer_count_or_depth(1)
+                .with_num_levels(1)
+                .with_usage(sdl3::gpu::TextureUsage::Sampler | sdl3::gpu::TextureUsage::ColorTarget)).unwrap(),
+            cache_transfer_buffer: gpu
+                .create_transfer_buffer()
+                .with_size(4 * TEXTURE_WIDTH * TEXTURE_HEIGHT)
+                .with_usage(sdl3::gpu::TransferBufferUsage::Upload)
+                .build().unwrap(),
+            cache: CacheBuilder::default().dimensions(TEXTURE_WIDTH, TEXTURE_HEIGHT).build(),
+            
             transfer_buffer: gpu.create_transfer_buffer()
-                .with_size((size_of::<TexturedVertex>() * 4 + size_of::<u16>() * 6) as u32)
+                .with_size(((size_of::<TexturedVertex>() * 4 + size_of::<u16>() * 6) * MAX_TEXT) as u32)
                 .with_usage(sdl3::gpu::TransferBufferUsage::Upload)
                 .build().unwrap(),
         }
@@ -170,7 +270,7 @@ impl TextObjectContainer<'_> {
 
         for text in self.texts.iter_mut() {
             if text.should_update {
-                text.upload_text(&mut self.cached_fonts, gpu, copy_pass);
+                text.upload_text(&mut self.font_id, &mut self.cache, &mut self.data, &self.cache_texture, &self.cache_transfer_buffer, &mut self.cached_fonts, gpu, copy_pass);
                 text.buffers.as_ref().unwrap().update(
                     text,
                     &self.transfer_buffer,
@@ -207,10 +307,10 @@ impl TextObjectContainer<'_> {
             render_pass.bind_fragment_sampler(
                 0,
                 &[sdl3::gpu::TextureSamplerBinding::new()
-                    .with_texture(text.texture.as_ref().unwrap())
+                    .with_texture(&self.cache_texture)
                     .with_sampler(self.sampler.as_ref().unwrap())],
             );
-            render_pass.draw_indexed_primitives(6, 1, 0, 0, 0);
+            render_pass.draw_indexed_primitives(6 * (text.verts.len() as u32 / 4), 1, 0, 0, 0);
         }
     }
 
@@ -218,7 +318,7 @@ impl TextObjectContainer<'_> {
         let mut text = obj;
         text.z = z;
         
-        text.upload_text(&mut self.cached_fonts, gpu, copy_pass);
+        text.upload_text(&mut self.font_id, &mut self.cache, &mut self.data, &self.cache_texture, &self.cache_transfer_buffer, &mut self.cached_fonts, gpu, copy_pass);
 
         text.buffers = Some(TexturedQuadBuffers::setup(
             &text,
@@ -250,21 +350,23 @@ impl TexturedQuadBuffers {
         gpu: &sdl3::gpu::Device,
         copy_pass: &sdl3::gpu::CopyPass,
     ) -> Self {
-        let vertices = [
-            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y, obj.z)), Vector2::new(0., 0.)),
-            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y, obj.z)), Vector2::new(1., 0.)),
-            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y + obj.h, obj.z)), Vector2::new(1., 1.)),
-            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y + obj.h, obj.z)), Vector2::new(0., 1.)),
-        ];
+        let ind: Vec<u16> = vec![0, 1, 2, 0, 2, 3];
+        let mut indices = vec![];
 
-        let indices: &[u16] = &[0, 1, 2, 0, 2, 3];
+        let mut i = 0;
+
+        for _ in obj.verts.iter().step_by(4) {
+            let n: Vec<u16> = ind.iter().map(|f| f + i).collect();
+            indices.extend_from_slice(&n);
+            i += 4;
+        }
 
         let vbo = create_buffer_with_data(
             gpu,
             transfer_buffer,
             copy_pass,
             sdl3::gpu::BufferUsageFlags::Vertex,
-            &vertices,
+            &obj.verts,
         )
         .unwrap();
 
@@ -273,7 +375,7 @@ impl TexturedQuadBuffers {
             transfer_buffer,
             copy_pass,
             sdl3::gpu::BufferUsageFlags::Index,
-            indices,
+            &indices,
         )
         .unwrap();
 
@@ -287,18 +389,32 @@ impl TexturedQuadBuffers {
         gpu: &sdl3::gpu::Device,
         copy_pass: &sdl3::gpu::CopyPass,
     ) {
-        let vertices = [
-            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y, obj.z)), Vector2::new(0., 0.)),
-            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y, obj.z)), Vector2::new(1., 0.)),
-            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x + obj.w, obj.y + obj.h, obj.z)), Vector2::new(1., 1.)),
-            TexturedVertex::new(get_local_coords3(Vector3::new(obj.x, obj.y + obj.h, obj.z)), Vector2::new(0., 1.)),
-        ];
+        let ind: Vec<u16> = vec![0, 1, 2, 0, 2, 3];
+        let mut indices = vec![];
+
+        let mut i = 0;
+
+        for _ in obj.verts.iter().step_by(4) {
+            let n: Vec<u16> = ind.iter().map(|f| f + i).collect();
+            indices.extend_from_slice(&n);
+            i += 4;
+        }
+
         set_buffer_data(
             gpu,
             &self.vbo,
             transfer_buffer,
             copy_pass,
-            &vertices,
+            &obj.verts,
+        )
+        .unwrap();
+
+        set_buffer_data(
+            gpu,
+            &self.ibo,
+            transfer_buffer,
+            copy_pass,
+            &indices,
         )
         .unwrap();
     }

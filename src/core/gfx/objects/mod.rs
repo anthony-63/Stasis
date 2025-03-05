@@ -180,6 +180,32 @@ fn create_texture_from_data(
     Ok((texture, data.to_vec()))
 }
 
+fn update_texture_with_data(
+    gpu: &Device,
+    texture: &Texture<'static>,
+    transfer_buffer: &TransferBuffer,
+    data: &[u8],
+    width: u32,
+    height: u32,
+    copy_pass: &CopyPass
+) {
+    let mut buffer_mem = transfer_buffer.map::<u8>(gpu, false);
+    buffer_mem.mem_mut().copy_from_slice(data);
+    buffer_mem.unmap();
+
+    copy_pass.upload_to_gpu_texture(
+        TextureTransferInfo::new()
+            .with_offset(0)
+            .with_transfer_buffer(&transfer_buffer),
+        TextureRegion::new()
+            .with_texture(&texture)
+            .with_width(width)
+            .with_height(height)
+            .with_depth(1),
+        false,
+    );
+}
+
 fn create_texture_from_image(
     gpu: &Device,
     image_path: impl AsRef<Path>,

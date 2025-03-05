@@ -26,7 +26,7 @@ impl Scene for LoadingScene {
         gfx.set_clear_color(Color::from_frgb(0.05, 0.0025, 0.1));
 
         let window_size = Graphics::window_size();
-        self.loading_text = gfx.add_text(TextObject::new(window_size.x / 2., 0., "Loading Stasis...".into(), 58.,  Color::from_rgb(199, 199, 199), "Assets/Game/font.ttf", ));
+        self.loading_text = gfx.add_text(TextObject::new(window_size.x / 2., 0., "hello world".into(), 58.,  Color::from_rgb(199, 199, 199), "Assets/Game/font.ttf", ));
         
         self.fps = Some(FpsCounter::new(gfx));
 
