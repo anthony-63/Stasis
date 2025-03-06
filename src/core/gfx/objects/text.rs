@@ -135,22 +135,6 @@ impl TextObject {
             .layout(text_str, scale, point(0., 0. + v_metrics.ascent))
             .collect();
 
-        let glyphs_height = (v_metrics.ascent - v_metrics.descent).ceil() as u32;
-        let glyphs_width = {
-            let min_x = glyphs
-                .first()
-                .map(|g| g.pixel_bounding_box().unwrap().min.x)
-                .unwrap();
-            let max_x = glyphs
-                .last()
-                .map(|g| g.pixel_bounding_box().unwrap().max.x)
-                .unwrap();
-            (max_x - min_x) as u32
-        };
-
-        self.w = glyphs_width as f32;
-        self.h = glyphs_height as f32;
-
         for glyph in &glyphs {
             cache.queue_glyph(id, glyph.clone());
         }
@@ -178,15 +162,28 @@ impl TextObject {
         update_texture_with_data(gpu, cache_texture, transfer_buffer, &data, TEXTURE_WIDTH, TEXTURE_HEIGHT, copy_pass);
 
         let mut x = self.x;
+        let mut ci = 0;
+
+        self.w = 0.;
+        self.h = 0.;
         
         self.verts = glyphs
             .iter()
             .filter_map(|g| cache.rect_for(id, g).ok().flatten())
             .flat_map(|(coord, screen)| {
                 let w = screen.width() as f32;
-                let h = screen.height() as f32;
-                let y = self.y - ((h - screen.max.y as f32) - (h - screen.max.y as f32) / 2.);
+                self.w += w + 2.;
 
+                let h = screen.height() as f32;
+                self.h = h;
+
+                let y = self.y - (h - screen.max.y as f32);
+                let c = text_str.chars().nth(ci).unwrap();
+
+                if c == ' ' {
+                    x += w;
+                }
+                
                 let r = [
                     TexturedVertex::new(get_local_coords3(Vector3::new(x, y, self.z)), Vector2::new(coord.min.x, coord.min.y)),
                     TexturedVertex::new(get_local_coords3(Vector3::new(x + w, y, self.z)), Vector2::new(coord.max.x, coord.min.y)),
@@ -194,6 +191,7 @@ impl TextObject {
                     TexturedVertex::new(get_local_coords3(Vector3::new(x, y + h, self.z)), Vector2::new(coord.min.x, coord.max.y)),
                 ];
                 x += w as f32 + 2.;
+                ci += 1;
 
                 r
             }).collect();

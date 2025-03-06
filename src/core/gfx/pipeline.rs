@@ -444,6 +444,7 @@ impl GraphicsPipeline {
     pub fn reset(&mut self) {
         self.quads.clear();
         self.textured_quads.clear();
+        self.text_objects.clear();
     }
 }
 

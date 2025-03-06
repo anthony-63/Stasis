@@ -1,11 +1,13 @@
-use crate::core::{gfx::{color::Color, Graphics}, scene::Scene};
+use crate::{content::maps::beatmapset::BeatmapSet, core::{gfx::{color::Color, Graphics}, scene::Scene}};
 
 pub struct MenuScene {
+    maps: Vec<BeatmapSet>,
 }
 
 impl MenuScene {
-    pub fn new() -> Self {
+    pub fn new(maps: Vec<BeatmapSet>) -> Self {
         Self {
+            maps,
         }
     }
 }

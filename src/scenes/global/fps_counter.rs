@@ -25,7 +25,7 @@ impl FpsCounter {
             let text: &mut TextObject = &mut gfx.text_objects_mut()[self.id];
             text.text = (1./dt).ceil().to_string();
             text.update();
-            // self.timer = 0.;
+            self.timer = 0.;
         }
     }
 }
