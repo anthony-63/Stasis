@@ -1,6 +1,6 @@
 use crate::{content::maps::beatmapset::BeatmapSet, core::{gfx::{color::Color, Graphics}, scene::Scene}};
 
-use super::global::fps_counter::FpsCounter;
+use super::{game::GameScene, global::fps_counter::FpsCounter};
 
 pub struct MenuScene {
     maps: Vec<BeatmapSet>,
@@ -27,7 +27,7 @@ impl Scene for MenuScene {
     fn update(&mut self, gfx: &mut Graphics, dt: f64) -> Option<Box<dyn Scene + 'static>> {
         self.fps_counter.as_mut().unwrap().update(gfx, dt);
         
-        None
+        Some(Box::new(GameScene::new(self.maps[3].clone())))
     }
 
 }
