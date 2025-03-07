@@ -45,11 +45,11 @@ impl BeatmapSet {
         let meta: Value = sonic_rs::from_str(&meta_json).unwrap();
 
         let version = meta["_version"].as_number().expect("version must be a number").as_u64().unwrap() as u8;
-        let title = meta["_title"].to_string();
+        let title = meta["_title"].as_str().unwrap().to_string();
 
         let mut mappers: Vec<String> = vec![];
         for mapper in meta["_mappers"].clone().into_array().unwrap() {
-            mappers.push(mapper.to_string());
+            mappers.push(mapper.as_str().unwrap().to_string());
         }
         
         let mut difficulties: Vec<Beatmap> = vec![];
@@ -62,7 +62,7 @@ impl BeatmapSet {
             }
         }
 
-        let music_path = meta["_music"].to_string();
+        let music_path = meta["_music"].as_str().unwrap().to_string();
 
         let mut hasher = GxHasher::with_seed(STAGE2_MAP_SEED);
 

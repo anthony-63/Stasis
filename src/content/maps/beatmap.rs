@@ -33,7 +33,7 @@ impl Beatmap {
         let data: Value = sonic_rs::from_str(&data_json).unwrap();
 
         self.version = data["_version"].as_number().expect("expected number for version").as_u64().unwrap() as u8;
-        self.name = data["_name"].to_string();
+        self.name = data["_name"].as_str().unwrap().to_string();
 
         self.notes = vec![];
         for note in data["_notes"].clone().into_array().unwrap() {
