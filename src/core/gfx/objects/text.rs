@@ -42,7 +42,7 @@ pub struct TextObject {
     color: Color,
 
     pub should_update: bool,
-    buffers: Option<TexturedQuadBuffers>,
+    buffers: Option<TextObjectBuffers>,
 
     verts: Vec<TexturedVertex>,
 }
@@ -170,18 +170,18 @@ impl TextObject {
         self.verts = glyphs
             .iter()
             .filter_map(|g| cache.rect_for(id, g).ok().flatten())
-            .flat_map(|(coord, screen)| {
-                let w = screen.width() as f32;
+            .flat_map(|(coord, glyph_size)| {
+                let w = glyph_size.width() as f32;
                 self.w += w + 2.;
 
-                let h = screen.height() as f32;
+                let h = glyph_size.height() as f32;
                 self.h = h;
 
-                let y = self.y - (h - screen.max.y as f32);
+                let y = self.y - (h - glyph_size.max.y as f32);
                 let c = text_str.chars().nth(ci).unwrap();
 
                 if c == ' ' {
-                    x += w;
+                    x += w / 2.;
                 }
                 
                 let r = [
@@ -318,7 +318,7 @@ impl TextObjectContainer<'_> {
         
         text.upload_text(&mut self.font_id, &mut self.cache, &mut self.data, &self.cache_texture, &self.cache_transfer_buffer, &mut self.cached_fonts, gpu, copy_pass);
 
-        text.buffers = Some(TexturedQuadBuffers::setup(
+        text.buffers = Some(TextObjectBuffers::setup(
             &text,
             &self.transfer_buffer,
             gpu,
@@ -336,12 +336,12 @@ impl TextObjectContainer<'_> {
     }
 }
 
-pub struct TexturedQuadBuffers {
+pub struct TextObjectBuffers {
     vbo: sdl3::gpu::Buffer,
     ibo: sdl3::gpu::Buffer,
 }
 
-impl TexturedQuadBuffers {
+impl TextObjectBuffers {
     pub fn setup(
         obj: &TextObject,
         transfer_buffer: &TransferBuffer,
@@ -417,4 +417,3 @@ impl TexturedQuadBuffers {
         .unwrap();
     }
 }
-
