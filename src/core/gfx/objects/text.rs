@@ -1,15 +1,14 @@
 
 
-use std::ops::Index;
 
 use rusttype::{gpu_cache::{Cache, CacheBuilder}, point, Font, PositionedGlyph, Scale};
-use sdl3::{gpu::TransferBuffer, libc::exit};
+use sdl3::gpu::TransferBuffer;
 use tracing::info;
 
 use crate::core::{gfx::color::Color, Vector2, Vector3};
 
 use super::{
-    create_buffer_with_data, create_texture_from_data, get_local_coords3, set_buffer_data, update_texture_with_data, TexturedVertex
+    create_buffer_with_data, get_local_coords3, set_buffer_data, update_texture_with_data, TexturedVertex
 };
 
 pub struct CachedFont<'a> {
@@ -144,9 +143,9 @@ impl TextObject {
             let glyph_height = r.height() as usize;
             for y in 0..glyph_height {
                 for x in 0..glyph_width {
-                    let pixel_index = (y * glyph_width + x) as usize;
+                    let pixel_index = y * glyph_width + x;
                     let alpha = d[pixel_index];
-                    let atlas_index = ((r.min.y as usize + y) * TEXTURE_WIDTH as usize + (r.min.x as usize + x)) as usize;
+                    let atlas_index = (r.min.y as usize + y) * TEXTURE_WIDTH as usize + (r.min.x as usize + x);
     
                     if atlas_index < data.len() {
                         let base_index = atlas_index * 4;
@@ -159,7 +158,7 @@ impl TextObject {
             }
         }).unwrap();
         
-        update_texture_with_data(gpu, cache_texture, transfer_buffer, &data, TEXTURE_WIDTH, TEXTURE_HEIGHT, copy_pass);
+        update_texture_with_data(gpu, cache_texture, transfer_buffer, data, TEXTURE_WIDTH, TEXTURE_HEIGHT, copy_pass);
 
         let mut x = self.x;
         let mut ci = 0;
@@ -190,7 +189,7 @@ impl TextObject {
                     TexturedVertex::new(get_local_coords3(Vector3::new(x + w, y + h, self.z)), Vector2::new(coord.max.x, coord.max.y)),
                     TexturedVertex::new(get_local_coords3(Vector3::new(x, y + h, self.z)), Vector2::new(coord.min.x, coord.max.y)),
                 ];
-                x += w as f32 + 2.;
+                x += w + 2.;
                 ci += 1;
 
                 r
@@ -224,7 +223,7 @@ impl TextObjectContainer<'_> {
             texts: vec![],
             text_id: 0,
             font_id: 0,
-            data: vec![0 as u8; (TEXTURE_WIDTH * TEXTURE_HEIGHT) as usize * 4],
+            data: vec![0_u8; (TEXTURE_WIDTH * TEXTURE_HEIGHT) as usize * 4],
             sampler: None,
             cached_fonts: vec![],
             cache_texture: gpu.create_texture(

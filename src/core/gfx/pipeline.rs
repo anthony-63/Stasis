@@ -365,7 +365,7 @@ impl GraphicsPipeline {
 
     pub fn window_size(&self) -> Vector2 {
         let sz = self.window.size();
-        return Vector2::new(sz.0 as f32, sz.1 as f32)
+        Vector2::new(sz.0 as f32, sz.1 as f32)
     }
 
     pub fn begin_upload(&mut self) {

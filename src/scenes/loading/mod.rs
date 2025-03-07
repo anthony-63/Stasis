@@ -1,8 +1,6 @@
 
-use chrono::Local;
-use tracing::info;
 
-use crate::{content::{maploader::MapLoader, maps::beatmapset::BeatmapSet}, core::{gfx::{color::Color, objects::{quad::QuadObject, text::TextObject, textured_quad::TexturedQuadObject}, Graphics}, scene::Scene, Vector2}};
+use crate::{content::maploader::MapLoader, core::{gfx::{color::Color, objects::{text::TextObject, textured_quad::TexturedQuadObject}, Graphics}, scene::Scene, Vector2}};
 
 use super::{global::fps_counter::FpsCounter, menu::MenuScene};
 

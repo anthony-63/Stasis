@@ -1,7 +1,7 @@
 use std::{io::{Cursor, Read, Seek, Write}, path::PathBuf};
 
 use byteorder::{LittleEndian, ReadBytesExt};
-use json::{object, JsonValue};
+use sonic_rs::{object, Object};
 use tracing::{info, warn, error};
 use super::beatmap::NoteData;
 
@@ -141,22 +141,22 @@ impl SSPMParser {
             Err(error) => error!("{}", error)
         }
 
-        let meta = json::stringify(object! {
-            _version: 1,
-            _title: title,
-            _mappers: mappers,
-            _music: "music.bin",
-            _difficulties: [
+        let meta = sonic_rs::to_string_pretty(&object! {
+            "_version": 1,
+            "_title": title,
+            "_mappers": mappers,
+            "_music": "music.bin",
+            "_difficulties": [
                 "sspm.json",
             ],
-        });
+        }).unwrap();
 
-        let mut notes_json: Vec<JsonValue> = vec![];
+        let mut notes_json: Vec<Object> = vec![];
         for note in notes {
             notes_json.push(object! {
-                _x: note.x,
-                _y: note.y,
-                _time: note.time,
+                "_x": note.x,
+                "_y": note.y,
+                "_time": note.time,
             });
         }
 
@@ -166,11 +166,11 @@ impl SSPMParser {
             difficulty_name
         };
 
-        let difficulty = json::stringify(object! {
-            _version: 1,
-            _name: diffname_new,
-            _notes: notes_json,
-        });
+        let difficulty = sonic_rs::to_string_pretty(&object! {
+            "_version": 1,
+            "_name": diffname_new,
+            "_notes": notes_json,
+        }).unwrap();
 
         if cover_buffer.is_some() {
             let mut cover_file = match std::fs::File::create(format!("{}/cover.png", folder_path)) {
@@ -337,7 +337,7 @@ impl SSPMParser {
 
         self.buffer.seek(std::io::SeekFrom::Start(offset)).unwrap();
         for _ in 0..note_count {
-            let mut note: NoteData = NoteData::default();
+            let mut note = NoteData::default();
 
             note.time = self.buffer.read_u32::<LittleEndian>().unwrap() as f32 / 1000.;
 

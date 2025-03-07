@@ -196,9 +196,9 @@ fn update_texture_with_data(
     copy_pass.upload_to_gpu_texture(
         TextureTransferInfo::new()
             .with_offset(0)
-            .with_transfer_buffer(&transfer_buffer),
+            .with_transfer_buffer(transfer_buffer),
         TextureRegion::new()
-            .with_texture(&texture)
+            .with_texture(texture)
             .with_width(width)
             .with_height(height)
             .with_depth(1),

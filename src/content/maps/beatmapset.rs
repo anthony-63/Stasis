@@ -1,6 +1,7 @@
 use std::{hash::Hasher, path::Path};
 
 use gxhash::GxHasher;
+use sonic_rs::{JsonNumberTrait, JsonValueTrait, Value};
 use tracing::warn;
 
 use super::beatmap::Beatmap;
@@ -29,7 +30,7 @@ pub struct BeatmapSet {
 }
 
 impl BeatmapSet {
-    pub fn from_folder(folder_path: String) -> Self {
+    pub fn from_folder(folder_path: String, parse_difficulties: bool) -> Self {
         let meta_path = &format!("{}/meta.json", folder_path);
 
         if !Path::new(meta_path).exists() {
@@ -41,19 +42,21 @@ impl BeatmapSet {
         }
 
         let meta_json = std::fs::read_to_string(meta_path).expect("meta json not found somehow?");
-        let meta = json::parse(&meta_json).unwrap();
+        let meta: Value = sonic_rs::from_str(&meta_json).unwrap();
 
-        let version = meta["_version"].as_u8().expect("version must be a number");
+        let version = meta["_version"].as_number().expect("version must be a number").as_u64().unwrap() as u8;
         let title = meta["_title"].to_string();
 
         let mut mappers: Vec<String> = vec![];
-        for mapper in meta["_mappers"].members() {
+        for mapper in meta["_mappers"].clone().into_array().unwrap() {
             mappers.push(mapper.to_string());
         }
         
         let mut difficulties: Vec<Beatmap> = vec![];
-        for difficulty in meta["_difficulties"].members() {
-            difficulties.push(Beatmap::from_file(format!("{}/{}", folder_path, difficulty)));
+        if parse_difficulties {
+            for difficulty in meta["_difficulties"].clone().into_array().unwrap() {
+                difficulties.push(Beatmap::from_file(format!("{}/{}", folder_path, difficulty.as_str().unwrap())));
+            }
         }
 
         let music_path = meta["_music"].to_string();

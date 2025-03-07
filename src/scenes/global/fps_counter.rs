@@ -7,7 +7,7 @@ pub struct FpsCounter {
 
 impl FpsCounter {
     pub fn new(gfx: &mut Graphics) -> Self {
-        return Self {
+        Self {
             id: gfx.add_text(TextObject::new(
                 10., 5.,
                 "0 FPS".into(),
