@@ -1,7 +1,7 @@
-use crate::core::gfx::{color::Color, objects::text::TextObject, Graphics};
+use crate::core::gfx::{color::Color, objects::text::TextObject, Graphics, ObjectId};
 
 pub struct FpsCounter {
-    id: usize,
+    id: ObjectId,
     timer: f64,
 }
 

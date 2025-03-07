@@ -9,6 +9,8 @@ pub mod objects;
 pub mod pipeline;
 pub mod shader_compiler;
 
+pub type ObjectId = usize;
+
 static mut WINDOW_SIZE: Option<Vector2> = None;
 
 pub struct Graphics {

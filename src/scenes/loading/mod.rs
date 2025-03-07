@@ -1,12 +1,12 @@
 
 
-use crate::{content::maploader::MapLoader, core::{gfx::{color::Color, objects::{text::TextObject, textured_quad::TexturedQuadObject}, Graphics}, scene::Scene, Vector2}};
+use crate::{content::maploader::MapLoader, core::{gfx::{color::Color, objects::{text::TextObject, textured_quad::TexturedQuadObject}, Graphics, ObjectId}, scene::Scene, Vector2}};
 
 use super::{global::fps_counter::FpsCounter, menu::MenuScene};
 
 
 pub struct LoadingScene {
-    loading_text: usize,
+    loading_text: ObjectId,
     fps: Option<FpsCounter>,
     first_render: bool,
 }

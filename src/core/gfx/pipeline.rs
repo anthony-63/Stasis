@@ -363,11 +363,6 @@ impl GraphicsPipeline {
                             .with_src_color_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha))
      */
 
-    pub fn window_size(&self) -> Vector2 {
-        let sz = self.window.size();
-        Vector2::new(sz.0 as f32, sz.1 as f32)
-    }
-
     pub fn begin_upload(&mut self) {
         self.copy_cmd_buffer = Some(self.gpu.acquire_command_buffer().unwrap());
         self.copy_pass = Some(

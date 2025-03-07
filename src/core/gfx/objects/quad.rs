@@ -97,6 +97,7 @@ impl QuadsContainer {
 
     pub fn clear(&mut self) {
         self.quads.clear();
+        self.quad_id = 0;
     }
 }
 

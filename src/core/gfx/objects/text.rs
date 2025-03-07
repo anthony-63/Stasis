@@ -332,6 +332,7 @@ impl TextObjectContainer<'_> {
 
     pub fn clear(&mut self) {
         self.texts.clear();
+        self.text_id = 0;
     }
 }
 
