@@ -53,19 +53,16 @@ impl BeatmapSet {
         }
         
         let mut difficulties: Vec<Beatmap> = vec![];
-        if parse_difficulties {
-            for difficulty in meta["_difficulties"].clone().into_array().unwrap() {
-                difficulties.push(Beatmap::from_file(format!("{}/{}", folder_path, difficulty.as_str().unwrap())));
+        for difficulty in meta["_difficulties"].clone().into_array().unwrap() {
+            let full_path = format!("{}/{}", folder_path, difficulty.as_str().unwrap());
+            if parse_difficulties {
+                difficulties.push(Beatmap::from_file(full_path));
+            } else {
+                difficulties.push(Beatmap::empty(full_path));
             }
         }
 
         let music_path = meta["_music"].to_string();
-
-        let cover = if Path::new(&format!("{}/cover.png", folder_path)).exists() {
-            Some(std::fs::read(format!("{}/cover.png", folder_path)).unwrap())
-        } else {
-            None
-        };
 
         let mut hasher = GxHasher::with_seed(STAGE2_MAP_SEED);
 
@@ -94,9 +91,23 @@ impl BeatmapSet {
             difficulties,
             path: folder_path,
             hash: hash.to_string(),
-            cover,
+            cover: None,
             ..Default::default()
         }
+    }
+
+    pub fn load_difficulties(&mut self) {
+        for diff in &mut self.difficulties {
+            diff.load();
+        }
+    }
+
+    pub fn load_cover(&mut self) {
+        self.cover = if Path::new(&format!("{}/cover.png", self.path)).exists() {
+            Some(std::fs::read(format!("{}/cover.png", self.path)).unwrap())
+        } else {
+            None
+        };
     }
 }
 
