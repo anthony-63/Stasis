@@ -28,6 +28,7 @@ impl ColorVertex {
     }
 }
 
+#[repr(packed)]
 #[derive(Clone, Debug, Copy)]
 pub struct TexturedVertex {
     pub vertex: Vector3,
