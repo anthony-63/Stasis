@@ -9,6 +9,8 @@ use super::{color::Color, Graphics};
 pub mod quad;
 pub mod textured_quad;
 pub mod text;
+pub mod sprite3d;
+pub mod camera;
 
 #[repr(packed)]
 #[derive(Copy, Clone, Debug)]
@@ -26,7 +28,6 @@ impl ColorVertex {
     }
 }
 
-#[repr(packed)]
 #[derive(Clone, Debug, Copy)]
 pub struct TexturedVertex {
     pub vertex: Vector3,
@@ -248,7 +249,7 @@ fn create_texture_from_image(
     } else if bpp == 4 {
         buffer_mem.mem_mut().copy_from_slice(pixels);
     } else {
-        error!("Invalid Pixel Format");
+        error!("Invalid Pixel Format({})", bpp);
     }
     buffer_mem.unmap();
 

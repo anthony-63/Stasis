@@ -2,6 +2,7 @@ use crate::{content::maps::beatmapset::BeatmapSet, core::{gfx::{color::Color, Gr
 
 use super::{game::GameScene, global::fps_counter::FpsCounter};
 
+#[derive(Default)]
 pub struct MenuScene {
     maps: Vec<BeatmapSet>,
 
@@ -13,6 +14,8 @@ impl MenuScene {
         Self {
             maps,
             fps_counter: None,
+
+            ..Default::default()
         }
     }
 }

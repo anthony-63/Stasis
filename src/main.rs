@@ -23,6 +23,6 @@ fn main() {
     
     tracing::subscriber::set_global_default(subscriber).unwrap();
 
-    let mut window = Window::new("Stasis", 1280, 720, LoadingScene::new());
+    let mut window = Window::new("Stasis", 1280, 720, Some("Assets/Game/Icon.png"), LoadingScene::new());
     window.run();
 }

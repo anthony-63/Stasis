@@ -1,6 +1,7 @@
 use color::Color;
-use objects::{quad::QuadObject, text::TextObject, textured_quad::TexturedQuadObject};
-use pipeline::GraphicsPipeline;
+use objects::{camera::CameraObject, quad::QuadObject, sprite3d::Sprite3dObject, text::TextObject, textured_quad::TexturedQuadObject};
+use pipeline::RenderPipeline;
+use sdl3::video::Window;
 
 use super::Vector2;
 
@@ -14,15 +15,15 @@ pub type ObjectId = usize;
 static mut WINDOW_SIZE: Option<Vector2> = None;
 
 pub struct Graphics {
-    pipeline: GraphicsPipeline,
+    pipeline: RenderPipeline,
 
     z_index: f32,
 }
 
 impl Graphics {
-    pub fn new(window: sdl3::video::Window) -> Self {
+    pub fn new(window: &sdl3::video::Window) -> Self {
         Self {
-            pipeline: GraphicsPipeline::new(window),
+            pipeline: RenderPipeline::new(window),
             z_index: 1.,
         }
     }
@@ -39,10 +40,18 @@ impl Graphics {
         self.pipeline.textured_quads.add_quad(quad, self.z_index, &self.pipeline.gpu, self.pipeline.copy_pass.as_ref().unwrap())
     }
 
+    pub fn add_sprite(&mut self, sprite: Sprite3dObject) -> usize {        
+        self.pipeline.sprites.add_sprite(sprite, &self.pipeline.gpu, self.pipeline.copy_pass.as_ref().unwrap())
+    }
+
     pub fn add_text(&mut self, text: TextObject) -> usize {
         self.z_index -= 0.0001;
         
         self.pipeline.text_objects.add_text(text, self.z_index, &self.pipeline.gpu, self.pipeline.copy_pass.as_ref().unwrap())
+    }
+
+    pub fn bind_camera(&mut self, cam: CameraObject) {
+        self.pipeline.bound_camera = Some(cam);
     }
 
     pub fn window_size() -> Vector2 {
@@ -98,8 +107,8 @@ impl Graphics {
         self.pipeline.resize(w as u32, h as u32);
     }
  
-    pub fn render(&mut self) {
-        self.pipeline.render();
+    pub fn render(&mut self, window: &Window) {
+        self.pipeline.render(window);
     }
 
     pub fn reset(&mut self) {

@@ -4,7 +4,7 @@ use crate::{content::maploader::MapLoader, core::{gfx::{color::Color, objects::{
 
 use super::{global::fps_counter::FpsCounter, menu::MenuScene};
 
-
+#[derive(Default)]
 pub struct LoadingScene {
     loading_text: ObjectId,
     fps: Option<FpsCounter>,
@@ -14,9 +14,9 @@ pub struct LoadingScene {
 impl LoadingScene {
     pub fn new() -> Self {
         Self {
-            loading_text: 0,
             first_render: false,
             fps: None,
+            ..Default::default()
         }
     }
 }

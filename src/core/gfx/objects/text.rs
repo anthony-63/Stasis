@@ -2,7 +2,7 @@
 
 
 use rusttype::{gpu_cache::{Cache, CacheBuilder}, point, Font, PositionedGlyph, Scale};
-use sdl3::gpu::TransferBuffer;
+use sdl3::gpu::{Buffer, BufferBinding, BufferUsageFlags, CopyPass, Device, Filter, GraphicsPipeline, IndexElementSize, RenderPass, Sampler, SamplerAddressMode, SamplerCreateInfo, SamplerMipmapMode, Texture, TextureCreateInfo, TextureFormat, TextureSamplerBinding, TextureType, TextureUsage, TransferBuffer, TransferBufferUsage};
 use tracing::info;
 
 use crate::core::{gfx::color::Color, Vector2, Vector3};
@@ -107,7 +107,7 @@ impl TextObject {
         }
     }
 
-    pub fn upload_text<'a>(&mut self, current_id: &mut usize, cache: &mut Cache<'a>, data: &mut [u8], cache_texture: &sdl3::gpu::Texture<'static>, transfer_buffer: &TransferBuffer, cached_fonts: &mut Vec<CachedFont<'a>>, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) {
+    pub fn upload_text<'a>(&mut self, current_id: &mut usize, cache: &mut Cache<'a>, data: &mut [u8], cache_texture: &Texture<'static>, transfer_buffer: &TransferBuffer, cached_fonts: &mut Vec<CachedFont<'a>>, gpu: &Device, copy_pass: &CopyPass) {
         let font;
         let id;
         if let Some(cached) = cached_fonts.iter().find(|f| f.size == self.font_size && f.path == self.font_path) {
@@ -206,19 +206,19 @@ pub struct TextObjectContainer<'a> {
     text_id: usize,
 
     cached_fonts: Vec<CachedFont<'a>>,
-    cache_texture: sdl3::gpu::Texture<'static>,
-    cache_transfer_buffer: sdl3::gpu::TransferBuffer,
+    cache_texture: Texture<'static>,
+    cache_transfer_buffer: TransferBuffer,
     data: Vec<u8>,
     cache: Cache<'a>,
 
     font_id: usize,
 
-    sampler: Option<sdl3::gpu::Sampler>,
-    transfer_buffer: sdl3::gpu::TransferBuffer,
+    sampler: Option<Sampler>,
+    transfer_buffer: TransferBuffer,
 }
 
 impl TextObjectContainer<'_> {
-    pub fn new(gpu: &sdl3::gpu::Device) -> Self {
+    pub fn new(gpu: &Device) -> Self {
         Self {
             texts: vec![],
             text_id: 0,
@@ -227,39 +227,39 @@ impl TextObjectContainer<'_> {
             sampler: None,
             cached_fonts: vec![],
             cache_texture: gpu.create_texture(
-                sdl3::gpu::TextureCreateInfo::new()
-                .with_format(sdl3::gpu::TextureFormat::R8g8b8a8Unorm)
-                .with_type(sdl3::gpu::TextureType::_2D)
+                TextureCreateInfo::new()
+                .with_format(TextureFormat::R8g8b8a8Unorm)
+                .with_type(TextureType::_2D)
                 .with_width(TEXTURE_WIDTH)
                 .with_height(TEXTURE_HEIGHT)
                 .with_layer_count_or_depth(1)
                 .with_num_levels(1)
-                .with_usage(sdl3::gpu::TextureUsage::Sampler | sdl3::gpu::TextureUsage::ColorTarget)).unwrap(),
+                .with_usage(TextureUsage::Sampler | TextureUsage::ColorTarget)).unwrap(),
             cache_transfer_buffer: gpu
                 .create_transfer_buffer()
                 .with_size(4 * TEXTURE_WIDTH * TEXTURE_HEIGHT)
-                .with_usage(sdl3::gpu::TransferBufferUsage::Upload)
+                .with_usage(TransferBufferUsage::Upload)
                 .build().unwrap(),
             cache: CacheBuilder::default().dimensions(TEXTURE_WIDTH, TEXTURE_HEIGHT).build(),
             
             transfer_buffer: gpu.create_transfer_buffer()
                 .with_size(((size_of::<TexturedVertex>() * 4 + size_of::<u16>() * 6) * MAX_TEXT) as u32)
-                .with_usage(sdl3::gpu::TransferBufferUsage::Upload)
+                .with_usage(TransferBufferUsage::Upload)
                 .build().unwrap(),
         }
     }
 
-    pub fn update(&mut self, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) {
+    pub fn update(&mut self, gpu: &Device, copy_pass: &CopyPass) {
         if self.sampler.is_none() {
             self.sampler = Some(
                 gpu.create_sampler(
-                    sdl3::gpu::SamplerCreateInfo::new()
-                        .with_min_filter(sdl3::gpu::Filter::Linear)
-                        .with_mag_filter(sdl3::gpu::Filter::Linear)
-                        .with_mipmap_mode(sdl3::gpu::SamplerMipmapMode::Linear)
-                        .with_address_mode_u(sdl3::gpu::SamplerAddressMode::Repeat)
-                        .with_address_mode_v(sdl3::gpu::SamplerAddressMode::Repeat)
-                        .with_address_mode_w(sdl3::gpu::SamplerAddressMode::Repeat),
+                    SamplerCreateInfo::new()
+                        .with_min_filter(Filter::Linear)
+                        .with_mag_filter(Filter::Linear)
+                        .with_mipmap_mode(SamplerMipmapMode::Linear)
+                        .with_address_mode_u(SamplerAddressMode::Repeat)
+                        .with_address_mode_v(SamplerAddressMode::Repeat)
+                        .with_address_mode_w(SamplerAddressMode::Repeat),
                 )
                 .unwrap(),
             );
@@ -281,8 +281,8 @@ impl TextObjectContainer<'_> {
 
     pub fn render(
         &mut self,
-        pipeline: sdl3::gpu::GraphicsPipeline,
-        render_pass: &sdl3::gpu::RenderPass,
+        pipeline: GraphicsPipeline,
+        render_pass: &RenderPass,
     ) {
         render_pass.bind_graphics_pipeline(&pipeline);
         for text in self.texts.iter() {
@@ -292,18 +292,18 @@ impl TextObjectContainer<'_> {
             render_pass.bind_vertex_buffers(
                 0,
                 &[
-                    sdl3::gpu::BufferBinding::new()
+                    BufferBinding::new()
                         .with_buffer(&text.buffers.as_ref().unwrap().vbo),
                 ],
             );
             render_pass.bind_index_buffer(
-                &sdl3::gpu::BufferBinding::new()
+                &BufferBinding::new()
                     .with_buffer(&text.buffers.as_ref().unwrap().ibo),
-                    sdl3::gpu::IndexElementSize::_16Bit
+                    IndexElementSize::_16Bit
             );
             render_pass.bind_fragment_sampler(
                 0,
-                &[sdl3::gpu::TextureSamplerBinding::new()
+                &[TextureSamplerBinding::new()
                     .with_texture(&self.cache_texture)
                     .with_sampler(self.sampler.as_ref().unwrap())],
             );
@@ -311,7 +311,7 @@ impl TextObjectContainer<'_> {
         }
     }
 
-    pub fn add_text(&mut self, obj: TextObject, z: f32, gpu: &sdl3::gpu::Device, copy_pass: &sdl3::gpu::CopyPass) -> usize {
+    pub fn add_text(&mut self, obj: TextObject, z: f32, gpu: &Device, copy_pass: &CopyPass) -> usize {
         let mut text = obj;
         text.z = z;
         
@@ -337,16 +337,16 @@ impl TextObjectContainer<'_> {
 }
 
 pub struct TextObjectBuffers {
-    vbo: sdl3::gpu::Buffer,
-    ibo: sdl3::gpu::Buffer,
+    vbo: Buffer,
+    ibo: Buffer,
 }
 
 impl TextObjectBuffers {
     pub fn setup(
         obj: &TextObject,
         transfer_buffer: &TransferBuffer,
-        gpu: &sdl3::gpu::Device,
-        copy_pass: &sdl3::gpu::CopyPass,
+        gpu: &Device,
+        copy_pass: &CopyPass,
     ) -> Self {
         let ind: Vec<u16> = vec![0, 1, 2, 0, 2, 3];
         let mut indices = vec![];
@@ -363,7 +363,7 @@ impl TextObjectBuffers {
             gpu,
             transfer_buffer,
             copy_pass,
-            sdl3::gpu::BufferUsageFlags::Vertex,
+            BufferUsageFlags::Vertex,
             &obj.verts,
         )
         .unwrap();
@@ -372,7 +372,7 @@ impl TextObjectBuffers {
             gpu,
             transfer_buffer,
             copy_pass,
-            sdl3::gpu::BufferUsageFlags::Index,
+            BufferUsageFlags::Index,
             &indices,
         )
         .unwrap();
@@ -384,8 +384,8 @@ impl TextObjectBuffers {
         &self,
         obj: &TextObject,
         transfer_buffer: &TransferBuffer,
-        gpu: &sdl3::gpu::Device,
-        copy_pass: &sdl3::gpu::CopyPass,
+        gpu: &Device,
+        copy_pass: &CopyPass,
     ) {
         let ind: Vec<u16> = vec![0, 1, 2, 0, 2, 3];
         let mut indices = vec![];

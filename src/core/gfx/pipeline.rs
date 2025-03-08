@@ -1,41 +1,46 @@
+use sdl3::{gpu::{BlendFactor, BlendOp, ColorTargetBlendState, ColorTargetDescription, ColorTargetInfo, CommandBuffer, CompareOp, CopyPass, DepthStencilState, DepthStencilTargetInfo, Device, GraphicsPipeline, GraphicsPipelineTargetInfo, LoadOp, PrimitiveType, SampleCount, Shader, ShaderFormat, ShaderStage, StoreOp, Texture, TextureCreateInfo, TextureFormat, TextureType, TextureUsage, VertexAttribute, VertexBufferDescription, VertexElementFormat, VertexInputRate, VertexInputState}, video::Window};
 use tracing::{debug, error, info, warn};
 
 use crate::core::Vector2;
 
 use super::{
     color::Color,
-    objects::{quad::QuadsContainer, text::TextObjectContainer, textured_quad::TexturedQuadsContainer, ColorVertex, TexturedVertex},
+    objects::{camera::CameraObject, quad::QuadsContainer, sprite3d::Sprite3dObjectsContainer, text::TextObjectContainer, textured_quad::TexturedQuadsContainer, ColorVertex, TexturedVertex},
     shader_compiler::ShaderCompiler, WINDOW_SIZE,
 };
 
-pub struct GraphicsPipeline {
-    window: sdl3::video::Window,
-    pub gpu: sdl3::gpu::Device,
+pub struct RenderPipeline {
+    pub gpu: Device,
     pub clear_color: Color,
 
-    pub copy_pass: Option<sdl3::gpu::CopyPass>,
-    pub copy_cmd_buffer: Option<sdl3::gpu::CommandBuffer>,
+    pub copy_pass: Option<CopyPass>,
+    pub copy_cmd_buffer: Option<CommandBuffer>,
     
-    pub depth_texture: sdl3::gpu::Texture<'static>,
+    pub depth_texture: Texture<'static>,
 
-    pub basic_pipeline: sdl3::gpu::GraphicsPipeline,
+    pub basic_pipeline: GraphicsPipeline,
     pub quads: QuadsContainer,
 
-    pub textured_quad_pipeline: sdl3::gpu::GraphicsPipeline,
+    pub textured_quad_pipeline: GraphicsPipeline,
     pub textured_quads: TexturedQuadsContainer,
 
-    pub text_object_pipeline: sdl3::gpu::GraphicsPipeline,
+    pub text_object_pipeline: GraphicsPipeline,
     pub text_objects: TextObjectContainer<'static>,
+
+    pub sprite_object_pipeline: GraphicsPipeline,
+    pub sprites: Sprite3dObjectsContainer,
+
+    pub bound_camera: Option<CameraObject>,
 }
 
-impl GraphicsPipeline {
-    pub fn new(window: sdl3::video::Window) -> Self {
+impl RenderPipeline {
+    pub fn new(window: &sdl3::video::Window) -> Self {
         setup_logger();
 
         let clear_color = Color::from_rgb(0, 0, 0);
-        let gpu = sdl3::gpu::Device::new(sdl3::gpu::ShaderFormat::SpirV, true)
+        let gpu = Device::new(ShaderFormat::SpirV, false)
             .expect("Failed to create GPU Device")
-            .with_window(&window)
+            .with_window(window)
             .expect("Failed to claim window");
         let shader_compiler = ShaderCompiler::new();
 
@@ -46,6 +51,7 @@ impl GraphicsPipeline {
         }
 
         Self {
+            bound_camera: None,
             basic_pipeline: Self::make_basic_pipeline(
                 &gpu,
                 window.clone(),
@@ -67,19 +73,24 @@ impl GraphicsPipeline {
             ),
             text_objects: TextObjectContainer::new(&gpu),
 
+            sprite_object_pipeline: Self::make_sprite_pipeline(
+                &gpu,
+                window.clone(),
+                &shader_compiler,
+            ),
+            sprites: Sprite3dObjectsContainer::new(&gpu),
+
             depth_texture: gpu.create_texture(
-                sdl3::gpu::TextureCreateInfo::new()
-                    .with_type(sdl3::gpu::TextureType::_2D)
+                TextureCreateInfo::new()
+                    .with_type(TextureType::_2D)
                     .with_width(width)
                     .with_height(height)
                     .with_layer_count_or_depth(1)
                     .with_num_levels(1)
-                    .with_sample_count(sdl3::gpu::SampleCount::NoMultiSampling)
-                    .with_format(sdl3::gpu::TextureFormat::D16Unorm)
-                    .with_usage(sdl3::gpu::TextureUsage::Sampler | sdl3::gpu::TextureUsage::DepthStencilTarget),
+                    .with_sample_count(SampleCount::NoMultiSampling)
+                    .with_format(TextureFormat::D16Unorm)
+                    .with_usage(TextureUsage::Sampler | TextureUsage::DepthStencilTarget),
             ).unwrap(),
-
-            window,
             gpu,
 
             clear_color,
@@ -90,23 +101,23 @@ impl GraphicsPipeline {
     }
 
     fn make_basic_pipeline(
-        gpu: &sdl3::gpu::Device,
+        gpu: &Device,
         window: sdl3::video::Window,
         compiler: &ShaderCompiler,
-    ) -> sdl3::gpu::GraphicsPipeline {
+    ) -> GraphicsPipeline {
         let vertex_source = compiler.compile(
-            include_str!("../../shaders/basic.hlsl.vert"),
+            include_str!("../../shaders/basic.vert"),
             super::shader_compiler::ShaderKind::Vertex,
-        );
+        ).expect("Failed to compile basic.vert");
         let fragment_source = compiler.compile(
-            include_str!("../../shaders/basic.hlsl.frag"),
+            include_str!("../../shaders/basic.frag"),
             super::shader_compiler::ShaderKind::Fragment,
-        );
+        ).expect("Failed to compile basic.frag");
         
         let vertex = load_shader(
             gpu.clone(),
             &vertex_source,
-            sdl3::gpu::ShaderStage::Vertex,
+            ShaderStage::Vertex,
             0,
             0,
             0,
@@ -115,7 +126,7 @@ impl GraphicsPipeline {
         let fragment = load_shader(
             gpu.clone(),
             &fragment_source,
-            sdl3::gpu::ShaderStage::Fragment,
+            ShaderStage::Fragment,
             0,
             0,
             0,
@@ -127,45 +138,45 @@ impl GraphicsPipeline {
             .with_vertex_shader(&vertex)
             .with_fragment_shader(&fragment)
             .with_vertex_input_state(
-                sdl3::gpu::VertexInputState::new()
-                    .with_vertex_buffer_descriptions(&[sdl3::gpu::VertexBufferDescription::new()
+                VertexInputState::new()
+                    .with_vertex_buffer_descriptions(&[VertexBufferDescription::new()
                         .with_slot(0)
                         .with_pitch(size_of::<ColorVertex>() as u32)
-                        .with_input_rate(sdl3::gpu::VertexInputRate::Vertex)
+                        .with_input_rate(VertexInputRate::Vertex)
                         .with_instance_step_rate(0)])
                     .with_vertex_attributes(&[
-                        sdl3::gpu::VertexAttribute::new()
+                        VertexAttribute::new()
                             .with_location(0)
-                            .with_format(sdl3::gpu::VertexElementFormat::Float4)
+                            .with_format(VertexElementFormat::Float4)
                             .with_offset((size_of::<f32>() * 3) as u32),
-                        sdl3::gpu::VertexAttribute::new()
+                        VertexAttribute::new()
                             .with_location(1)
-                            .with_format(sdl3::gpu::VertexElementFormat::Float3)
+                            .with_format(VertexElementFormat::Float3)
                             .with_offset(0),
                     ]),
             )
             .with_depth_stencil_state(
-                sdl3::gpu::DepthStencilState::new()
+                DepthStencilState::new()
                     .with_enable_depth_test(true)
                     .with_enable_depth_write(true)
-                    .with_compare_op(sdl3::gpu::CompareOp::Less),
+                    .with_compare_op(CompareOp::Less),
             )
             .with_target_info(
-                sdl3::gpu::GraphicsPipelineTargetInfo::new()
+                GraphicsPipelineTargetInfo::new()
                         .with_has_depth_stencil_target(true)
-                        .with_depth_stencil_format(sdl3::gpu::TextureFormat::D16Unorm)
-                        .with_color_target_descriptions(&[sdl3::gpu::ColorTargetDescription::new()
-                        .with_blend_state(sdl3::gpu::ColorTargetBlendState::new()
+                        .with_depth_stencil_format(TextureFormat::D16Unorm)
+                        .with_color_target_descriptions(&[ColorTargetDescription::new()
+                        .with_blend_state(ColorTargetBlendState::new()
                             .with_enable_blend(true)
-                            .with_alpha_blend_op(sdl3::gpu::BlendOp::Add)
-                            .with_color_blend_op(sdl3::gpu::BlendOp::Add)
-                            .with_dst_alpha_blendfactor(sdl3::gpu::BlendFactor::OneMinusSrcAlpha)
-                            .with_dst_color_blendfactor(sdl3::gpu::BlendFactor::OneMinusSrcAlpha)
-                            .with_src_alpha_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha)
-                            .with_src_color_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha))
+                            .with_alpha_blend_op(BlendOp::Add)
+                            .with_color_blend_op(BlendOp::Add)
+                            .with_dst_alpha_blendfactor(BlendFactor::OneMinusSrcAlpha)
+                            .with_dst_color_blendfactor(BlendFactor::OneMinusSrcAlpha)
+                            .with_src_alpha_blendfactor(BlendFactor::SrcAlpha)
+                            .with_src_color_blendfactor(BlendFactor::SrcAlpha))
                         .with_format(gpu.get_swapchain_texture_format(&window))]),
             )
-            .with_primitive_type(sdl3::gpu::PrimitiveType::TriangleList)
+            .with_primitive_type(PrimitiveType::TriangleList)
             .build()
             .unwrap();
 
@@ -176,23 +187,23 @@ impl GraphicsPipeline {
     }
 
     fn make_textured_quad_pipeline(
-        gpu: &sdl3::gpu::Device,
+        gpu: &Device,
         window: sdl3::video::Window,
         compiler: &ShaderCompiler,
-    ) -> sdl3::gpu::GraphicsPipeline {
+    ) -> GraphicsPipeline {
         let vertex_source = compiler.compile(
-            include_str!("../../shaders/textured.hlsl.vert"),
+            include_str!("../../shaders/textured.vert"),
             super::shader_compiler::ShaderKind::Vertex,
-        );
+        ).expect("Failed to compile textured.vert");
         let fragment_source = compiler.compile(
-            include_str!("../../shaders/textured.hlsl.frag"),
+            include_str!("../../shaders/textured.frag"),
             super::shader_compiler::ShaderKind::Fragment,
-        );
+        ).expect("Failed to compile textured.frag");
 
         let vertex = load_shader(
             gpu.clone(),
             &vertex_source,
-            sdl3::gpu::ShaderStage::Vertex,
+            ShaderStage::Vertex,
             0,
             0,
             0,
@@ -201,7 +212,7 @@ impl GraphicsPipeline {
         let fragment = load_shader(
             gpu.clone(),
             &fragment_source,
-            sdl3::gpu::ShaderStage::Fragment,
+            ShaderStage::Fragment,
             1,
             0,
             0,
@@ -213,47 +224,135 @@ impl GraphicsPipeline {
             .with_vertex_shader(&vertex)
             .with_fragment_shader(&fragment)
             .with_vertex_input_state(
-                sdl3::gpu::VertexInputState::new()
-                    .with_vertex_buffer_descriptions(&[sdl3::gpu::VertexBufferDescription::new()
+                VertexInputState::new()
+                    .with_vertex_buffer_descriptions(&[VertexBufferDescription::new()
                         .with_slot(0)
                         .with_pitch(size_of::<TexturedVertex>() as u32)
-                        .with_input_rate(sdl3::gpu::VertexInputRate::Vertex)
+                        .with_input_rate(VertexInputRate::Vertex)
                         .with_instance_step_rate(0)])
                     .with_vertex_attributes(&[
-                        sdl3::gpu::VertexAttribute::new()
+                        VertexAttribute::new()
                             .with_buffer_slot(0)
                             .with_location(0)
-                            .with_format(sdl3::gpu::VertexElementFormat::Float3)
+                            .with_format(VertexElementFormat::Float3)
                             .with_offset(0),
-                        sdl3::gpu::VertexAttribute::new()
+                        VertexAttribute::new()
                             .with_buffer_slot(0)
                             .with_location(1)
-                            .with_format(sdl3::gpu::VertexElementFormat::Float2)
+                            .with_format(VertexElementFormat::Float2)
                             .with_offset((size_of::<f32>() * 3) as u32),
                     ]),
             )
             .with_depth_stencil_state(
-                sdl3::gpu::DepthStencilState::new()
+                DepthStencilState::new()
                     .with_enable_depth_test(true)
                     .with_enable_depth_write(true)
-                    .with_compare_op(sdl3::gpu::CompareOp::Less),
+                    .with_compare_op(CompareOp::Less),
             )
             .with_target_info(
-                sdl3::gpu::GraphicsPipelineTargetInfo::new()
+                GraphicsPipelineTargetInfo::new()
                         .with_has_depth_stencil_target(true)
-                        .with_depth_stencil_format(sdl3::gpu::TextureFormat::D16Unorm)
-                        .with_color_target_descriptions(&[sdl3::gpu::ColorTargetDescription::new()
-                        .with_blend_state(sdl3::gpu::ColorTargetBlendState::new()
+                        .with_depth_stencil_format(TextureFormat::D16Unorm)
+                        .with_color_target_descriptions(&[ColorTargetDescription::new()
+                        .with_blend_state(ColorTargetBlendState::new()
                             .with_enable_blend(true)
-                            .with_alpha_blend_op(sdl3::gpu::BlendOp::Add)
-                            .with_color_blend_op(sdl3::gpu::BlendOp::Add)
-                            .with_dst_alpha_blendfactor(sdl3::gpu::BlendFactor::OneMinusSrcAlpha)
-                            .with_dst_color_blendfactor(sdl3::gpu::BlendFactor::OneMinusSrcAlpha)
-                            .with_src_alpha_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha)
-                            .with_src_color_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha))
+                            .with_alpha_blend_op(BlendOp::Add)
+                            .with_color_blend_op(BlendOp::Add)
+                            .with_dst_alpha_blendfactor(BlendFactor::OneMinusSrcAlpha)
+                            .with_dst_color_blendfactor(BlendFactor::OneMinusSrcAlpha)
+                            .with_src_alpha_blendfactor(BlendFactor::SrcAlpha)
+                            .with_src_color_blendfactor(BlendFactor::SrcAlpha))
                         .with_format(gpu.get_swapchain_texture_format(&window))]),
             )
-            .with_primitive_type(sdl3::gpu::PrimitiveType::TriangleList)
+            .with_primitive_type(PrimitiveType::TriangleList)
+            .build()
+            .unwrap();
+
+        drop(vertex);
+        drop(fragment);
+
+        pipeline
+    }
+
+    fn make_sprite_pipeline(
+        gpu: &Device,
+        window: sdl3::video::Window,
+        compiler: &ShaderCompiler,
+    ) -> GraphicsPipeline {
+        let vertex_source = compiler.compile(
+            include_str!("../../shaders/three-d.vert"),
+            super::shader_compiler::ShaderKind::Vertex,
+        ).expect("Failed to compile three-d.vert");
+        let fragment_source = compiler.compile(
+            include_str!("../../shaders/three-d.frag"),
+            super::shader_compiler::ShaderKind::Fragment,
+        ).expect("Failed to compile three-d.frag");
+
+        let vertex = load_shader(
+            gpu.clone(),
+            &vertex_source,
+            ShaderStage::Vertex,
+            0,
+            1,
+            0,
+            0,
+        );
+        let fragment = load_shader(
+            gpu.clone(),
+            &fragment_source,
+            ShaderStage::Fragment,
+            1,
+            0,
+            0,
+            0,
+        );
+
+        let pipeline = gpu
+            .create_graphics_pipeline()
+            .with_vertex_shader(&vertex)
+            .with_fragment_shader(&fragment)
+            .with_vertex_input_state(
+                VertexInputState::new()
+                    .with_vertex_buffer_descriptions(&[VertexBufferDescription::new()
+                        .with_slot(0)
+                        .with_pitch(size_of::<TexturedVertex>() as u32)
+                        .with_input_rate(VertexInputRate::Vertex)
+                        .with_instance_step_rate(0)])
+                    .with_vertex_attributes(&[
+                        VertexAttribute::new()
+                            .with_buffer_slot(0)
+                            .with_location(0)
+                            .with_format(VertexElementFormat::Float3)
+                            .with_offset(0),
+                        VertexAttribute::new()
+                            .with_buffer_slot(0)
+                            .with_location(1)
+                            .with_format(VertexElementFormat::Float2)
+                            .with_offset((size_of::<f32>() * 3) as u32),
+                    ]),
+            )
+            .with_depth_stencil_state(
+                DepthStencilState::new()
+                    .with_enable_depth_test(true)
+                    .with_enable_depth_write(true)
+                    .with_compare_op(CompareOp::Less),
+            )
+            .with_target_info(
+                GraphicsPipelineTargetInfo::new()
+                        .with_has_depth_stencil_target(true)
+                        .with_depth_stencil_format(TextureFormat::D16Unorm)
+                        .with_color_target_descriptions(&[ColorTargetDescription::new()
+                        .with_blend_state(ColorTargetBlendState::new()
+                            .with_enable_blend(true)
+                            .with_alpha_blend_op(BlendOp::Add)
+                            .with_color_blend_op(BlendOp::Add)
+                            .with_dst_alpha_blendfactor(BlendFactor::OneMinusSrcAlpha)
+                            .with_dst_color_blendfactor(BlendFactor::OneMinusSrcAlpha)
+                            .with_src_alpha_blendfactor(BlendFactor::SrcAlpha)
+                            .with_src_color_blendfactor(BlendFactor::SrcAlpha))
+                        .with_format(gpu.get_swapchain_texture_format(&window))]),
+            )
+            .with_primitive_type(PrimitiveType::TriangleList)
             .build()
             .unwrap();
 
@@ -264,23 +363,23 @@ impl GraphicsPipeline {
     }
 
     fn make_text_pipeline(
-        gpu: &sdl3::gpu::Device,
+        gpu: &Device,
         window: sdl3::video::Window,
         compiler: &ShaderCompiler,
-    ) -> sdl3::gpu::GraphicsPipeline {
+    ) -> GraphicsPipeline {
         let vertex_source = compiler.compile(
-            include_str!("../../shaders/textured.hlsl.vert"),
+            include_str!("../../shaders/textured.vert"),
             super::shader_compiler::ShaderKind::Vertex,
-        );
+        ).expect("Failed to compile textured.vert");
         let fragment_source = compiler.compile(
-            include_str!("../../shaders/textured.hlsl.frag"),
+            include_str!("../../shaders/textured.frag"),
             super::shader_compiler::ShaderKind::Fragment,
-        );
+        ).expect("Failed to compile textured.frag");
 
         let vertex = load_shader(
             gpu.clone(),
             &vertex_source,
-            sdl3::gpu::ShaderStage::Vertex,
+            ShaderStage::Vertex,
             0,
             0,
             0,
@@ -289,7 +388,7 @@ impl GraphicsPipeline {
         let fragment = load_shader(
             gpu.clone(),
             &fragment_source,
-            sdl3::gpu::ShaderStage::Fragment,
+            ShaderStage::Fragment,
             1,
             0,
             0,
@@ -301,47 +400,47 @@ impl GraphicsPipeline {
             .with_vertex_shader(&vertex)
             .with_fragment_shader(&fragment)
             .with_vertex_input_state(
-                sdl3::gpu::VertexInputState::new()
-                    .with_vertex_buffer_descriptions(&[sdl3::gpu::VertexBufferDescription::new()
+                VertexInputState::new()
+                    .with_vertex_buffer_descriptions(&[VertexBufferDescription::new()
                         .with_slot(0)
                         .with_pitch(size_of::<TexturedVertex>() as u32)
-                        .with_input_rate(sdl3::gpu::VertexInputRate::Vertex)
+                        .with_input_rate(VertexInputRate::Vertex)
                         .with_instance_step_rate(0)])
                     .with_vertex_attributes(&[
-                        sdl3::gpu::VertexAttribute::new()
+                        VertexAttribute::new()
                             .with_buffer_slot(0)
                             .with_location(0)
-                            .with_format(sdl3::gpu::VertexElementFormat::Float3)
+                            .with_format(VertexElementFormat::Float3)
                             .with_offset(0),
-                        sdl3::gpu::VertexAttribute::new()
+                        VertexAttribute::new()
                             .with_buffer_slot(0)
                             .with_location(1)
-                            .with_format(sdl3::gpu::VertexElementFormat::Float2)
+                            .with_format(VertexElementFormat::Float2)
                             .with_offset((size_of::<f32>() * 3) as u32),
                     ]),
             )
             .with_depth_stencil_state(
-                sdl3::gpu::DepthStencilState::new()
+                DepthStencilState::new()
                     .with_enable_depth_test(true)
                     .with_enable_depth_write(true)
-                    .with_compare_op(sdl3::gpu::CompareOp::Less),
+                    .with_compare_op(CompareOp::Less),
             )
             .with_target_info(
-                sdl3::gpu::GraphicsPipelineTargetInfo::new()
+                GraphicsPipelineTargetInfo::new()
                     .with_has_depth_stencil_target(true)
-                    .with_depth_stencil_format(sdl3::gpu::TextureFormat::D16Unorm)
-                    .with_color_target_descriptions(&[sdl3::gpu::ColorTargetDescription::new()
-                        .with_blend_state(sdl3::gpu::ColorTargetBlendState::new()
+                    .with_depth_stencil_format(TextureFormat::D16Unorm)
+                    .with_color_target_descriptions(&[ColorTargetDescription::new()
+                        .with_blend_state(ColorTargetBlendState::new()
                             .with_enable_blend(true)
-                            .with_alpha_blend_op(sdl3::gpu::BlendOp::Add)
-                            .with_color_blend_op(sdl3::gpu::BlendOp::Add)
-                            .with_dst_alpha_blendfactor(sdl3::gpu::BlendFactor::OneMinusSrcAlpha)
-                            .with_dst_color_blendfactor(sdl3::gpu::BlendFactor::OneMinusSrcAlpha)
-                            .with_src_alpha_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha)
-                            .with_src_color_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha))
+                            .with_alpha_blend_op(BlendOp::Add)
+                            .with_color_blend_op(BlendOp::Add)
+                            .with_dst_alpha_blendfactor(BlendFactor::OneMinusSrcAlpha)
+                            .with_dst_color_blendfactor(BlendFactor::OneMinusSrcAlpha)
+                            .with_src_alpha_blendfactor(BlendFactor::SrcAlpha)
+                            .with_src_color_blendfactor(BlendFactor::SrcAlpha))
                         .with_format(gpu.get_swapchain_texture_format(&window))]),
             )
-            .with_primitive_type(sdl3::gpu::PrimitiveType::TriangleList)
+            .with_primitive_type(PrimitiveType::TriangleList)
             .build()
             .unwrap();
 
@@ -353,14 +452,14 @@ impl GraphicsPipeline {
     
 
     /*
-        .with_blend_state(sdl3::gpu::ColorTargetBlendState::new()
+        .with_blend_state(ColorTargetBlendState::new()
                             .with_enable_blend(true)
-                            .with_alpha_blend_op(sdl3::gpu::BlendOp::Add)
-                            .with_color_blend_op(sdl3::gpu::BlendOp::Add)
-                            .with_dst_alpha_blendfactor(sdl3::gpu::BlendFactor::OneMinusSrcAlpha)
-                            .with_dst_color_blendfactor(sdl3::gpu::BlendFactor::OneMinusSrcColor)
-                            .with_src_alpha_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha)
-                            .with_src_color_blendfactor(sdl3::gpu::BlendFactor::SrcAlpha))
+                            .with_alpha_blend_op(BlendOp::Add)
+                            .with_color_blend_op(BlendOp::Add)
+                            .with_dst_alpha_blendfactor(BlendFactor::OneMinusSrcAlpha)
+                            .with_dst_color_blendfactor(BlendFactor::OneMinusSrcColor)
+                            .with_src_alpha_blendfactor(BlendFactor::SrcAlpha)
+                            .with_src_color_blendfactor(BlendFactor::SrcAlpha))
      */
 
     pub fn begin_upload(&mut self) {
@@ -379,15 +478,15 @@ impl GraphicsPipeline {
 
     pub fn resize(&mut self, w: u32, h: u32) {
         self.depth_texture = self.gpu.create_texture(
-            sdl3::gpu::TextureCreateInfo::new()
-                .with_type(sdl3::gpu::TextureType::_2D)
+            TextureCreateInfo::new()
+                .with_type(TextureType::_2D)
                 .with_width(w)
                 .with_height(h)
                 .with_layer_count_or_depth(1)
                 .with_num_levels(1)
-                .with_sample_count(sdl3::gpu::SampleCount::NoMultiSampling)
-                .with_format(sdl3::gpu::TextureFormat::D16Unorm)
-                .with_usage(sdl3::gpu::TextureUsage::Sampler | sdl3::gpu::TextureUsage::DepthStencilTarget),
+                .with_sample_count(SampleCount::NoMultiSampling)
+                .with_format(TextureFormat::D16Unorm)
+                .with_usage(TextureUsage::Sampler | TextureUsage::DepthStencilTarget),
         ).unwrap()
     }
 
@@ -396,37 +495,46 @@ impl GraphicsPipeline {
             .update(&self.gpu, self.copy_pass.as_ref().unwrap());
         self.textured_quads
             .update(&self.gpu, self.copy_pass.as_ref().unwrap());
+        self.sprites
+            .update(&self.gpu, self.copy_pass.as_ref().unwrap());
         self.text_objects
             .update(&self.gpu, self.copy_pass.as_ref().unwrap());
     }
 
-    pub fn render(&mut self) {
+    pub fn render(&mut self, window: &Window) {
         let mut cmd_buffer = self.gpu.acquire_command_buffer().unwrap();
 
-        if let Ok(swapchain_texture) = cmd_buffer.wait_and_acquire_swapchain_texture(&self.window) {
-            let color_targets = [sdl3::gpu::ColorTargetInfo::default()
+        if let Ok(swapchain_texture) = cmd_buffer.wait_and_acquire_swapchain_texture(window) {
+            let color_targets = [ColorTargetInfo::default()
                 .with_texture(&swapchain_texture)
                 .with_clear_color(self.clear_color.sdl_color())
-                .with_load_op(sdl3::gpu::LoadOp::Clear)
-                .with_store_op(sdl3::gpu::StoreOp::Store)];
-            let depth_target = sdl3::gpu::DepthStencilTargetInfo::new()
+                .with_load_op(LoadOp::Clear)
+                .with_store_op(StoreOp::Store)];
+            let depth_target = DepthStencilTargetInfo::new()
                 .with_texture(&mut self.depth_texture)
                 .with_cycle(false)
                 .with_clear_depth(1.0)
                 .with_clear_stencil(0)
-                .with_load_op(sdl3::gpu::LoadOp::Clear)
-                .with_store_op(sdl3::gpu::StoreOp::Store)
-                .with_stencil_load_op(sdl3::gpu::LoadOp::Clear)
-                .with_stencil_store_op(sdl3::gpu::StoreOp::Store);
+                .with_load_op(LoadOp::Clear)
+                .with_store_op(StoreOp::Store)
+                .with_stencil_load_op(LoadOp::Clear)
+                .with_stencil_store_op(StoreOp::Store);
 
             let render_pass = self
                 .gpu
                 .begin_render_pass(&cmd_buffer, &color_targets, Some(&depth_target))
                 .unwrap();
 
+            if self.bound_camera.is_some() {
+                self.bound_camera.as_mut().unwrap().update_matrices();
+                self.bound_camera.as_ref().unwrap().push_matrices(&cmd_buffer);
+            }
+
             self.quads.render(self.basic_pipeline.clone(), &render_pass);
             self.textured_quads.render(self.textured_quad_pipeline.clone(), &render_pass);
+            self.sprites.render(self.sprite_object_pipeline.clone(), &render_pass);
             self.text_objects.render(self.text_object_pipeline.clone(), &render_pass);
+
 
             self.gpu.end_render_pass(render_pass);
 
@@ -440,6 +548,7 @@ impl GraphicsPipeline {
         self.quads.clear();
         self.textured_quads.clear();
         self.text_objects.clear();
+        self.sprites.clear();
     }
 }
 
@@ -458,16 +567,16 @@ fn setup_logger() {
 }
 
 fn load_shader(
-    gpu: sdl3::gpu::Device,
+    gpu: Device,
     code: &[u8],
-    stage: sdl3::gpu::ShaderStage,
+    stage: ShaderStage,
     sampler_count: u32,
     ubo_count: u32,
     sbo_count: u32,
     storage_tex_count: u32,
-) -> sdl3::gpu::Shader {
+) -> Shader {
     gpu.create_shader()
-        .with_code(sdl3::gpu::ShaderFormat::SpirV, code, stage)
+        .with_code(ShaderFormat::SpirV, code, stage)
         .with_entrypoint("main")
         .with_samplers(sampler_count)
         .with_uniform_buffers(ubo_count)

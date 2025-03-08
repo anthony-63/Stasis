@@ -15,7 +15,7 @@ pub enum AudioType {
 }
 
 impl AudioType {
-    fn compare_bytes(buffer: &Vec<u8>, index: u64, bytes: Vec<u8>) -> bool {
+    fn compare_bytes(buffer: &[u8], index: u64, bytes: Vec<u8>) -> bool {
         for (i, b) in bytes.into_iter().enumerate() {
             if b != buffer[i + index as usize] {
                 return false;
