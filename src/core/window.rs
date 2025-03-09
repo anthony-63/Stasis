@@ -2,10 +2,11 @@ use std::time::SystemTime;
 
 use sdl3::{event::Event, surface::Surface};
 
-use super::{gfx::Graphics, scene::{Scene, SceneSwapper}};
+use super::{gfx::Graphics, input::Input, scene::{Scene, SceneSwapper}};
 
 pub struct Window {
     gfx: Graphics,
+    input: Input,
     context: sdl3::Sdl,
     swapper: SceneSwapper,
     window: sdl3::video::Window,
@@ -17,7 +18,9 @@ impl Window {
         sdl3::hint::set(sdl3::hint::names::RENDER_VSYNC, "0");
         sdl3::hint::set(sdl3::hint::names::RENDER_GPU_DEBUG, "0");
         sdl3::hint::set(sdl3::hint::names::RENDER_VULKAN_DEBUG, "0");
+
         let context = sdl3::init().expect("Failed to initialize SDL3");
+        let mouse = context.mouse();
         let video = context.video().expect("Failed to initialize SDL3 Video");
         let mut window = video.window(title, width, height).build().expect("Failed to create SDL3 Window");
         let gfx = Graphics::new(&window);
@@ -33,6 +36,7 @@ impl Window {
             context,
             gfx,
             window,
+            input: Input::new(mouse),
             swapper: SceneSwapper::new(initial_scene),
         }
     }
@@ -54,12 +58,15 @@ impl Window {
                 if let Event::Quit { .. } = ev { break 'running }
                 if let Event::Window { win_event, .. } = ev {
                     if let sdl3::event::WindowEvent::Resized(w, h) = win_event { self.gfx.resize(w, h) }
-                } 
+                }
+                self.input.update(&self.window, ev);
             }
 
+            
             self.gfx.update();
-            self.swapper.update(&mut self.gfx, dt);
+            self.swapper.update(&mut self.gfx, &mut self.input, dt);
             self.gfx.render(&self.window);
+            self.input.update(&self.window, Event::Unknown { timestamp: 0, type_: 0 });
         }
     }
 }

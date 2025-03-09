@@ -1,4 +1,4 @@
-use crate::{content::maps::beatmapset::BeatmapSet, core::{gfx::{color::Color, Graphics}, scene::Scene}};
+use crate::{content::maps::beatmapset::BeatmapSet, core::{gfx::{color::Color, Graphics}, input::Input, scene::Scene}};
 
 use super::{game::GameScene, global::fps_counter::FpsCounter};
 
@@ -27,7 +27,7 @@ impl Scene for MenuScene {
         self.fps_counter = Some(FpsCounter::new(gfx));
     }
 
-    fn update(&mut self, gfx: &mut Graphics, dt: f64) -> Option<Box<dyn Scene + 'static>> {
+    fn update(&mut self, gfx: &mut Graphics, input: &mut Input, dt: f64) -> Option<Box<dyn Scene + 'static>> {
         self.fps_counter.as_mut().unwrap().update(gfx, dt);
         
         Some(Box::new(GameScene::new(self.maps[3].clone())))

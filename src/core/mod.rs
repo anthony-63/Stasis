@@ -2,6 +2,7 @@ pub mod window;
 pub mod scene;
 pub mod gfx;
 pub mod ui;
+pub mod input;
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Vector2 {

@@ -1,16 +1,16 @@
+use player::Player;
 use tracing::info;
 
-use crate::{content::maps::beatmapset::BeatmapSet, core::{gfx::{color::Color, objects::{camera::CameraObject, sprite3d::Sprite3dObject}, Graphics, ObjectId}, scene::Scene, Vector3}};
+use crate::{content::maps::beatmapset::BeatmapSet, core::{gfx::{color::Color, objects::{camera::CameraObject, sprite3d::Sprite3dObject}, Graphics, ObjectId}, input::Input, scene::Scene, Vector3}};
 
 use super::global::fps_counter::FpsCounter;
-
+pub mod player;
 
 #[derive(Default)]
 pub struct GameScene {
     map: BeatmapSet,
 
-    grid: ObjectId,
-    cursor: ObjectId,
+    player: Option<Player>,
     fps_counter: Option<FpsCounter>,
 }
 
@@ -19,6 +19,7 @@ impl GameScene {
         Self {
             map,
             fps_counter: None,
+            player: None,
             ..Default::default()
         }
     }
@@ -31,18 +32,17 @@ impl Scene for GameScene {
         self.map.load_difficulties();
         info!("Playing map: {}[{}]", self.map.title, self.map.difficulties[0].name);
 
-        let cursor_scale = 0.6;
-
-        self.cursor = gfx.add_sprite(Sprite3dObject::new_plane(-cursor_scale / 2., -cursor_scale / 2., 0., cursor_scale, cursor_scale, "Assets/Game/Cursor.png"));
-        self.grid = gfx.add_sprite(Sprite3dObject::new_plane(-3., -3., 0., 6., 6., "Assets/Game/Grid.png"));
-        
+        self.player = Some(Player::new(gfx, 0.6));
         self.fps_counter = Some(FpsCounter::new(gfx));
 
         gfx.bind_camera(CameraObject::new(70.0, Vector3::new(0., 0., 7.), Vector3::zero()));
     }
 
-    fn update(&mut self, gfx: &mut Graphics, dt: f64) -> Option<Box<dyn Scene + 'static>> {
+    fn update(&mut self, gfx: &mut Graphics, input: &mut Input, dt: f64) -> Option<Box<dyn Scene + 'static>> {
+        input.lock_cursor();
+
         self.fps_counter.as_mut().unwrap().update(gfx, dt);
+        self.player.as_mut().unwrap().update(gfx, input);
         
         None
     }

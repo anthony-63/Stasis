@@ -201,12 +201,12 @@ impl Sprite3dObjectBuffers {
     ) {
         let vertices = [
             TexturedVertex::new(Vector3::new(obj.x, obj.y, obj.z), Vector2::new(0., 0.)),
-            TexturedVertex::new(Vector3::new(obj.x + obj.w, obj.y, obj.z), Vector2::new(4., 0.)),
+            TexturedVertex::new(Vector3::new(obj.x + obj.w, obj.y, obj.z), Vector2::new(1., 0.)),
             TexturedVertex::new(
                 Vector3::new(obj.x + obj.w, obj.y + obj.h, obj.z),
-                Vector2::new(4., 4.),
+                Vector2::new(1., 1.),
             ),
-            TexturedVertex::new(Vector3::new(obj.x, obj.y + obj.h, obj.z), Vector2::new(0., 4.)),
+            TexturedVertex::new(Vector3::new(obj.x, obj.y + obj.h, obj.z), Vector2::new(0., 1.)),
         ];
         set_buffer_data(
             gpu,

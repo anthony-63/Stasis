@@ -1,6 +1,6 @@
 
 
-use crate::{content::maploader::MapLoader, core::{gfx::{color::Color, objects::{text::TextObject, textured_quad::TexturedQuadObject}, Graphics, ObjectId}, scene::Scene, Vector2}};
+use crate::{content::maploader::MapLoader, core::{gfx::{color::Color, objects::{text::TextObject, textured_quad::TexturedQuadObject}, Graphics, ObjectId}, input::Input, scene::Scene, Vector2}};
 
 use super::{global::fps_counter::FpsCounter, menu::MenuScene};
 
@@ -39,7 +39,7 @@ impl Scene for LoadingScene {
         loading_text.update();
     }
 
-    fn update(&mut self, gfx: &mut Graphics, dt: f64) -> Option<Box<dyn Scene + 'static>> {
+    fn update(&mut self, gfx: &mut Graphics, input: &mut Input, dt: f64) -> Option<Box<dyn Scene + 'static>> {
         if self.first_render {
             let maps = MapLoader::load_all_from_dir("Assets/Maps".to_string());
             return Some(Box::new(MenuScene::new(maps)))

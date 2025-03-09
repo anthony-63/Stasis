@@ -1,10 +1,10 @@
 use tracing::info;
 
-use super::gfx::Graphics;
+use super::{gfx::Graphics, input::Input};
 
 pub trait Scene {
     fn init(&mut self, gfx: &mut Graphics);
-    fn update(&mut self, gfx: &mut Graphics, dt: f64) -> Option<Box<dyn Scene + 'static>>;
+    fn update(&mut self, gfx: &mut Graphics, input: &mut Input, dt: f64) -> Option<Box<dyn Scene + 'static>>;
 }
 
 pub struct SceneSwapper {
@@ -25,8 +25,8 @@ impl SceneSwapper {
         gfx.end_upload();
     }
 
-    pub fn update(&mut self, gfx: &mut Graphics, dt: f64) {
-        if let Some(new_scene) = self.current_scene.update(gfx, dt) {
+    pub fn update(&mut self, gfx: &mut Graphics, input: &mut Input, dt: f64) {
+        if let Some(new_scene) = self.current_scene.update(gfx, input, dt) {
             info!("Swapping Scene");
             gfx.reset();
             self.current_scene = new_scene;

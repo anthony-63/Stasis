@@ -62,6 +62,10 @@ impl Graphics {
         &self.pipeline.quads.quads
     }
 
+    pub fn sprite3ds(&self) -> &Vec<Sprite3dObject> {
+        &self.pipeline.sprites.sprites
+    }
+
     pub fn textured_quads(&self) -> &Vec<TexturedQuadObject> {
         &self.pipeline.textured_quads.quads
     }
@@ -72,6 +76,10 @@ impl Graphics {
 
     pub fn quads_mut(&mut self) -> &mut Vec<QuadObject> {
         &mut self.pipeline.quads.quads
+    }
+
+    pub fn sprite3ds_mut(&mut self) -> &mut Vec<Sprite3dObject> {
+        &mut self.pipeline.sprites.sprites
     }
 
     pub fn textured_quads_mut(&mut self) -> &mut Vec<TexturedQuadObject> {
