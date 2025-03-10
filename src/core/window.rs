@@ -60,8 +60,7 @@ impl Window {
                 self.input.update(&self.window, ev);
             }
 
-
-            if self.input.key_pressed(Key::F11) {
+            if self.input.keys_pressed(vec![Key::LAlt, Key::Return]) {
                 _ = self.window.set_fullscreen(!(self.window.fullscreen_state() == FullscreenType::True));
             }
 
