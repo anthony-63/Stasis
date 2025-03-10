@@ -70,14 +70,10 @@ impl Input {
     }
 
     pub fn keys_pressed(&mut self, keys: Vec<Key>) -> bool {
-        let mut any = false;
-        let mut contains_all = true;
-        for key in keys {
-            any |= self.keys.iter().any(|k| k.0 == key && k.1);
-            contains_all &= self.keys.iter().any(|k| k.0 == key);
-        }
-
-        any && contains_all
+        keys.iter().all(|key|
+            self.keys.iter().any(|k| k.0 == *key)) &&
+        keys.iter().any(|key|
+            self.keys.iter().any(|k| k.0 == *key && k.1))
     }
 
     pub fn key_pressed(&mut self, key: Key) -> bool {
@@ -90,5 +86,9 @@ impl Input {
 
     pub fn unlock_cursor(&mut self) {
         self.cursor_locked = false;
+    }
+
+    pub fn toggle_lock_cursor(&mut self) {
+        self.cursor_locked = !self.cursor_locked;
     }
 }
