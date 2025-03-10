@@ -5,6 +5,7 @@ mod content;
 use core::window::Window;
 use std::fs;
 
+use content::settings::Settings;
 use scenes::loading::LoadingScene;
 use tracing_subscriber::{fmt, layer::SubscriberExt, Registry};
 

@@ -39,7 +39,7 @@ impl Scene for LoadingScene {
         loading_text.update();
     }
 
-    fn update(&mut self, gfx: &mut Graphics, input: &mut Input, dt: f64) -> Option<Box<dyn Scene + 'static>> {
+    fn update(&mut self, _gfx: &mut Graphics, _input: &mut Input, _dt: f64) -> Option<Box<dyn Scene + 'static>> {
         if self.first_render {
             let maps = MapLoader::load_all_from_dir("Assets/Maps".to_string());
             return Some(Box::new(MenuScene::new(maps)))

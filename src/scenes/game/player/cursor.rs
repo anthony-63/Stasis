@@ -1,6 +1,8 @@
 use tracing::info;
 
-use crate::core::{gfx::{objects::sprite3d::Sprite3dObject, Graphics, ObjectId}, Vector2};
+use crate::{content::settings::{CameraSettings, CursorSettings}, core::{gfx::{objects::sprite3d::Sprite3dObject, Graphics, ObjectId}, Vector2}};
+
+use super::grid::Grid;
 
 pub struct Cursor {
     id: ObjectId,
@@ -10,17 +12,24 @@ pub struct Cursor {
 
     locked_to_grid: bool,
 
+    camera_parallax: f32,
+    grid_parallax: f32,
+
     pub pos: Vector2,
 }
 
+const CLAMP: f32 =  (6.0 - 0.525) / 2.0;
+
 impl Cursor {
-    pub fn new(gfx: &mut Graphics, scale: f32) -> Self {
+    pub fn new(gfx: &mut Graphics, settings: &CursorSettings, camera_settings: &CameraSettings) -> Self {
         Self {
-            id: gfx.add_sprite(Sprite3dObject::new_plane(-scale / 2., -scale / 2., 0., scale, scale, "Assets/Game/Cursor.png")),
+            id: gfx.add_sprite(Sprite3dObject::new_plane(-settings.scale / 2., -settings.scale / 2., 0., settings.scale, settings.scale, "Assets/Game/Cursor.png")),
             pos: Vector2::zero(),
-            sensitivity: 0.017,
-            locked_to_grid: true,
-            scale,
+            sensitivity: settings.sensitivity / 100.0,
+            locked_to_grid: settings.clamped,
+            camera_parallax: camera_settings.camera_parallax / 50.0,
+            grid_parallax: camera_settings.grid_parallax / 50.0,
+            scale: settings.scale,
         }
     }
 
@@ -30,13 +39,23 @@ impl Cursor {
         cursor.x += delta.x * self.sensitivity;
         cursor.y -= delta.y * self.sensitivity;
         
+
         if self.locked_to_grid {
-            cursor.x = cursor.x.clamp(-3., 3. - self.scale);
-            cursor.y = cursor.y.clamp(-3., 3. - self.scale);
+            cursor.x = cursor.x.clamp(-(CLAMP + (self.pos.x * self.grid_parallax)) - self.scale / 2., CLAMP - (self.pos.x * self.grid_parallax) - self.scale / 2.);
+            cursor.y = cursor.y.clamp(-(CLAMP + (self.pos.y * self.grid_parallax)) - self.scale / 2., CLAMP - (self.pos.y * self.grid_parallax) - self.scale / 2.);
         }
 
-        cursor.update();
+        self.pos = Vector2::new(cursor.x - self.scale / 2., cursor.y - self.scale / 2.);
 
+        cursor.update();
+    }
+
+    pub fn apply_parallax(&self, gfx: &mut Graphics, grid: &mut Grid) {
+        let camera = gfx.bound_camera_mut();
+        camera.position.x = -self.pos.x * (self.camera_parallax);
+        camera.position.y = -self.pos.y * (self.camera_parallax);
+
+        grid.apply_parallax(gfx, self.pos);
 
     }
 }

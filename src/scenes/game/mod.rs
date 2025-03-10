@@ -1,7 +1,7 @@
 use player::Player;
 use tracing::info;
 
-use crate::{content::maps::beatmapset::BeatmapSet, core::{gfx::{color::Color, objects::{camera::CameraObject, sprite3d::Sprite3dObject}, Graphics, ObjectId}, input::Input, scene::Scene, Vector3}};
+use crate::{content::{maps::beatmapset::BeatmapSet, settings::Settings}, core::{gfx::{color::Color, objects::{camera::CameraObject, sprite3d::Sprite3dObject}, Graphics, ObjectId}, input::Input, scene::Scene, Vector3}};
 
 use super::global::fps_counter::FpsCounter;
 pub mod player;
@@ -11,15 +11,17 @@ pub struct GameScene {
     map: BeatmapSet,
 
     player: Option<Player>,
+    settings: Settings,
     fps_counter: Option<FpsCounter>,
 }
 
 impl GameScene {
-    pub fn new(map: BeatmapSet) -> Self {
+    pub fn new(map: BeatmapSet, settings: Settings) -> Self {
         Self {
             map,
             fps_counter: None,
             player: None,
+            settings,
             ..Default::default()
         }
     }
@@ -32,10 +34,9 @@ impl Scene for GameScene {
         self.map.load_difficulties();
         info!("Playing map: {}[{}]", self.map.title, self.map.difficulties[0].name);
 
-        self.player = Some(Player::new(gfx, 0.6));
+        self.player = Some(Player::new(gfx, &self.settings.cursor, &self.settings.camera));
         self.fps_counter = Some(FpsCounter::new(gfx));
 
-        gfx.bind_camera(CameraObject::new(70.0, Vector3::new(0., 0., 7.), Vector3::zero()));
     }
 
     fn update(&mut self, gfx: &mut Graphics, input: &mut Input, dt: f64) -> Option<Box<dyn Scene + 'static>> {

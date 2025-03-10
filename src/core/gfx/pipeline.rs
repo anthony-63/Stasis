@@ -527,7 +527,7 @@ impl RenderPipeline {
 
             if self.bound_camera.is_some() {
                 self.bound_camera.as_mut().unwrap().update_matrices();
-                self.bound_camera.as_ref().unwrap().push_matrices(&cmd_buffer);
+                self.bound_camera.as_mut().unwrap().push_matrices(&cmd_buffer);
             }
 
             self.quads.render(self.basic_pipeline.clone(), &render_pass);

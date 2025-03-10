@@ -54,6 +54,14 @@ impl Graphics {
         self.pipeline.bound_camera = Some(cam);
     }
 
+    pub fn bound_camera(&self) -> &CameraObject {
+        self.pipeline.bound_camera.as_ref().unwrap()
+    }
+
+    pub fn bound_camera_mut(&mut self) -> &mut CameraObject {
+        self.pipeline.bound_camera.as_mut().unwrap()
+    } 
+
     pub fn window_size() -> Vector2 {
         unsafe { WINDOW_SIZE.unwrap() }
     }
