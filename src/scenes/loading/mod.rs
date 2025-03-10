@@ -22,7 +22,7 @@ impl LoadingScene {
 }
 
 impl Scene for LoadingScene {
-    fn init(&mut self, gfx: &mut Graphics) {
+    fn init(&mut self, gfx: &mut Graphics, _input: &mut Input) {
         gfx.set_clear_color(Color::from_frgb(0.05, 0.0025, 0.1));
 
         let window_size = Graphics::window_size();

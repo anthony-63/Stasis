@@ -42,7 +42,7 @@ impl Window {
     pub fn run(&mut self) {
         let mut event_pump = self.context.event_pump().map_err(|e| e.to_string()).unwrap();
 
-        self.swapper.init(&mut self.gfx);
+        self.swapper.init(&mut self.gfx, &mut self.input);
 
         let mut current_time =  SystemTime::now();
         let mut last_time: SystemTime;

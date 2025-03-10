@@ -3,7 +3,7 @@ use tracing::info;
 use super::{gfx::Graphics, input::Input};
 
 pub trait Scene {
-    fn init(&mut self, gfx: &mut Graphics);
+    fn init(&mut self, gfx: &mut Graphics, input: &mut Input);
     fn update(&mut self, gfx: &mut Graphics, input: &mut Input, dt: f64) -> Option<Box<dyn Scene + 'static>>;
 }
 
@@ -19,9 +19,9 @@ impl SceneSwapper {
         }
     }
 
-    pub fn init(&mut self, gfx: &mut Graphics) {
+    pub fn init(&mut self, gfx: &mut Graphics, input: &mut Input) {
         gfx.begin_upload();
-        self.current_scene.init(gfx);
+        self.current_scene.init(gfx, input);
         gfx.end_upload();
     }
 
@@ -31,7 +31,7 @@ impl SceneSwapper {
             gfx.reset();
             self.current_scene = new_scene;
             gfx.begin_upload();
-            self.current_scene.init(gfx);
+            self.current_scene.init(gfx, input);
             gfx.end_upload();
         }
     }

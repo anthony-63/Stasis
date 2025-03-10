@@ -22,7 +22,7 @@ impl MenuScene {
 }
 
 impl Scene for MenuScene {
-    fn init(&mut self, gfx: &mut Graphics) {
+    fn init(&mut self, gfx: &mut Graphics, _input: &mut Input) {
         gfx.set_clear_color(Color::from_frgb(0.01, 0.01, 0.01));
         self.settings.save("settings.toml");
         self.fps_counter = Some(FpsCounter::new(gfx));
