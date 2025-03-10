@@ -89,18 +89,12 @@ impl Default for CameraSettings {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
+#[derive(Default)]
 pub struct MiscSettings {
     #[serde(default)]
     pub enable_replays: bool,
 }
 
-impl Default for MiscSettings {
-    fn default() -> Self {
-        Self { 
-            enable_replays: false,
-        }
-    }
-}
 
 #[derive(Default, Clone)]
 #[derive(Serialize, Deserialize)]

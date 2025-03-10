@@ -1,8 +1,8 @@
 use std::time::SystemTime;
 
-use sdl3::{event::Event, surface::Surface};
+use sdl3::{event::Event, surface::Surface, video::FullscreenType};
 
-use super::{gfx::Graphics, input::Input, scene::{Scene, SceneSwapper}};
+use super::{gfx::Graphics, input::{Input, Key}, scene::{Scene, SceneSwapper}};
 
 pub struct Window {
     gfx: Graphics,
@@ -24,10 +24,8 @@ impl Window {
         let video = context.video().expect("Failed to initialize SDL3 Video");
         let mut window = video.window(title, width, height).build().expect("Failed to create SDL3 Window");
         let gfx = Graphics::new(&window);
-        
-        if icon_path.is_some() {
-            let path = icon_path.unwrap();
 
+        if let Some(path) = icon_path {
             let surf: Surface = sdl3::image::LoadSurface::from_file(path).unwrap();
             window.set_icon(surf);
         }
@@ -62,7 +60,11 @@ impl Window {
                 self.input.update(&self.window, ev);
             }
 
-            
+
+            if self.input.key_pressed(Key::F11) {
+                _ = self.window.set_fullscreen(!(self.window.fullscreen_state() == FullscreenType::True));
+            }
+
             self.gfx.update();
             self.swapper.update(&mut self.gfx, &mut self.input, dt);
             self.gfx.render(&self.window);

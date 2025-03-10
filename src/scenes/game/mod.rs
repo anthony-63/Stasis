@@ -1,7 +1,7 @@
 use player::Player;
 use tracing::info;
 
-use crate::{content::{maps::beatmapset::BeatmapSet, settings::Settings}, core::{gfx::{color::Color, objects::{camera::CameraObject, sprite3d::Sprite3dObject}, Graphics, ObjectId}, input::Input, scene::Scene, Vector3}};
+use crate::{content::{maps::beatmapset::BeatmapSet, settings::Settings}, core::{gfx::{color::Color, Graphics}, input::Input, scene::Scene}};
 
 use super::global::fps_counter::FpsCounter;
 pub mod player;
@@ -41,7 +41,7 @@ impl Scene for GameScene {
 
     fn update(&mut self, gfx: &mut Graphics, input: &mut Input, dt: f64) -> Option<Box<dyn Scene + 'static>> {
         input.lock_cursor();
-
+        
         self.fps_counter.as_mut().unwrap().update(gfx, dt);
         self.player.as_mut().unwrap().update(gfx, input);
         

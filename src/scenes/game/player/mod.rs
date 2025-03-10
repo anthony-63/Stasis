@@ -1,7 +1,7 @@
 use cursor::Cursor;
 use grid::Grid;
 
-use crate::{content::settings::{CameraSettings, CursorSettings}, core::{gfx::{objects::camera::CameraObject, Graphics, ObjectId}, input::Input, Vector3}};
+use crate::{content::settings::{CameraSettings, CursorSettings}, core::{gfx::{objects::camera::CameraObject, Graphics}, input::Input, Vector3}};
 
 mod cursor;
 mod grid;

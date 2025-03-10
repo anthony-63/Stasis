@@ -1,4 +1,4 @@
-use sdl3::{gpu::{BlendFactor, BlendOp, ColorTargetBlendState, ColorTargetDescription, ColorTargetInfo, CommandBuffer, CompareOp, CopyPass, DepthStencilState, DepthStencilTargetInfo, Device, GraphicsPipeline, GraphicsPipelineTargetInfo, LoadOp, PrimitiveType, SampleCount, Shader, ShaderFormat, ShaderStage, StoreOp, Texture, TextureCreateInfo, TextureFormat, TextureType, TextureUsage, VertexAttribute, VertexBufferDescription, VertexElementFormat, VertexInputRate, VertexInputState}, video::{DisplayMode, Window}};
+use sdl3::{gpu::{BlendFactor, BlendOp, ColorTargetBlendState, ColorTargetDescription, ColorTargetInfo, CommandBuffer, CompareOp, CopyPass, DepthStencilState, DepthStencilTargetInfo, Device, GraphicsPipeline, GraphicsPipelineTargetInfo, LoadOp, PrimitiveType, SampleCount, Shader, ShaderFormat, ShaderStage, StoreOp, Texture, TextureCreateInfo, TextureFormat, TextureType, TextureUsage, VertexAttribute, VertexBufferDescription, VertexElementFormat, VertexInputRate, VertexInputState}, video::Window};
 use tracing::{debug, error, info, warn};
 
 use crate::core::Vector2;
@@ -525,9 +525,9 @@ impl RenderPipeline {
                 .begin_render_pass(&cmd_buffer, &color_targets, Some(&depth_target))
                 .unwrap();
 
-            if self.bound_camera.is_some() {
-                self.bound_camera.as_mut().unwrap().update_matrices();
-                self.bound_camera.as_mut().unwrap().push_matrices(&cmd_buffer);
+            if let Some(camera) = &mut self.bound_camera {
+                camera.update_matrices();
+                camera.push_matrices(&cmd_buffer);
             }
 
             self.quads.render(self.basic_pipeline.clone(), &render_pass);

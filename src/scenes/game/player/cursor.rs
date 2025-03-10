@@ -1,4 +1,3 @@
-use tracing::info;
 
 use crate::{content::settings::{CameraSettings, CursorSettings}, core::{gfx::{objects::sprite3d::Sprite3dObject, Graphics, ObjectId}, Vector2}};
 

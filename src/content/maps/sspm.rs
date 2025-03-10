@@ -172,7 +172,7 @@ impl SSPMParser {
             "_notes": notes_json,
         }).unwrap();
 
-        if cover_buffer.is_some() {
+        if let Some(buffer) = cover_buffer {
             let mut cover_file = match std::fs::File::create(format!("{}/cover.png", folder_path)) {
                 Ok(file) => file,
                 Err(error) => {
@@ -181,7 +181,7 @@ impl SSPMParser {
                 }
             };
 
-            cover_file.write_all(&cover_buffer.unwrap()).unwrap();
+            cover_file.write_all(&buffer).unwrap();
             cover_file.flush().unwrap();
         }
 
