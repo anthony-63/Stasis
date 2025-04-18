@@ -31,7 +31,7 @@ class SSPMapParser {
     int Index;
     byte[] Buffer;
 
-    DataOffsets DataOffsets;
+    public DataOffsets DataOffsets;
 
     public SSPMapParser(byte[] buffer) {
         Buffer = buffer;
@@ -244,10 +244,8 @@ public class SSPMap : IBeatmapSet {
         Difficulties = [parser.GetBeatmapFromData()];
         Path = path;
 
-        var dataOffsets = parser.GetDataOffsets();
-
-        AudioData = parser.GetAudioBytes(dataOffsets);
-        Cover = parser.GetCoverBytes(dataOffsets);
+        AudioData = parser.GetAudioBytes(parser.DataOffsets);
+        Cover = parser.GetCoverBytes(parser.DataOffsets);
 
         Logger.Info("Loaded '", Title, "' in ", stopwatch.ElapsedMilliseconds, "ms");
     }

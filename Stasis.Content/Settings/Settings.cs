@@ -10,6 +10,7 @@ public class Settings {
     public AudioSettings Audio { get; set; } = new();
     public CameraSettings Camera { get; set; } = new();
     public MiscSettings Misc { get; set; } = new();
+    public AdvancedSettings Advanced { get; set; } = new();
     
     public void Save(string output) {
         var text = Toml.FromModel(this);

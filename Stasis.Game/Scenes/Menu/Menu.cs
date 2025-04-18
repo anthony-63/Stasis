@@ -272,7 +272,9 @@ public class MenuScene : Scene {
         var container = MakeSettingsContainerFrame();
         MakeSettingSpinbox(container, Global.Settings.Note.ApproachTime, "Approach Time", 20, UpdateApproachTime);
         MakeSettingSpinbox(container, Global.Settings.Note.ApproachDistance, "Approach Distance", 60, UpdateApproachDistance);
-        MakeSettingsToggle(container, Global.Settings.Note.Pushback, "Pushback", 100, UpdatePushback);
+        MakeSettingSpinbox(container, Global.Settings.Note.FadeIn, "Fade In", 100, UpdateFadeIn);
+        MakeSettingsToggle(container, Global.Settings.Note.HalfGhost, "Half Ghost", 140, UpdateHalfGhost);
+        MakeSettingsToggle(container, Global.Settings.Note.Pushback, "Pushback", 180, UpdatePushback);
         tab.AddChild(container);
         return tab;
     }
@@ -283,6 +285,16 @@ public class MenuScene : Scene {
 
     public void UpdateApproachTime(float value) {
         Global.Settings.Note.ApproachTime = value;
+        SaveSettings();
+    }
+
+    public void UpdateFadeIn(float value) {
+        Global.Settings.Note.FadeIn = value;
+        SaveSettings();
+    }
+
+    public void UpdateHalfGhost(bool value) {
+        Global.Settings.Note.HalfGhost = value;
         SaveSettings();
     }
 
@@ -385,6 +397,13 @@ public class MenuScene : Scene {
         SaveSettings();
     }
 
+    public TabContainerTab MakeAdvancedSettings() {
+        var tab = MakeSettingsTab("Advanced(breakable)");
+        var container = MakeSettingsContainerFrame();
+        tab.AddChild(container);
+        return tab;
+    }
+
     public TabContainerTab MakeSettings() {
         var frame = new TabContainerTab() {
             Size = new UDim2(0.95f, -5, 1f, 0),
@@ -415,6 +434,7 @@ public class MenuScene : Scene {
                 MakeCameraSettings(),
                 MakeAudioSettings(),
                 MakeMiscSettings(),
+                MakeAdvancedSettings(),
             ]
         });
 

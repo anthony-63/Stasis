@@ -46,16 +46,20 @@ void main() {
 
     Matrix4x4[] Instances = [];
     Material Material;
+    Material BasicMaterial;
 
     public int InstanceCount => Instances.Length;
+
     int Index = 0;
 
     public MultiMesh(string meshPath, int maxInstanceCount) {
         var model = Raylib.LoadModel(meshPath);
         Instances = new Matrix4x4[maxInstanceCount];
         Material = Raylib.LoadMaterialDefault();
+        BasicMaterial = Raylib.LoadMaterialDefault();
 
         Shader shader = Raylib.LoadShaderFromMemory(_vs_shader, _fs_shader);
+
         unsafe {
             shader.Locs[6] = Raylib.GetShaderLocation(shader, "mvp");
             shader.Locs[9] = Raylib.GetShaderLocationAttrib(shader, "instanceTransform");
@@ -65,6 +69,7 @@ void main() {
 
         unsafe {
             Material.Maps[0].Color = Color.White;
+            BasicMaterial.Maps[0].Color = Color.White;
             Mesh = model.Meshes[0];
         }
     }
