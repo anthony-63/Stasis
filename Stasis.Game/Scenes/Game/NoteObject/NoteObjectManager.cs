@@ -104,9 +104,10 @@ public class NoteObjectManager {
             var noteData = Global.SelectedMap?.Difficulties[0].Notes[i] ?? new Note();
             var color = Raylib.GetColor((Global.Settings.Note.Colors[i % Global.Settings.Note.Colors.Length] << 8) | 0xff);
             OrderedNotes[i] = new NoteObject(noteData, i, color);
+            if(noteData.Time <= Global.Mods.StartFrom) StartProcess += 1;
         }
         
-        NextNote = OrderedNotes[0];
+        NextNote = OrderedNotes[StartProcess];
 
         Logger.Info($"Loaded {OrderedNotes.Length} Notes");
     }

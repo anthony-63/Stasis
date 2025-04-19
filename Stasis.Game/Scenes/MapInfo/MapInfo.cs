@@ -11,6 +11,16 @@ using Stasis.Game.Scenes.Menu;
 
 namespace Stasis.Game.Scenes.MapInfo;
 
+class StartFromBox : SpinBox {
+    public override void Update(double dt) {
+        base.Update(dt);
+        var currentTime = TimeSpan.FromSeconds(Value);
+        _value = Math.Clamp(_value, 0, Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0);
+        Text.Text = string.Format("{0:D1}:{1:D2}", currentTime.Minutes, currentTime.Seconds);
+        Text.Update(dt);
+    }
+}
+
 public class MapInfoScene : Scene {
     public UiRoot Root = new();
     Frame MainFrame;
@@ -20,6 +30,7 @@ public class MapInfoScene : Scene {
     Frame Leaderboard;
 
     SpinBox SpeedMod;
+    StartFromBox StartFrom;
     Button NoFailMod;
     Button VisualMapMod;
     Frame Cover;
@@ -235,6 +246,7 @@ public class MapInfoScene : Scene {
             entry.AddChild(mods);
             entry.AddChild(failFrame);
             entry.AddChild(replayButton);
+            entry.AddChild(replayButton);
             gridContainer.AddChild(entry);
         }
 
@@ -305,6 +317,68 @@ public class MapInfoScene : Scene {
         return speedMod;
     }
 
+    StartFromBox MakeStartFrom() {
+        var lastModPos = SpeedMod.Position;
+
+        var startFromMod = new StartFromBox() {
+            Value = Global.Mods.Speed,
+            Step = 1f,
+            Position = new UDim2(0.01f, 137, lastModPos.Y.Scale, lastModPos.Y.Offset + 30),
+            Size = new UDim2(0, 100, 0, 25),
+            NormalFrame = new() {
+                Color = Color.DarkGray,
+                BorderWidth = 1f,
+                BorderColor = Color.Gray,
+                Roundness = 3f,
+            },
+            FocusedFrame = new() {
+                Color = new Color(100, 100, 100, 255),
+                BorderWidth = 1f,
+                BorderColor = Color.Gray,
+                Roundness = 3f,
+            },
+            Placeholder = new() {
+                AlignmentX = TextAlignX.Left,
+                AlignmentY = TextAlignY.Middle,
+                Position = new UDim2(0.04f, 0, 0, 0),
+                Size = new UDim2(0.96f, 0, 1, 0),
+                FontSize = 24,
+                Font = Global.UIFont,
+                TextColor = Color.Gray,
+                OneLine = true,
+            },
+            Text = new() {
+                AlignmentX = TextAlignX.Left,
+                AlignmentY = TextAlignY.Middle,
+                Position = new UDim2(0.04f, 0, 0, 0),
+                Size = new UDim2(0.96f, 0, 1, 0),
+                FontSize = 18,
+                Text = Global.Mods.Speed.ToString(),
+                Font = Global.UIFont,
+                TextColor = Color.White,
+                OneLine = true,
+            },
+        };
+
+        startFromMod.Value = 0;
+
+        var startFromModLabel = new Label() {
+            AlignmentX = TextAlignX.Right,
+            AlignmentY = TextAlignY.Middle,
+            Position = new UDim2(0f, -100f, 0, 0),
+            Size = new UDim2(0.96f, 0, 1, 0),
+            FontSize = 32,
+            Text = "Start From: ",
+            Font = Global.UIFont,
+            TextColor = Color.White,
+            OneLine = true,
+        };
+
+        startFromMod.AddChild(startFromModLabel);
+
+        return startFromMod;
+    }
+
     Button MakeNoFailMod() {
         Frame buttonFrame = new Frame() {
             Size = UDim2.Fill,
@@ -327,11 +401,11 @@ public class MapInfoScene : Scene {
             Roundness = 0.3f,
         };
 
-        var speedModPos = SpeedMod.Position;
+        var lastModPos = StartFrom.Position;
 
         var noFailButton = new Button() {
             Size = new UDim2(0, 188, 0, 25),
-            Position = new UDim2(0.01f, 0, speedModPos.Y.Scale, speedModPos.Y.Offset + 50),
+            Position = new UDim2(0.01f, 0, lastModPos.Y.Scale, lastModPos.Y.Offset + 50),
             Toggle = true,
             ToggledValue = Global.Mods.NoFail,
             Anchor = UiElementAnchor.MiddleLeft,
@@ -453,6 +527,7 @@ public class MapInfoScene : Scene {
         };
 
         SpeedMod = MakeSpeedMod();
+        StartFrom = MakeStartFrom();
         NoFailMod = MakeNoFailMod();
         VisualMapMod = MakeVisualMapModeButton();
 
@@ -479,6 +554,7 @@ public class MapInfoScene : Scene {
         Root.AddChild(BackButton);
         Root.AddChild(PlayButton);
         Root.AddChild(SpeedMod);
+        Root.AddChild(StartFrom);
         Root.AddChild(VisualMapMod);
         Root.AddChild(NoFailMod);
         Root.AddChild(Global.BasicFPSLabel);
@@ -532,6 +608,7 @@ public class MapInfoScene : Scene {
             Window?.SceneHandler.AddScene(new MapInfoScene());
         }
         Global.Mods.Speed = SpeedMod.Value;
+        Global.Mods.StartFrom = StartFrom.Value;
         Root.Update(dt);
     }
 }

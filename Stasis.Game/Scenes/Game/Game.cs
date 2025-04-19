@@ -63,7 +63,7 @@ public class GameScene : Scene {
         NoteManager ??= new NoteObjectManager(this, Player);
         NoteRenderer ??= new NoteObjectRenderer(this);
 
-        if(!Music?.Playing ?? false ) Music?.Play(-2f);
+        if(!Music?.Playing ?? false ) Music?.Play(-2f + Global.Mods.StartFrom);
         else Music?.Update();
         Player.Update(dt, Grid, Music);
         NoteManager?.Update(Player.Cursor);
