@@ -16,27 +16,26 @@ public class ScrollContainer : UiElement {
         constantPosition ??= AbsolutePosition;
     }
 
-    void GetMaxYAllChildren(UiElement element, ref float max) {
+    void GetMaxYAllChildren(UiElement element, ref float max, bool parent = true) {
+        maxY = 0;
         foreach(UiElement child in element.Children) {
             if(!child.Visible) continue;
-            if(child.Children.Count > 0) GetMaxYAllChildren(child, ref max);
-            max = Math.Max(max, child.AbsolutePosition.Y - child.AbsoluteSize.Y * 3.5f);
+            if(child.Children.Count > 0 && parent) GetMaxYAllChildren(child, ref max, false);
+            max = Math.Max(max, child.AbsolutePosition.Y + child.AbsoluteSize.Y - Scroll);
         }
+        if(parent) maxY -= AbsoluteSize.Y;
     }
 
     public override void Update(double dt) {
         if(!Visible) return;
-        if(Scroll >= 0) {
-            maxY = 0;
-            GetMaxYAllChildren(this, ref maxY);
-        }
         if(IsHovering(constantPosition ?? AbsolutePosition)) {
             var mdelt = Raylib.GetMouseWheelMove() * Sensitivity;
+            GetMaxYAllChildren(this, ref maxY);
             Scroll += mdelt;
             Scroll = Math.Clamp(Scroll, -maxY, 0);
             Position.Y.Offset = Scroll;
         }
-        
+
         base.Update(dt);
     }
 
