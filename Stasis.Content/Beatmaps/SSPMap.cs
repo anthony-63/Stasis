@@ -103,13 +103,15 @@ class SSPMapParser {
 
         ReadString();
 
-        var dataType = Read8();
-        if(dataType == 0x09)
+        var dataType = Peek8();
+        if(dataType == 0x09) {
+            Read8();
             return ReadString();
-        else if(dataType == 0x0b)
+        } else if(dataType == 0x0b) {
+            Read8();
             return ReadStringLong();
-        else
-            throw new FileLoadException("Invalid data type for difficulty name");
+        } else Logger.Warn("Invalid data type, skipping");
+        return "SSP";
     }
 
     Note[] GetNotes() {
@@ -175,6 +177,10 @@ class SSPMapParser {
 
     byte Read8() {
         return Buffer[Index++];
+    }
+
+    byte Peek8() {
+        return Buffer[Index + 1];
     }
 
     ushort Read16() {
