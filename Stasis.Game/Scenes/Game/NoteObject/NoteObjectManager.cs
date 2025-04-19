@@ -105,6 +105,7 @@ public class NoteObjectManager {
             var color = Raylib.GetColor((Global.Settings.Note.Colors[i % Global.Settings.Note.Colors.Length] << 8) | 0xff);
             OrderedNotes[i] = new NoteObject(noteData, i, color);
         }
+        
         NextNote = OrderedNotes[0];
 
         Logger.Info($"Loaded {OrderedNotes.Length} Notes");

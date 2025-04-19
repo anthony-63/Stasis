@@ -1,9 +1,14 @@
+using System.Collections;
 using System.ComponentModel;
 using System.Numerics;
 using System.Reflection.Metadata;
 using Raylib_cs;
 
 namespace Stasis.Engine.GFX;
+
+public struct MultiMeshInstance {
+    
+}
 
 public class MultiMesh {
     const string _vs_shader = @"
@@ -52,11 +57,15 @@ void main() {
 
     int Index = 0;
 
-    public MultiMesh(string meshPath, int maxInstanceCount) {
+    bool ZSorting = true;
+
+    public MultiMesh(string meshPath, int maxInstanceCount, bool enableZSorting) {
         var model = Raylib.LoadModel(meshPath);
         Instances = new Matrix4x4[maxInstanceCount];
         Material = Raylib.LoadMaterialDefault();
         BasicMaterial = Raylib.LoadMaterialDefault();
+
+        ZSorting = enableZSorting;
 
         Shader shader = Raylib.LoadShaderFromMemory(_vs_shader, _fs_shader);
 
@@ -79,7 +88,12 @@ void main() {
         Instances[Index++] = transform * Matrix4x4.CreateScale(final, color.A / 255f, 1f);
     }
 
+    int SortZDelegate(Matrix4x4 x, Matrix4x4 y) {
+        return x.M34.CompareTo(y.M34);
+    }
+
     public void Render() {
+        if(ZSorting) Array.Sort(Instances, SortZDelegate);
         Raylib.DrawMeshInstanced(Mesh, Material, Instances, Index);
         Array.Clear(Instances);
         Index = 0;

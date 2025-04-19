@@ -19,3 +19,4 @@ fov = 70.0
 [misc]
 enable_replays = true
 [advanced]
+zsorting = true

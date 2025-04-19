@@ -17,7 +17,7 @@ public class NoteObjectRenderer {
 
     public NoteObjectRenderer(GameScene game) {
         Game = game;
-        MultiMesh = new MultiMesh(Global.GetAsset("Assets/Game/Mesh.obj"), CaluclateMaxInstances());
+        MultiMesh = new MultiMesh(Global.GetAsset("Assets/Game/Mesh.obj"), CaluclateMaxInstances(), Global.Settings.Advanced.ZSorting);
     }
 
     public static int CaluclateMaxInstances() {

@@ -400,8 +400,14 @@ public class MenuScene : Scene {
     public TabContainerTab MakeAdvancedSettings() {
         var tab = MakeSettingsTab("Advanced(breakable)");
         var container = MakeSettingsContainerFrame();
+        MakeSettingsToggle(container, Global.Settings.Advanced.ZSorting, "MultiMesh Z Sorting", 20, UpdateZSorting);
         tab.AddChild(container);
         return tab;
+    }
+
+    public void UpdateZSorting(bool value) {
+        Global.Settings.Advanced.ZSorting = value;
+        SaveSettings();
     }
 
     public TabContainerTab MakeSettings() {
