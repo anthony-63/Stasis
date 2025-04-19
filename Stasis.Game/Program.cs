@@ -7,7 +7,7 @@ namespace Stasis.Game;
 public class Program {
     static void Main(string[] args) {
         Logger.Init("Stasis.log");
-        var window = new Window(1280, 720, "Stasis", Raylib.LoadImage(Global.GetAsset("Assets/Game/Icon.ico")));
+        var window = new Window(1280, 720, "Stasis", Raylib.LoadImage(Global.GetAsset("Assets/Game/Icon.ico", false)));
         window.SceneHandler.AddScene(new LoadingScene());
         window.Run();
         Global.Settings.Save("Assets/settings.toml");

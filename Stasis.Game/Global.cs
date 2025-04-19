@@ -39,13 +39,15 @@ public static class Global {
     }
     public static Random Random = new Random();
 
-    public static string GetAsset(string path) {
+    public static string GetAsset(string path, bool draw = true) {
         if(!File.Exists(path)) {
             Logger.Info("Downloading ", path);
-            Raylib.BeginDrawing();
-            Raylib.ClearBackground(Color.Black);
-            Raylib.DrawTextEx(Raylib.LoadFontEx(UIFont, 50, [], 0), "Downloading " + path, new Vector2(20, 20), 50, 1, Color.Green);
-            Raylib.EndDrawing();
+            if(draw) {
+                Raylib.BeginDrawing();
+                Raylib.ClearBackground(Color.Black);
+                Raylib.DrawTextEx(Raylib.LoadFontEx(UIFont, 50, [], 0), "Downloading " + path, new Vector2(20, 20), 50, 1, Color.Green);
+                Raylib.EndDrawing();
+            }
             using var client = new HttpClient();
             using var s = client.GetStreamAsync("https://github.com/anthony-63/StasisDefaultAssets/raw/refs/heads/master/" + path.Replace("Assets/", ""));
             Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
