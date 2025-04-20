@@ -586,7 +586,8 @@ public class MapInfoScene : Scene {
     }
 
     private void PlayReplay(Replay replay, Mods mods) {
-        Global.ReplayMods = mods;
+        Global.OldMods = Global.Mods;
+        Global.Mods = mods;
         if(Raylib.IsKeyDown(KeyboardKey.D)) {
             Global.EnableDebugStats = true;
         }

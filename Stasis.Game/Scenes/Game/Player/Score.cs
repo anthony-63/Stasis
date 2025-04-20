@@ -73,7 +73,6 @@ public class Score {
                 Hash = SHA256.Create().ComputeHash(hashComputer);
                 var folderPath = toCreate + "/" + Convert.ToHexString(Hash);
                 hashComputer.Close();
-                Logger.Info(folderPath);
                 Directory.CreateDirectory(folderPath);
                 File.Move(file.Name, folderPath + "/" + Path.GetFileName(file.Name));
                 return folderPath;

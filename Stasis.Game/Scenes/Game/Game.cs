@@ -31,13 +31,9 @@ public class GameScene : Scene {
 
     HUDRoot HUD = new();
 
-    public Mods OldMods = Global.Mods;
-
     public GameScene() {
         HUD.AddChild(FadeFrame);
         InputManager.HideCursor();
-
-        if(Global.Replay is not null) Global.Mods = Global.ReplayMods;
 
         var modText = Global.GetModText(Global.Mods);
 
@@ -98,7 +94,7 @@ public class GameScene : Scene {
             }
         }
         Global.Replay = null;
-        Global.Mods = OldMods;
+        Global.Mods = Global.OldMods;
         
         window.SceneHandler.RemoveSceneByType<GameScene>();
         window.SceneHandler.AddScene(new MapInfoScene()); 

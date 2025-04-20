@@ -45,7 +45,6 @@ public class NoteObjectManager {
 
     public void SkipToNote(SyncAudioPlayer music) {
         music?.Seek(Math.Max((NextNote?.Time ?? 0) - 2f, 0));
-        Logger.Info(music?.Time ?? 0);
     }
 
     public void UpdateRenderer(NoteObjectRenderer? renderer, SyncAudioPlayer? music) {

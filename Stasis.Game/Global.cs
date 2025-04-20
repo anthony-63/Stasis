@@ -12,14 +12,6 @@ using Stasis.Content.Replays;
 
 namespace Stasis.Game;
 
-public class Mods {
-    public float Speed = 1f;
-    public float StartFrom = 0f;
-    public bool NoFail = false;
-    public bool VisualMap = false;
-
-}
-
 public static class Global {
     public static IBeatmapSet? SelectedMap;
 
@@ -28,7 +20,7 @@ public static class Global {
     public static string UIFont = GetAsset("Assets/Game/font.ttf");
 
     public static Mods Mods = new();
-    public static Mods ReplayMods = new();
+    public static Mods OldMods = new();
 
     public static MenuScene? LoadedMenu = null;
     public static bool EnableDebugStats = false;

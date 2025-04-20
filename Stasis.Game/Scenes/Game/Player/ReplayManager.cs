@@ -22,7 +22,6 @@ public class ReplayManager(Replay replay) {
         var basePath = scoreDir + "/" + Util.GetSHA256(Global.SelectedMap?.Title + string.Concat(Replay.Frames.Select(x => x.CursorPosition.X + x.CursorPosition.Y + x.Time) ?? []));
         var time = DateTime.Now.ToFileTime();
         var replayPath = basePath + "/" + time.ToString() + ".sr";
-        Logger.Info(replayPath);
         Replay.Export(replayPath, scoreHash);
     }
 
