@@ -31,11 +31,16 @@ public class GameScene : Scene {
 
     HUDRoot HUD = new();
 
+    public Mods OldMods = Global.Mods;
+
     public GameScene() {
         HUD.AddChild(FadeFrame);
         InputManager.HideCursor();
 
+        if(Global.Replay is not null) Global.Mods = Global.ReplayMods;
+
         var modText = Global.GetModText(Global.Mods);
+
         // Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
         //     Details = "Playing Map" + (modText == "" ? "" : " with " + modText),
         //     State = Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 127)] ?? "",
@@ -48,6 +53,7 @@ public class GameScene : Scene {
         if(Global.SelectedMap == null || quitEarly || Player.Score.Failed || Music?.Time > Global.SelectedMap?.Difficulties[0].Notes.Last().Time + 1) {
             Ending = true;
             Player.Score.Failed |= quitEarly;
+            Player.Score.TimeStart = (int)Global.Mods.StartFrom;
             Player.Score.TimeEnd = Math.Max((int)(Music?.Time ?? 0), 0);
         }
 
@@ -60,10 +66,13 @@ public class GameScene : Scene {
             return;
         }
 
-        NoteManager ??= new NoteObjectManager(this, Player);
+        var startFrom = Global.Replay?.Frames[0].Time + 2f ?? Global.Mods.StartFrom;
+
+        NoteManager ??= new NoteObjectManager(this, Player, startFrom);
         NoteRenderer ??= new NoteObjectRenderer(this);
 
-        if(!Music?.Playing ?? false ) Music?.Play(-2f + Global.Mods.StartFrom);
+        if(!Music?.Playing ?? false) Music?.Play(-2f + startFrom);
+        
         else Music?.Update();
         Player.Update(dt, Grid, Music);
         NoteManager?.Update(Player.Cursor);
@@ -89,7 +98,8 @@ public class GameScene : Scene {
             }
         }
         Global.Replay = null;
-
+        Global.Mods = OldMods;
+        
         window.SceneHandler.RemoveSceneByType<GameScene>();
         window.SceneHandler.AddScene(new MapInfoScene()); 
         InputManager.ShowCursor();

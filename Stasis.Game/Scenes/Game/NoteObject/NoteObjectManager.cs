@@ -24,9 +24,9 @@ public class NoteObjectManager {
 
     public bool Skippable = false;
 
-    public NoteObjectManager(GameScene game, Player.Player player) {
+    public NoteObjectManager(GameScene game, Player.Player player, float startFrom) {
         Game = game;
-        LoadNotes();
+        LoadNotes(startFrom);
         if(!Global.Mods.VisualMap && Global.Replay is null) {
             Hit += player.Hit;
             Miss += player.Miss;
@@ -96,7 +96,7 @@ public class NoteObjectManager {
         }
     }
 
-    void LoadNotes() {
+    void LoadNotes(float startFrom) {
         Logger.Info("Started Note Loading");
         OrderedNotes = new NoteObject[Global.SelectedMap?.Difficulties[0].Notes.Length ?? 1];
 
@@ -104,7 +104,7 @@ public class NoteObjectManager {
             var noteData = Global.SelectedMap?.Difficulties[0].Notes[i] ?? new Note();
             var color = Raylib.GetColor((Global.Settings.Note.Colors[i % Global.Settings.Note.Colors.Length] << 8) | 0xff);
             OrderedNotes[i] = new NoteObject(noteData, i, color);
-            if(noteData.Time <= Global.Mods.StartFrom) StartProcess += 1;
+            if(noteData.Time <= startFrom) StartProcess += 1;
         }
         
         NextNote = OrderedNotes[StartProcess];

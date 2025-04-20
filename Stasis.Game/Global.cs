@@ -28,6 +28,7 @@ public static class Global {
     public static string UIFont = GetAsset("Assets/Game/font.ttf");
 
     public static Mods Mods = new();
+    public static Mods ReplayMods = new();
 
     public static MenuScene? LoadedMenu = null;
     public static bool EnableDebugStats = false;

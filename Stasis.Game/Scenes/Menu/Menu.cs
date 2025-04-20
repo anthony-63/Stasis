@@ -594,6 +594,7 @@ public class MenuScene : Scene {
     public void SelectMap(IBeatmapSet map) {
         Global.SelectedMap = map;
         Global.LoadedMenu = this;
+        Global.Mods.StartFrom = 0;
         Window?.SceneHandler.RemoveSceneByType<MenuScene>();
         Window?.SceneHandler.AddScene(new MapInfoScene());
     }

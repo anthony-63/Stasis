@@ -321,7 +321,6 @@ public class MapInfoScene : Scene {
         var lastModPos = SpeedMod.Position;
 
         var startFromMod = new StartFromBox() {
-            Value = Global.Mods.Speed,
             Step = 1f,
             Position = new UDim2(0.01f, 137, lastModPos.Y.Scale, lastModPos.Y.Offset + 30),
             Size = new UDim2(0, 100, 0, 25),
@@ -360,7 +359,7 @@ public class MapInfoScene : Scene {
             },
         };
 
-        startFromMod.Value = 0;
+        startFromMod.Value = Global.Mods.StartFrom;
 
         var startFromModLabel = new Label() {
             AlignmentX = TextAlignX.Right,
@@ -587,7 +586,7 @@ public class MapInfoScene : Scene {
     }
 
     private void PlayReplay(Replay replay, Mods mods) {
-        Global.Mods = mods;
+        Global.ReplayMods = mods;
         if(Raylib.IsKeyDown(KeyboardKey.D)) {
             Global.EnableDebugStats = true;
         }
@@ -608,6 +607,7 @@ public class MapInfoScene : Scene {
             Window?.SceneHandler.AddScene(new MapInfoScene());
         }
         Global.Mods.Speed = SpeedMod.Value;
+
         Global.Mods.StartFrom = StartFrom.Value;
         Root.Update(dt);
     }
