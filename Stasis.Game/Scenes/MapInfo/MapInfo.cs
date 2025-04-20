@@ -84,9 +84,9 @@ public class MapInfoScene : Scene {
 
     Frame MakeLeaderboard() {
         var lbFrame = new Frame() {
-            Position = new UDim2(1, -20, 0, 30),
+            Position = new UDim2(1, -20, 0.02f, 0),
             Anchor = UiElementAnchor.TopRight,
-            Size = new UDim2(0.3f, 0, 1, -185),
+            Size = new UDim2(0.3f, 0, 0.965f, 0),
             Color = new Color(20, 20, 20, 255),
             BorderWidth = 2,
             Roundness = 0.1f,
@@ -101,7 +101,7 @@ public class MapInfoScene : Scene {
         };
 
         var scrollContainer = new ScrollContainer() {
-            Position = new UDim2(0, 0, 0.08f, 0),
+            Position = new UDim2(0, 0, 0.05f, 0),
             Size = new UDim2(1, 0, 0.92f, 0),
             ClipContents = true,
         };
@@ -507,9 +507,16 @@ public class MapInfoScene : Scene {
             PressedFrame = buttonFrame,
         };
 
+        SpeedMod = MakeSpeedMod();
+        StartFrom = MakeStartFrom();
+        NoFailMod = MakeNoFailMod();
+        VisualMapMod = MakeVisualMapModeButton();
+
+        Leaderboard = MakeLeaderboard();
+
         PlayButton = new Button() {
             Size = new UDim2(0.078125f, 0, 0.06944445f, 0),
-            Position = new UDim2(0.99f, 0, 0.95f, 0),
+            Position = new UDim2(0.67f, 0, 0.95f, 0),
             Anchor = UiElementAnchor.MiddleRight,
             Label = new Label() {
                 Text = "Play",
@@ -524,13 +531,6 @@ public class MapInfoScene : Scene {
             DisabledFrame = buttonFrame,
             PressedFrame = buttonFrame,
         };
-
-        SpeedMod = MakeSpeedMod();
-        StartFrom = MakeStartFrom();
-        NoFailMod = MakeNoFailMod();
-        VisualMapMod = MakeVisualMapModeButton();
-
-        Leaderboard = MakeLeaderboard();
         
         BackButton.PressedOnce += GoToMenu;
         PlayButton.PressedOnce += PlayMap;
