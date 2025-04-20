@@ -20,9 +20,7 @@ public static class MapLoader {
         var map_files = Directory.EnumerateFiles(search_dir).ToArray();
         var map_dirs = Directory.EnumerateDirectories(search_dir).ToArray();
 
-        Parallel.ForEach(map_files, file => {
-            LoadMap(file);
-        });
+        Parallel.ForEach(map_files, LoadMap);
 
         Parallel.ForEach(map_dirs, folder => {
             if(File.Exists(folder + "/meta.json")) {

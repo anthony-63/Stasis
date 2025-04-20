@@ -2,6 +2,7 @@ using Raylib_cs;
 using Stasis.Content.Beatmaps;
 using Stasis.Content.Replays;
 using Stasis.Engine;
+using Stasis.Engine.Audio;
 using Stasis.Engine.Scene;
 using Stasis.Engine.UI;
 using Stasis.Engine.UI.Elements;
@@ -34,6 +35,9 @@ public class MapInfoScene : Scene {
     Button NoFailMod;
     Button VisualMapMod;
     Frame Cover;
+
+    Music Music;
+    byte[] AudioData;
 
     Frame MakeCoverFrame() {
         Frame cover = new Frame() {
@@ -558,6 +562,14 @@ public class MapInfoScene : Scene {
         Root.AddChild(NoFailMod);
         Root.AddChild(Global.BasicFPSLabel);
 
+        AudioData = Global.SelectedMap?.AudioData ?? [];
+        Logger.Info();
+        Music = Raylib.LoadMusicStreamFromMemory(AudioUtil.GetFileFormat(AudioData), AudioData);
+        Raylib.SeekMusicStream(Music, StartFrom.Value == 0 ? (Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 3) / 3 : StartFrom.Value);
+        Raylib.SetMusicPitch(Music, SpeedMod.Value);
+        Raylib.SetMusicVolume(Music, Global.Settings.Audio.Volume);
+        Raylib.PlayMusicStream(Music);
+        
         // Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
         //     Details = "Viewing map",
         //     State = Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 127)] ?? "",
@@ -607,9 +619,14 @@ public class MapInfoScene : Scene {
             Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
             Window?.SceneHandler.AddScene(new MapInfoScene());
         }
+
+        if(Global.Mods.Speed != SpeedMod.Value) Raylib.SetMusicPitch(Music, SpeedMod.Value);
         Global.Mods.Speed = SpeedMod.Value;
 
+        if(Global.Mods.StartFrom != StartFrom.Value) Raylib.SeekMusicStream(Music, StartFrom.Value);
         Global.Mods.StartFrom = StartFrom.Value;
+
+        Raylib.UpdateMusicStream(Music);
         Root.Update(dt);
     }
 }

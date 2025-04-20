@@ -46,7 +46,7 @@ public class GameScene : Scene {
 
     public override void Update(double dt) {
         var quitEarly = Raylib.IsKeyDown(KeyboardKey.R);
-        if(Global.SelectedMap == null || quitEarly || Player.Score.Failed || Music?.Time > Global.SelectedMap?.Difficulties[0].Notes.Last().Time + 1) {
+        if(Global.SelectedMap == null || quitEarly || Player.Score.Failed || Music?.Time > Global.SelectedMap?.Difficulties[0].Notes.Last().Time) {
             Ending = true;
             Player.Score.Failed |= quitEarly;
             Player.Score.TimeStart = (int)Global.Mods.StartFrom;
