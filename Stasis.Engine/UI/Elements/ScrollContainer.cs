@@ -32,6 +32,10 @@ public class ScrollContainer : UiElement {
             var mdelt = Raylib.GetMouseWheelMove() * Sensitivity;
             GetMaxYAllChildren(this, ref maxY);
             Scroll += mdelt;
+
+            if(Raylib.IsKeyPressed(KeyboardKey.Down)) Scroll -= 500f;
+            else if(Raylib.IsKeyPressed(KeyboardKey.Up)) Scroll += 500f;
+
             Scroll = Math.Clamp(Scroll, -maxY, 0);
             Position.Y.Offset = Scroll;
         }
