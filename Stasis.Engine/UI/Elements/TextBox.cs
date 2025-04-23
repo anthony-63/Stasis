@@ -37,6 +37,9 @@ public class TextBox : UiElement {
     }
 
     public virtual void GetInput() {
+        if(Raylib.IsKeyPressed(KeyboardKey.V) && Raylib.IsKeyDown(KeyboardKey.LeftControl)) Text.Text += Raylib.GetClipboardText_();
+        if(Raylib.IsKeyPressed(KeyboardKey.Backspace) && Raylib.IsKeyDown(KeyboardKey.LeftControl)) Text.Text = "";
+        
         var c = Raylib.GetCharPressed();
         if((Raylib.IsKeyPressed(KeyboardKey.Backspace) || Raylib.IsKeyPressedRepeat(KeyboardKey.Backspace)) && Text.Text.Length > 0) Text.Text = Text.Text[..^1];
         else if(c != 0) Text.Text += (char)c;
