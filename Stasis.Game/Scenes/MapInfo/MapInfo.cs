@@ -168,6 +168,18 @@ public class MapInfoScene : Scene {
                 Visible = e.Score.Failed,
             };
 
+            var recentText = new Label() {
+                Size = UDim2.Fill,
+                FontSize = 32,
+                Text = "Recent",
+                OneLine = true,
+                AlignmentX = TextAlignX.Center,
+                AlignmentY = TextAlignY.Middle,
+                TextColor = new Color(255, 255, 255, 35),
+                Visible = (int)(DateTime.Now - e.time).TotalSeconds <= 2,
+                Font = Global.UIFont,
+            };
+
             var acc = new Label() {
                 Size = UDim2.Fill,
                 Position = new UDim2(0, -8, 0, 4),
@@ -227,7 +239,6 @@ public class MapInfoScene : Scene {
                 { TotalHours: < 1 } ts => $"{ts.Minutes} minutes ago",
                 { TotalDays: < 1 } ts => $"{ts.Hours} hours ago",
                 { TotalDays: < 2 } => $"yesterday",
-                { TotalDays: < 5 } => $"on {e.time.DayOfWeek}",
                 var ts => $"{ts.Days} days ago",
             };
 
@@ -249,8 +260,10 @@ public class MapInfoScene : Scene {
             entry.AddChild(playerName);
             entry.AddChild(mods);
             entry.AddChild(failFrame);
+            entry.AddChild(recentText);
             entry.AddChild(replayButton);
             entry.AddChild(replayButton);
+
             gridContainer.AddChild(entry);
         }
 
@@ -266,7 +279,7 @@ public class MapInfoScene : Scene {
         var speedMod = new SpinBox() {
             Value = Global.Mods.Speed,
             Step = 0.01f,
-            Position = new UDim2(0.01f, 85, 0.23f, 0),
+            Position = new UDim2(0.01f, 137, 0.23f, 0),
             Size = new UDim2(0, 100, 0, 25),
             Format = "0.00",
             NormalFrame = new() {

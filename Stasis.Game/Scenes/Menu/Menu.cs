@@ -534,6 +534,8 @@ public class MenuScene : Scene {
             },
         };
 
+        SearchBox.TextChanged += () => MapGrid?.SetScroll(0);
+
         ReloadMaps.PressedOnce += ReloadMapsAction;
 
         MetaFrame.AddChild(ReloadMaps);

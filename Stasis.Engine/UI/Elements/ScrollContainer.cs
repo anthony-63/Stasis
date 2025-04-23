@@ -36,11 +36,17 @@ public class ScrollContainer : UiElement {
             if(Raylib.IsKeyPressed(KeyboardKey.Down)) Scroll -= 500f;
             else if(Raylib.IsKeyPressed(KeyboardKey.Up)) Scroll += 500f;
 
+            if(-maxY > 0) maxY = 0;
             Scroll = Math.Clamp(Scroll, -maxY, 0);
             Position.Y.Offset = Scroll;
         }
 
         base.Update(dt);
+    }
+
+    public void SetScroll(float scroll) {
+        Scroll = scroll;
+        Position.Y.Offset = Scroll;
     }
 
     public override void SetClipDim() {

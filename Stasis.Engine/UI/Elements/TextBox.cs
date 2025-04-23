@@ -27,6 +27,9 @@ public class TextBox : UiElement {
 
     public TextBoxState State = TextBoxState.Normal;
 
+    public delegate void TextChangedEvent();
+    public TextChangedEvent? TextChanged;
+
     public override void UpdateAbsoluteValues(Vector2 parentPosition, Vector2 parentSize) {
         base.UpdateAbsoluteValues(parentPosition, parentSize);
         NormalFrame.SetAbsoluteValues(AbsolutePosition, AbsoluteSize);
@@ -37,12 +40,15 @@ public class TextBox : UiElement {
     }
 
     public virtual void GetInput() {
+        var last = Text.Text;
         if(Raylib.IsKeyPressed(KeyboardKey.V) && Raylib.IsKeyDown(KeyboardKey.LeftControl)) Text.Text += Raylib.GetClipboardText_();
         if(Raylib.IsKeyPressed(KeyboardKey.Backspace) && Raylib.IsKeyDown(KeyboardKey.LeftControl)) Text.Text = "";
         
         var c = Raylib.GetCharPressed();
         if((Raylib.IsKeyPressed(KeyboardKey.Backspace) || Raylib.IsKeyPressedRepeat(KeyboardKey.Backspace)) && Text.Text.Length > 0) Text.Text = Text.Text[..^1];
         else if(c != 0) Text.Text += (char)c;
+
+        if(last != Text.Text && TextChanged is not null) TextChanged();
     }
 
     public override void Update(double dt) {
