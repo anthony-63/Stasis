@@ -3,12 +3,32 @@
 #include <flecs.h>
 #include <raylib.h>
 
+#include "scenes/scene.h"
+#include "scenes/loading/loading.h"
+#include "scenes/global/fps_counter.h"
+
+ecs_world_t* world;
+
 int main() {
-    InitWindow(800, 600, "hi");
+    InitWindow(1280, 720, "Stasis");
 
-    ecs_world_t* world = ecs_init();
+    world = ecs_init();
 
+    ECS_IMPORT(world, FlecsStats);
+    ecs_singleton_set(world, EcsRest, {0});
     
+    define_scene_manager();
+    define_fps_counter();
+
+    ecs_entity_t loading_scene = empty_scene();
+    init_loading_scene(loading_scene);
+
+    while(!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(BLACK);
+        ecs_progress(world, 0);
+        EndDrawing();
+    }
 
     ecs_fini(world);
 }
