@@ -1,7 +1,14 @@
 #include <stdio.h>
 
-#include <SDL3/SDL.h>
+#include <flecs.h>
+#include <raylib.h>
 
 int main() {
-    printf("Hello stasis mhm mhm\n");
+    InitWindow(800, 600, "hi");
+
+    ecs_world_t* world = ecs_init();
+
+    
+
+    ecs_fini(world);
 }
