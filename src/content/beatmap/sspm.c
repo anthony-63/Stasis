@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-sspm_data_offsets_t get_sspm_data_offsets(beatmap_decoder_t* decoder) {
+sspm_data_offsets_t get_sspm_data_offsets(BeatmapDecoder* decoder) {
     sspm_data_offsets_t offsets = (sspm_data_offsets_t) {0};
     decoder_seek(decoder, SSPM_OFFSET_DATA);
     
@@ -23,17 +23,17 @@ sspm_data_offsets_t get_sspm_data_offsets(beatmap_decoder_t* decoder) {
     return offsets;
 }
 
-int check_magic(beatmap_decoder_t* decoder) {
+int check_magic(BeatmapDecoder* decoder) {
     uint32_t magic = decode_u32(decoder);
     return magic == 0x53532b6d; // 'SS+m'
 }
 
-int get_version(beatmap_decoder_t* decoder) {
+int get_version(BeatmapDecoder* decoder) {
     decoder_seek(decoder, SSPM_OFFSET_VERSION);
     return decode_u16(decoder);
 }
 
-char* get_title(beatmap_decoder_t* decoder) {
+char* get_title(BeatmapDecoder* decoder) {
     decoder_seek(decoder, SSPM_OFFSET_ID);
     size_t title_offset = SSPM_OFFSET_ID + decode_u16(decoder) + 2;
     decoder_seek(decoder, title_offset);
@@ -41,7 +41,7 @@ char* get_title(beatmap_decoder_t* decoder) {
     return decode_string(decoder);
 }
 
-uint8_t* get_audio_buffer(beatmap_decoder_t* decoder, sspm_data_offsets_t offsets) {
+uint8_t* get_audio_buffer(BeatmapDecoder* decoder, sspm_data_offsets_t offsets) {
     decoder_seek(decoder, offsets.audio_offset);
     uint8_t* audio_buffer = malloc(offsets.audio_length);
     for(uint64_t i = 0; i < offsets.audio_length; i++) {
@@ -51,12 +51,12 @@ uint8_t* get_audio_buffer(beatmap_decoder_t* decoder, sspm_data_offsets_t offset
     return audio_buffer;
 }
 
-size_t get_note_count(beatmap_decoder_t* decoder) {
+size_t get_note_count(BeatmapDecoder* decoder) {
     decoder_seek(decoder, SSPM_OFFSET_NOTE_COUNT);
     return decode_u32(decoder);
 }
 
-note_t* get_notes(beatmap_decoder_t* decoder, size_t note_count, sspm_data_offsets_t offsets) {
+NoteData* get_notes(BeatmapDecoder* decoder, size_t note_count, sspm_data_offsets_t offsets) {
     decoder_seek(decoder, offsets.marker_offset);
 
     union conv {
@@ -64,21 +64,21 @@ note_t* get_notes(beatmap_decoder_t* decoder, size_t note_count, sspm_data_offse
         float f;
     };
 
-    note_t* notes = malloc(sizeof(note_t) * note_count);
+    NoteData* notes = malloc(sizeof(NoteData) * note_count);
     for(size_t i = 0; i < note_count; i++) {
         float time = decode_u32(decoder);
         decode_u8(decoder); // always 1 lol
         int has_quantum = decode_u8(decoder);
 
         if(has_quantum) {
-            notes[i] = (note_t) {
+            notes[i] = (NoteData) {
                 .quantum = has_quantum,
                 .time = time,
                 .x = (((union conv){.u = decode_u32(decoder)}).f - 1),
                 .y = -(((union conv){.u = decode_u32(decoder)}).f - 1),
             };
         } else {
-            notes[i] = (note_t) {
+            notes[i] = (NoteData) {
                 .quantum = has_quantum,
                 .time = time,
                 .x = ((int)decode_u8(decoder) - 1),
@@ -89,7 +89,7 @@ note_t* get_notes(beatmap_decoder_t* decoder, size_t note_count, sspm_data_offse
     return notes;
 }
 
-beatmap_t decode_sspm(beatmap_decoder_t* decoder) {
+Beatmap decode_sspm(BeatmapDecoder* decoder) {
     if(check_magic(decoder)) {
         printf("Invalid magic for map: %s\n", decoder->file_path);
         exit(-1);
@@ -108,7 +108,7 @@ beatmap_t decode_sspm(beatmap_decoder_t* decoder) {
     printf("title: %s\n", title);
 
     size_t note_count = get_note_count(decoder);
-    note_t* notes = get_notes(decoder, note_count, offsets);
+    NoteData* notes = get_notes(decoder, note_count, offsets);
 
     printf("parsed %d notes\n", note_count);
 
@@ -116,7 +116,7 @@ beatmap_t decode_sspm(beatmap_decoder_t* decoder) {
 
     printf("read %d bytes of audio\n", offsets.audio_length);
 
-    return (beatmap_t){
+    return (Beatmap){
         .title = title,
         .mapper = "NONE",
         .artist = "SSPM",

@@ -24,5 +24,5 @@ typedef struct {
     uint64_t cover_length;
 } sspm_data_offsets_t;
 
-sspm_data_offsets_t get_sspm_data_offsets(beatmap_decoder_t* decoder);
-beatmap_t decode_sspm(beatmap_decoder_t* decoder);
+sspm_data_offsets_t get_sspm_data_offsets(BeatmapDecoder* decoder);
+Beatmap decode_sspm(BeatmapDecoder* decoder);

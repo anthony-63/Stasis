@@ -19,7 +19,7 @@ typedef struct {
 
     uint32_t time;
     uint8_t quantum;
-} note_t;
+} NoteData;
 
 typedef struct {
     bool valid;
@@ -31,5 +31,5 @@ typedef struct {
     uint32_t note_count;
 
     uint8_t* audio;
-    note_t* notes;
-} beatmap_t;
+    NoteData* notes;
+} Beatmap;

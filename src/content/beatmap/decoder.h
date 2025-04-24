@@ -8,15 +8,15 @@
 typedef struct {
     FILE* handle;
     char* file_path;
-    beatmap_t output;
-} beatmap_decoder_t;
+    Beatmap output;
+} BeatmapDecoder;
 
-beatmap_decoder_t new_decoder(char* path);
-beatmap_t decode_map(beatmap_decoder_t* decoder);
-uint8_t decode_u8(beatmap_decoder_t* decoder);
-uint16_t decode_u16(beatmap_decoder_t* decoder);
-uint32_t decode_u32(beatmap_decoder_t* decoder);
-uint64_t decode_u64(beatmap_decoder_t* decoder);
-void decoder_seek(beatmap_decoder_t* decoder, size_t address);
-void decoder_skip(beatmap_decoder_t* decoder, size_t to_skip);
-char* decode_string(beatmap_decoder_t* decoder);
+BeatmapDecoder new_decoder(char* path);
+Beatmap decode_map(BeatmapDecoder* decoder);
+uint8_t decode_u8(BeatmapDecoder* decoder);
+uint16_t decode_u16(BeatmapDecoder* decoder);
+uint32_t decode_u32(BeatmapDecoder* decoder);
+uint64_t decode_u64(BeatmapDecoder* decoder);
+void decoder_seek(BeatmapDecoder* decoder, size_t address);
+void decoder_skip(BeatmapDecoder* decoder, size_t to_skip);
+char* decode_string(BeatmapDecoder* decoder);

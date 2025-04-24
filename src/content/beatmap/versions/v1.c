@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-void v1_decode_metadata(beatmap_decoder_t* decoder) {
+void v1_decode_metadata(BeatmapDecoder* decoder) {
     uint8_t count = decode_u8(decoder);
 
     for(int i = 0; i < count; i++) {
@@ -18,12 +18,12 @@ void v1_decode_metadata(beatmap_decoder_t* decoder) {
     }
 }
 
-void v1_decode_notes(beatmap_decoder_t* decoder) {
-    decoder->output.notes = malloc(sizeof(note_t) * decoder->output.note_count);
-    uint32_t note_time = 0;
+void v1_decode_notes(BeatmapDecoder* decoder) {
+    decoder->output.notes = malloc(sizeof(NoteData) * decoder->output.note_count);
+    uint32_t NoteDataime = 0;
     for(uint32_t i = 0; i < decoder->output.note_count; i++) {
         uint8_t header = decode_u8(decoder);
-        note_t note = (note_t){0};
+        NoteData note = (NoteData){0};
         note.quantum = header >> 7;
         int time_long = (header & 0b01000000) >> 6;
 
@@ -45,12 +45,12 @@ void v1_decode_notes(beatmap_decoder_t* decoder) {
         int diff = 0;
         if(time_long) diff = decode_u32(decoder);
         else diff = decode_u16(decoder);
-        note_time += diff;
-        note.time = note_time;
+        NoteDataime += diff;
+        note.time = NoteDataime;
     }
 }
 
-void v1_decode_audio(beatmap_decoder_t* decoder) {
+void v1_decode_audio(BeatmapDecoder* decoder) {
     decoder->output.audio = malloc(decoder->output.audio_size);
 
     for(uint32_t i = 0; i < decoder->output.audio_size; i++) {
