@@ -8,6 +8,7 @@
 #include "scenes/game/game.h"
 #include "content/beatmap/beatmap.h"
 #include "types/types.h"
+#include "global/input.h"
 
 ecs_world_t* world;
 
@@ -23,6 +24,7 @@ int main() {
     define_scene_manager();
     define_beatmap();
     define_game_scene();
+    setup_input();
 
     ecs_entity_t loading_scene = empty_scene();
     init_loading_scene(loading_scene);

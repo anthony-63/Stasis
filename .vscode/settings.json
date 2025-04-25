@@ -9,6 +9,7 @@
         "loading.h": "c",
         "transform3d.h": "c",
         "textured_mesh.h": "c",
-        "camera.h": "c"
+        "camera.h": "c",
+        "types.h": "c"
     }
 }

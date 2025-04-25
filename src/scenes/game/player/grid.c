@@ -52,6 +52,5 @@ void init_grid(ecs_entity_t player) {
     set_mesh(grid);
 
     ecs_set_name(world, grid, "Grid");
-
     ecs_add_pair(world, grid, EcsChildOf, player);
 }
