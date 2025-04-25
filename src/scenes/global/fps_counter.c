@@ -23,6 +23,7 @@ void init_fps_counter(ecs_entity_t parent, int x, int y) {
     ecs_set(world, counter, FpsCounterData, {
         .Position = (Vector2){x, y},
     });
+    ecs_set_name(world, counter, "Frame Counter");
 
     ecs_add_pair(world, counter, EcsChildOf, parent);
 }

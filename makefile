@@ -2,7 +2,7 @@ BIN = bin
 
 OUT = $(BIN)/stasis.exe
 
-SRC = src/*.c src/*/*.c src/*/*/*.c
+SRC = src/*.c src/*/*.c src/*/*/*.c src/*/*/*/*.c
 
 LIB = -Lthirdparty/raylib/lib -lraylib -lgdi32 -lwinmm thirdparty/flecs/flecs.c -lWs2_32
 INCLUDE = -Ithirdparty/raylib/include -Ithirdparty/flecs

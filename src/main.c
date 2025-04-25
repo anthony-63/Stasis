@@ -6,6 +6,7 @@
 #include "scenes/scene.h"
 #include "scenes/loading/loading.h"
 #include "scenes/global/fps_counter.h"
+#include "content/beatmap/beatmap.h"
 
 ecs_world_t* world;
 
@@ -19,6 +20,7 @@ int main() {
     
     define_scene_manager();
     define_fps_counter();
+    define_beatmap();
 
     ecs_entity_t loading_scene = empty_scene();
     init_loading_scene(loading_scene);

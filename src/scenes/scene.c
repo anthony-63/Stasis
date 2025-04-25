@@ -9,18 +9,10 @@ void define_scene_manager() {
 }
 
 ecs_entity_t empty_scene() {
-    ecs_iter_t iter = ecs_query_iter(world, ecs_query(world, {
-        .terms = {
-            { .first.id = Scene }
-        }
-    }));
-
-    while(ecs_query_next(&iter)) {
-        ecs_id_t id = ecs_field_id(&iter, 0);
-        ecs_delete(world, id);
-    }
+    ecs_delete_with(world, Scene);
 
     ecs_entity_t scene = ecs_new(world);
+    ecs_set_name(world, scene, "Root");
     ecs_add_id(world, scene, Scene);
     return scene;
 }

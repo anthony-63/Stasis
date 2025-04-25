@@ -4,6 +4,7 @@
         "*.lalrpop": "lalrpop",
         "flecs.h": "c",
         "fps_counter.h": "c",
-        "scene.h": "c"
+        "scene.h": "c",
+        "beatmap.h": "c"
     }
 }

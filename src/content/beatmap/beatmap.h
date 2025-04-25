@@ -33,3 +33,9 @@ typedef struct {
     uint8_t* audio;
     NoteData* notes;
 } Beatmap;
+
+typedef struct {
+    Beatmap map;
+} BeatmapSingleton;
+
+void define_beatmap();
