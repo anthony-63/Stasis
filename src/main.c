@@ -5,8 +5,9 @@
 
 #include "scenes/scene.h"
 #include "scenes/loading/loading.h"
-#include "scenes/global/fps_counter.h"
+#include "scenes/game/game.h"
 #include "content/beatmap/beatmap.h"
+#include "types/types.h"
 
 ecs_world_t* world;
 
@@ -18,9 +19,10 @@ int main() {
     ECS_IMPORT(world, FlecsStats);
     ecs_singleton_set(world, EcsRest, {0});
     
+    define_types();
     define_scene_manager();
-    define_fps_counter();
     define_beatmap();
+    define_game_scene();
 
     ecs_entity_t loading_scene = empty_scene();
     init_loading_scene(loading_scene);

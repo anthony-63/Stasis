@@ -1,6 +1,6 @@
 #include "loading.h"
 
-#include "../global/fps_counter.h"
+#include "../../types/fps_counter.h"
 #include "../../content/beatmap/beatmap.h"
 #include "../../content/beatmap/decoder.h"
 #include "../../content/beatmap/sspm.h"

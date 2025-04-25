@@ -5,6 +5,10 @@
         "flecs.h": "c",
         "fps_counter.h": "c",
         "scene.h": "c",
-        "beatmap.h": "c"
+        "beatmap.h": "c",
+        "loading.h": "c",
+        "transform3d.h": "c",
+        "textured_mesh.h": "c",
+        "camera.h": "c"
     }
 }

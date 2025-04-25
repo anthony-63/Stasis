@@ -14,7 +14,7 @@ void draw_system(ecs_iter_t* it) {
 
 void define_fps_counter() {
     ECS_COMPONENT_DEFINE(world, FpsCounterData);
-    ECS_SYSTEM(world, draw_system, EcsPostUpdate, FpsCounterData);
+    ECS_SYSTEM(world, draw_system, EcsOnUpdate, FpsCounterData);
 }
 
 void init_fps_counter(ecs_entity_t parent, int x, int y) {
