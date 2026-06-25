@@ -8,12 +8,14 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class Multiplier : Label {
+public class Multiplier : Label
+{
     ProgressBar Value;
 
     Label Encouragement;
 
-    public Multiplier() {
+    public Multiplier()
+    {
         OneLine = true;
 
         Size = new UDim2(0, 0, 1, 0);
@@ -28,10 +30,12 @@ public class Multiplier : Label {
 
         Position = new UDim2(0.005f, 0, 0.40f, 0);
 
-        Value = new() {
+        Value = new()
+        {
             Position = new UDim2(0, 0, 0, 50),
             Size = new UDim2(0, 175, 0, 12),
-            Background = new() {
+            Background = new()
+            {
                 Roundness = 1.5f,
                 Size = UDim2.Fill,
                 BorderWidth = 4,
@@ -39,7 +43,8 @@ public class Multiplier : Label {
                 Color = Color.DarkGray,
                 Rotation = 90,
             },
-            Foreground = new() {
+            Foreground = new()
+            {
                 Roundness = 1.5f,
                 Size = UDim2.Fill,
                 Color = Color.SkyBlue,
@@ -48,8 +53,9 @@ public class Multiplier : Label {
             Value = 1,
             MaxValue = 8,
         };
-        
-        Encouragement = new() {
+
+        Encouragement = new()
+        {
             FontSize = 24,
             Font = Global.UIFont,
             Size = Size,
@@ -65,10 +71,11 @@ public class Multiplier : Label {
     }
 
 
-    public void Update(Score score) {
+    public void Update(Score score)
+    {
         Text = score.Multipier + "X";
         Value.Value = score.Multipier;
 
-        Encouragement.Text = EncouragementMessages.Messages[score.Multipier-1];
+        Encouragement.Text = EncouragementMessages.Messages[score.Multipier - 1];
     }
 }

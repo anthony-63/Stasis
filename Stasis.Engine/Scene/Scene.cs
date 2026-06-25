@@ -7,7 +7,7 @@ public class Scene : IScene
 
     public Window? Window { get => _window; set => _window = value; }
 
-    public virtual void Render() {}
+    public virtual void Render() { }
 
-    public virtual void Update(double dt) {}
+    public virtual void Update(double dt) { }
 }

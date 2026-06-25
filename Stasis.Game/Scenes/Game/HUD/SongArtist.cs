@@ -6,8 +6,10 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class SongArtist : Label {
-    public SongArtist() {
+public class SongArtist : Label
+{
+    public SongArtist()
+    {
         OneLine = true;
 
         Size = UDim2.Fill;

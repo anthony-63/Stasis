@@ -12,8 +12,10 @@ using Stasis.Game.Scenes.Menu;
 
 namespace Stasis.Game.Scenes.MapInfo;
 
-class StartFromBox : SpinBox {
-    public override void Update(double dt) {
+class StartFromBox : SpinBox
+{
+    public override void Update(double dt)
+    {
         base.Update(dt);
         var currentTime = TimeSpan.FromSeconds(Value);
         _value = Math.Clamp(_value, 0, Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0);
@@ -22,7 +24,8 @@ class StartFromBox : SpinBox {
     }
 }
 
-public class MapInfoScene : Scene {
+public class MapInfoScene : Scene
+{
     public UiRoot Root = new();
     Frame MainFrame;
     Button BackButton;
@@ -39,21 +42,27 @@ public class MapInfoScene : Scene {
     Music Music;
     byte[] AudioData;
 
-    Frame MakeCoverFrame() {
-        Frame cover = new Frame() {
+    Frame MakeCoverFrame()
+    {
+        Frame cover = new Frame()
+        {
             Size = new UDim2(0.1171875f, 0, 0.20833333f, 0),
             Position = new UDim2(0.01f, 0, 0.01f, 0),
             Color = new Color(100, 100, 100, 100),
         };
 
-        ImageFrame image = new ImageFrame() {
+        ImageFrame image = new ImageFrame()
+        {
             Size = new UDim2(0.9f, 0, 0.9f, 0),
             Position = new UDim2(0.05f, 0, 0.05f, 0),
         };
 
-        if(Global.SelectedMap?.Cover is null || Global.SelectedMap?.Cover.Length <= 0) {
+        if (Global.SelectedMap?.Cover is null || Global.SelectedMap?.Cover.Length <= 0)
+        {
             image.ImagePath = Global.GetAsset("Assets/Game/cat.png");
-        } else {
+        }
+        else
+        {
             image.ImageData = Global.SelectedMap?.Cover ?? [];
         }
 
@@ -62,8 +71,10 @@ public class MapInfoScene : Scene {
         return cover;
     }
 
-    void MakeInfoLabel(Frame parent, string name, string? value, float padding, float y) {
-        var Info = new Label() {
+    void MakeInfoLabel(Frame parent, string name, string? value, float padding, float y)
+    {
+        var Info = new Label()
+        {
             Text = name + ": ",
             TextColor = Color.SkyBlue,
             Position = new UDim2(0.14f, 0, y, 0),
@@ -74,7 +85,8 @@ public class MapInfoScene : Scene {
         };
         Info.UpdateAbsoluteValues(parent.AbsoluteSize, parent.AbsolutePosition);
 
-        Info.AddChild(new Label() {
+        Info.AddChild(new Label()
+        {
             Position = new UDim2(0, Info.lines[0].Item2.X + padding, 0, 0),
             Text = value ?? "None",
             AlignmentX = TextAlignX.Left,
@@ -86,8 +98,10 @@ public class MapInfoScene : Scene {
         parent.AddChild(Info);
     }
 
-    Frame MakeLeaderboard() {
-        var lbFrame = new Frame() {
+    Frame MakeLeaderboard()
+    {
+        var lbFrame = new Frame()
+        {
             Position = new UDim2(1, -20, 0.02f, 0),
             Anchor = UiElementAnchor.TopRight,
             Size = new UDim2(0.3f, 0, 0.965f, 0),
@@ -96,7 +110,8 @@ public class MapInfoScene : Scene {
             Roundness = 0.1f,
         };
 
-        var title = new Label() {
+        var title = new Label()
+        {
             Position = new UDim2(0, 0, 0, 20),
             Size = new UDim2(1, 0, 0, 0),
             FontSize = 32,
@@ -104,13 +119,15 @@ public class MapInfoScene : Scene {
             Text = "Local Leaderboard",
         };
 
-        var scrollContainer = new ScrollContainer() {
+        var scrollContainer = new ScrollContainer()
+        {
             Position = new UDim2(0, 0, 0.05f, 0),
             Size = new UDim2(1, 0, 0.92f, 0),
             ClipContents = true,
         };
 
-        var gridContainer = new GridContainer() {
+        var gridContainer = new GridContainer()
+        {
             ItemsPerRow = 1,
             Padding = 8,
             Size = new UDim2(1, -20, 1, 0),
@@ -120,27 +137,31 @@ public class MapInfoScene : Scene {
 
         var lbEntries = LeaderboardLoader.LoadLeaderboardFromMap(Global.SelectedMap ?? new BeatmapSet());
 
-        foreach(var e in lbEntries) {
-            if(!e.Valid) continue;
-            var entry = new Frame() {
+        foreach (var e in lbEntries)
+        {
+            if (!e.Valid) continue;
+            var entry = new Frame()
+            {
                 Size = new UDim2(0, 0, 0, 50),
                 Color = new Color(30, 30, 30, 255),
                 Roundness = 0.5f,
                 BorderWidth = 2,
             };
-            
+
             string replayText;
-            if(e.Replay is not null && e.ReplayValid) replayText = "Press to Show Replay";
-            else if(!e.ReplayValid) replayText = "Invalid Replay";
+            if (e.Replay is not null && e.ReplayValid) replayText = "Press to Show Replay";
+            else if (!e.ReplayValid) replayText = "Invalid Replay";
             else replayText = "No Replay Found";
 
-            var hoveringReplayFrame = new Frame() {
+            var hoveringReplayFrame = new Frame()
+            {
                 Color = new Color(5, 5, 5, 155),
                 Size = UDim2.Fill,
                 Roundness = 0.5f,
             };
 
-            hoveringReplayFrame.AddChild(new Label() {
+            hoveringReplayFrame.AddChild(new Label()
+            {
                 FontSize = 32,
                 Text = replayText,
                 Size = UDim2.Fill,
@@ -150,9 +171,11 @@ public class MapInfoScene : Scene {
                 Font = Global.UIFont,
             });
 
-            var replayButton = new Button() {
+            var replayButton = new Button()
+            {
                 Size = UDim2.Fill,
-                NormalFrame = new Frame() {
+                NormalFrame = new Frame()
+                {
                     Visible = true,
                     Color = new Color(0, 0, 0, 0),
                 },
@@ -160,15 +183,17 @@ public class MapInfoScene : Scene {
                 PressedFrame = hoveringReplayFrame,
             };
 
-            if(e.Replay is not null && e.ReplayValid) replayButton.PressedOnce += () => PlayReplay(e.Replay, e.Mods);
+            if (e.Replay is not null && e.ReplayValid) replayButton.PressedOnce += () => PlayReplay(e.Replay, e.Mods);
 
-            var failFrame = new Frame() {
+            var failFrame = new Frame()
+            {
                 Size = UDim2.Fill,
                 Color = new Color(155, 0, 0, 20),
                 Visible = e.Score.Failed,
             };
 
-            var recentText = new Label() {
+            var recentText = new Label()
+            {
                 Size = UDim2.Fill,
                 FontSize = 32,
                 Text = "Recent",
@@ -180,7 +205,8 @@ public class MapInfoScene : Scene {
                 Font = Global.UIFont,
             };
 
-            var acc = new Label() {
+            var acc = new Label()
+            {
                 Size = UDim2.Fill,
                 Position = new UDim2(0, -8, 0, 4),
                 FontSize = 18,
@@ -192,7 +218,8 @@ public class MapInfoScene : Scene {
                 Text = e.Score.AccPlaceholder.ToString("0.00") + "%",
             };
 
-            var scoreOrProgress = new Label() {
+            var scoreOrProgress = new Label()
+            {
                 Size = UDim2.Fill,
                 Position = new UDim2(0, -8, 0, 0),
                 FontSize = 24,
@@ -204,14 +231,16 @@ public class MapInfoScene : Scene {
                 Text = e.Score.ScoreValue.ToString(),
             };
 
-            if(e.Score.Failed) {
+            if (e.Score.Failed)
+            {
                 scoreOrProgress.TextColor = Color.Gray;
                 var startTime = TimeSpan.FromSeconds(e.timeStart);
                 var endTime = TimeSpan.FromSeconds(e.timeEnd);
                 scoreOrProgress.Text = string.Format("{0:D1}:{1:D2}", startTime.Minutes, startTime.Seconds) + " / " + string.Format("{0:D1}:{1:D2}", endTime.Minutes, endTime.Seconds);
             }
 
-            var playerName = new Label() {
+            var playerName = new Label()
+            {
                 Size = new UDim2(0.98f, 0, 1, 0),
                 Position = new UDim2(0.02f, 0, 0, 4),
                 FontSize = 24,
@@ -222,7 +251,8 @@ public class MapInfoScene : Scene {
                 Text = "You",
             };
 
-            var mods = new Label() {
+            var mods = new Label()
+            {
                 Size = new UDim2(0.98f, 0, 1, 0),
                 Position = new UDim2(0.02f, 0, 0, -4),
                 FontSize = 18,
@@ -234,15 +264,17 @@ public class MapInfoScene : Scene {
                 Text = Global.GetModText(e.Mods, true),
             };
 
-            string from = (DateTime.Now - e.time) switch {
-                { TotalMinutes: < 1} ts => $"{ts.Seconds} seconds ago",
+            string from = (DateTime.Now - e.time) switch
+            {
+                { TotalMinutes: < 1 } ts => $"{ts.Seconds} seconds ago",
                 { TotalHours: < 1 } ts => $"{ts.Minutes} minutes ago",
                 { TotalDays: < 1 } ts => $"{ts.Hours} hours ago",
                 { TotalDays: < 2 } => $"yesterday",
                 var ts => $"{ts.Days} days ago",
             };
 
-            var timeSet = new Label() {
+            var timeSet = new Label()
+            {
                 Size = UDim2.Fill,
                 Position = new UDim2(0, -8, 0, 0),
                 FontSize = 16,
@@ -275,26 +307,31 @@ public class MapInfoScene : Scene {
         return lbFrame;
     }
 
-    SpinBox MakeSpeedMod() {
-        var speedMod = new SpinBox() {
+    SpinBox MakeSpeedMod()
+    {
+        var speedMod = new SpinBox()
+        {
             Value = Global.Mods.Speed,
             Step = 0.01f,
             Position = new UDim2(0.01f, 137, 0.23f, 0),
             Size = new UDim2(0, 100, 0, 25),
             Format = "0.00",
-            NormalFrame = new() {
+            NormalFrame = new()
+            {
                 Color = Color.DarkGray,
                 BorderWidth = 1f,
                 BorderColor = Color.Gray,
                 Roundness = 3f,
             },
-            FocusedFrame = new() {
+            FocusedFrame = new()
+            {
                 Color = new Color(100, 100, 100, 255),
                 BorderWidth = 1f,
                 BorderColor = Color.Gray,
                 Roundness = 3f,
             },
-            Placeholder = new() {
+            Placeholder = new()
+            {
                 AlignmentX = TextAlignX.Left,
                 AlignmentY = TextAlignY.Middle,
                 Position = new UDim2(0.04f, 0, 0, 0),
@@ -304,7 +341,8 @@ public class MapInfoScene : Scene {
                 TextColor = Color.Gray,
                 OneLine = true,
             },
-            Text = new() {
+            Text = new()
+            {
                 AlignmentX = TextAlignX.Left,
                 AlignmentY = TextAlignY.Middle,
                 Position = new UDim2(0.04f, 0, 0, 0),
@@ -317,7 +355,8 @@ public class MapInfoScene : Scene {
             },
         };
 
-        var speedModLabel = new Label() {
+        var speedModLabel = new Label()
+        {
             AlignmentX = TextAlignX.Right,
             AlignmentY = TextAlignY.Middle,
             Position = new UDim2(0f, -100f, 0, 0),
@@ -334,26 +373,31 @@ public class MapInfoScene : Scene {
         return speedMod;
     }
 
-    StartFromBox MakeStartFrom() {
+    StartFromBox MakeStartFrom()
+    {
         var lastModPos = SpeedMod.Position;
 
-        var startFromMod = new StartFromBox() {
+        var startFromMod = new StartFromBox()
+        {
             Step = 1f,
             Position = new UDim2(0.01f, 137, lastModPos.Y.Scale, lastModPos.Y.Offset + 30),
             Size = new UDim2(0, 100, 0, 25),
-            NormalFrame = new() {
+            NormalFrame = new()
+            {
                 Color = Color.DarkGray,
                 BorderWidth = 1f,
                 BorderColor = Color.Gray,
                 Roundness = 3f,
             },
-            FocusedFrame = new() {
+            FocusedFrame = new()
+            {
                 Color = new Color(100, 100, 100, 255),
                 BorderWidth = 1f,
                 BorderColor = Color.Gray,
                 Roundness = 3f,
             },
-            Placeholder = new() {
+            Placeholder = new()
+            {
                 AlignmentX = TextAlignX.Left,
                 AlignmentY = TextAlignY.Middle,
                 Position = new UDim2(0.04f, 0, 0, 0),
@@ -363,7 +407,8 @@ public class MapInfoScene : Scene {
                 TextColor = Color.Gray,
                 OneLine = true,
             },
-            Text = new() {
+            Text = new()
+            {
                 AlignmentX = TextAlignX.Left,
                 AlignmentY = TextAlignY.Middle,
                 Position = new UDim2(0.04f, 0, 0, 0),
@@ -378,7 +423,8 @@ public class MapInfoScene : Scene {
 
         startFromMod.Value = Global.Mods.StartFrom;
 
-        var startFromModLabel = new Label() {
+        var startFromModLabel = new Label()
+        {
             AlignmentX = TextAlignX.Right,
             AlignmentY = TextAlignY.Middle,
             Position = new UDim2(0f, -100f, 0, 0),
@@ -395,22 +441,26 @@ public class MapInfoScene : Scene {
         return startFromMod;
     }
 
-    Button MakeNoFailMod() {
-        Frame buttonFrame = new Frame() {
+    Button MakeNoFailMod()
+    {
+        Frame buttonFrame = new Frame()
+        {
             Size = UDim2.Fill,
             Color = new Color(60, 60, 60, 255),
             BorderWidth = 2,
             Roundness = 0.3f,
         };
 
-        Frame toggleFrame = new Frame() {
+        Frame toggleFrame = new Frame()
+        {
             Size = UDim2.Fill,
             Color = new Color(100, 100, 100, 255),
             BorderWidth = 2,
             Roundness = 0.3f,
         };
 
-        Frame hoveringFrame = new Frame() {
+        Frame hoveringFrame = new Frame()
+        {
             Size = UDim2.Fill,
             Color = new Color(140, 140, 140, 255),
             BorderWidth = 2,
@@ -419,13 +469,15 @@ public class MapInfoScene : Scene {
 
         var lastModPos = StartFrom.Position;
 
-        var noFailButton = new Button() {
+        var noFailButton = new Button()
+        {
             Size = new UDim2(0, 188, 0, 25),
             Position = new UDim2(0.01f, 0, lastModPos.Y.Scale, lastModPos.Y.Offset + 50),
             Toggle = true,
             ToggledValue = Global.Mods.NoFail,
             Anchor = UiElementAnchor.MiddleLeft,
-            Label = new Label() {
+            Label = new Label()
+            {
                 Text = "No Fail",
                 Size = UDim2.Fill,
                 AlignmentX = TextAlignX.Center,
@@ -444,22 +496,26 @@ public class MapInfoScene : Scene {
         return noFailButton;
     }
 
-    Button MakeVisualMapModeButton() {
-        Frame buttonFrame = new Frame() {
+    Button MakeVisualMapModeButton()
+    {
+        Frame buttonFrame = new Frame()
+        {
             Size = UDim2.Fill,
             Color = new Color(60, 60, 60, 255),
             BorderWidth = 2,
             Roundness = 0.3f,
         };
 
-        Frame toggleFrame = new Frame() {
+        Frame toggleFrame = new Frame()
+        {
             Size = UDim2.Fill,
             Color = new Color(100, 100, 100, 255),
             BorderWidth = 2,
             Roundness = 0.3f,
         };
 
-        Frame hoveringFrame = new Frame() {
+        Frame hoveringFrame = new Frame()
+        {
             Size = UDim2.Fill,
             Color = new Color(140, 140, 140, 255),
             BorderWidth = 2,
@@ -468,13 +524,15 @@ public class MapInfoScene : Scene {
 
         var noFailModPos = NoFailMod.Position;
 
-        var visualMapButton = new Button() {
+        var visualMapButton = new Button()
+        {
             Size = new UDim2(0, 188, 0, 25),
             Position = new UDim2(0.01f, 0, noFailModPos.Y.Scale, noFailModPos.Y.Offset + 37),
             Toggle = true,
             ToggledValue = Global.Mods.NoFail,
             Anchor = UiElementAnchor.MiddleLeft,
-            Label = new Label() {
+            Label = new Label()
+            {
                 Text = "Visual Mode",
                 Size = UDim2.Fill,
                 AlignmentX = TextAlignX.Center,
@@ -493,24 +551,29 @@ public class MapInfoScene : Scene {
         return visualMapButton;
     }
 
-    public MapInfoScene() {
-        MainFrame = new Frame() {
+    public MapInfoScene()
+    {
+        MainFrame = new Frame()
+        {
             Size = new UDim2(1f, 0, 1, 0),
             Color = new Color(12, 12, 12, 255),
         };
 
-        Frame buttonFrame = new Frame() {
+        Frame buttonFrame = new Frame()
+        {
             Size = UDim2.Fill,
             Color = new Color(60, 60, 60, 255),
             BorderWidth = 2,
             Roundness = 0.1f,
         };
 
-        BackButton = new Button() {
+        BackButton = new Button()
+        {
             Size = new UDim2(0.078125f, 0, 0.06944445f, 0),
             Position = new UDim2(0.01f, 0, 0.95f, 0),
             Anchor = UiElementAnchor.MiddleLeft,
-            Label = new Label() {
+            Label = new Label()
+            {
                 Text = "Back",
                 Size = UDim2.Fill,
                 AlignmentX = TextAlignX.Center,
@@ -531,11 +594,13 @@ public class MapInfoScene : Scene {
 
         Leaderboard = MakeLeaderboard();
 
-        PlayButton = new Button() {
+        PlayButton = new Button()
+        {
             Size = new UDim2(0.078125f, 0, 0.06944445f, 0),
             Position = new UDim2(0.67f, 0, 0.95f, 0),
             Anchor = UiElementAnchor.MiddleRight,
-            Label = new Label() {
+            Label = new Label()
+            {
                 Text = "Play",
                 Size = UDim2.Fill,
                 AlignmentX = TextAlignX.Center,
@@ -548,13 +613,13 @@ public class MapInfoScene : Scene {
             DisabledFrame = buttonFrame,
             PressedFrame = buttonFrame,
         };
-        
+
         BackButton.PressedOnce += GoToMenu;
         PlayButton.PressedOnce += PlayMap;
 
         Cover = MakeCoverFrame();
         MainFrame.AddChild(Cover);
-        
+
         var toIncrease = 0.035f;
         var initial = 0.027f;
         var mapLength = TimeSpan.FromSeconds(Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0);
@@ -582,7 +647,7 @@ public class MapInfoScene : Scene {
         Raylib.SetMusicPitch(Music, SpeedMod.Value);
         Raylib.SetMusicVolume(Music, Global.Settings.Audio.Volume);
         Raylib.PlayMusicStream(Music);
-        
+
         // Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
         //     Details = "Viewing map",
         //     State = Global.SelectedMap?.Title[..Math.Min(Global.SelectedMap?.Title.Length ?? 0, 127)] ?? "",
@@ -590,11 +655,14 @@ public class MapInfoScene : Scene {
         // });
     }
 
-    private void GoToMenu() {
+    private void GoToMenu()
+    {
         Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
         Global.LoadedMenu?.SetRPC();
-        if(Global.LoadedMenu is not null) {
-            if(Global.LoadedMenu.MapGrid.Children[0].Children.Count != MapLoader.Maps.Count) {
+        if (Global.LoadedMenu is not null)
+        {
+            if (Global.LoadedMenu.MapGrid.Children[0].Children.Count != MapLoader.Maps.Count)
+            {
                 Global.LoadedMenu.MapGrid = new();
                 Global.LoadedMenu.MakeMapList();
             }
@@ -602,18 +670,22 @@ public class MapInfoScene : Scene {
         }
     }
 
-    private void PlayMap() {
-        if(Raylib.IsKeyDown(KeyboardKey.D)) {
+    private void PlayMap()
+    {
+        if (Raylib.IsKeyDown(KeyboardKey.D))
+        {
             Global.EnableDebugStats = true;
         }
         Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
         Window?.SceneHandler.AddScene(new GameScene());
     }
 
-    private void PlayReplay(Replay replay, Mods mods) {
+    private void PlayReplay(Replay replay, Mods mods)
+    {
         Global.OldMods = Global.Mods;
         Global.Mods = mods;
-        if(Raylib.IsKeyDown(KeyboardKey.D)) {
+        if (Raylib.IsKeyDown(KeyboardKey.D))
+        {
             Global.EnableDebugStats = true;
         }
         Global.Replay = replay;
@@ -621,22 +693,25 @@ public class MapInfoScene : Scene {
         Window?.SceneHandler.AddScene(new GameScene());
     }
 
-    public override void Render() {
+    public override void Render()
+    {
         Global.BasicFPSLabel.Text = Raylib.GetFPS().ToString() + " FPS";
         Root.Render(Raylib.GetRenderWidth(), Raylib.GetRenderHeight());
     }
 
-    public override void Update(double dt) {
-        if(Raylib.IsKeyPressed(KeyboardKey.F2)) {
+    public override void Update(double dt)
+    {
+        if (Raylib.IsKeyPressed(KeyboardKey.F2))
+        {
             Global.SelectedMap = MapLoader.Maps[Global.Random.Next(MapLoader.Maps.Count)];
             Window?.SceneHandler.RemoveSceneByType<MapInfoScene>();
             Window?.SceneHandler.AddScene(new MapInfoScene());
         }
 
-        if(Global.Mods.Speed != SpeedMod.Value) Raylib.SetMusicPitch(Music, SpeedMod.Value);
+        if (Global.Mods.Speed != SpeedMod.Value) Raylib.SetMusicPitch(Music, SpeedMod.Value);
         Global.Mods.Speed = SpeedMod.Value;
 
-        if(Global.Mods.StartFrom != StartFrom.Value) Raylib.SeekMusicStream(Music, StartFrom.Value);
+        if (Global.Mods.StartFrom != StartFrom.Value) Raylib.SeekMusicStream(Music, StartFrom.Value);
         Global.Mods.StartFrom = StartFrom.Value;
 
         Raylib.UpdateMusicStream(Music);

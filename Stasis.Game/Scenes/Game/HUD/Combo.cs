@@ -6,8 +6,10 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class Combo : Label {
-    public Combo() {
+public class Combo : Label
+{
+    public Combo()
+    {
         OneLine = true;
 
         Size = new UDim2(0, 0, 1, 0);
@@ -23,13 +25,15 @@ public class Combo : Label {
         Position = new UDim2(0.005f, 0, 0, 0);
     }
 
-    public void UpdatePos() {
+    public void UpdatePos()
+    {
         var pos = Position;
         pos.Y.Offset = Raylib.GetRenderHeight() - 100;
         Position = pos;
     }
 
-    public void Update(Score score) {
+    public void Update(Score score)
+    {
         Text = score.Combo.ToString() + "x";
         UpdatePos();
     }

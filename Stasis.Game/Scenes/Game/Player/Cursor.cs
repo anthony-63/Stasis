@@ -7,7 +7,8 @@ using Stasis.Engine.GFX;
 
 namespace Stasis.Game.Scenes.Game.Player;
 
-public class Cursor {
+public class Cursor
+{
 
     private static float CLAMP_SINGLE = (6.0f - 0.525f) / 2.0f;
     private Vector2 CLAMP = new Vector2(CLAMP_SINGLE, CLAMP_SINGLE);
@@ -16,25 +17,30 @@ public class Cursor {
 
     private Vector2 position = Vector2.Zero;
 
-    public Vector2 Position {
+    public Vector2 Position
+    {
         get => position;
-        set {
+        set
+        {
             position = value;
             Sprite.Position = new Vector3(value.X, 0f, value.Y);
-        } 
+        }
     }
 
     public Vector2 ClampedPosition = Vector2.Zero;
 
-    public Cursor(Vector3 initialPosition, Vector3 rotation, Vector2 scale, string texPath) {
+    public Cursor(Vector3 initialPosition, Vector3 rotation, Vector2 scale, string texPath)
+    {
         Sprite = Sprite.MakePlane(initialPosition, rotation, scale, texPath);
     }
 
-    public void Render() {
+    public void Render()
+    {
         Sprite.Render();
     }
 
-    public void ApplyParallax(Camera camera, Sprite grid) {
+    public void ApplyParallax(Camera camera, Sprite grid)
+    {
         grid.Position.X = -ClampedPosition.X * (Global.Settings.Camera.GridParallax / 50f);
         grid.Position.Z = -ClampedPosition.Y * (Global.Settings.Camera.GridParallax / 50f);
 
@@ -44,7 +50,8 @@ public class Cursor {
         camera.Target.Y = ClampedPosition.Y * (Global.Settings.Camera.CameraParallax / 50f);
     }
 
-    public void ProcessInput() {
+    public void ProcessInput()
+    {
         var sensFactor = Global.Settings.Cursor.Sensitivity / 50f;
         var delta = Vector2.One * (InputManager.MouseDelta * sensFactor);
         Position -= delta;
@@ -55,6 +62,6 @@ public class Cursor {
         var negClamp = -(CLAMP + (Position * gridParallax));
 
         ClampedPosition = Vector2.Clamp(Position, negClamp, posClamp);
-        if(Global.Settings.Cursor.Clamped) Position = ClampedPosition;
+        if (Global.Settings.Cursor.Clamped) Position = ClampedPosition;
     }
 }

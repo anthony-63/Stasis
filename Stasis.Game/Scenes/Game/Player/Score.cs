@@ -4,7 +4,8 @@ using Stasis.Engine;
 
 namespace Stasis.Game.Scenes.Game.Player;
 
-public static class EncouragementMessages {
+public static class EncouragementMessages
+{
     public static string[] Messages = {
         "Ehhh....",
         "Getting There!",
@@ -17,7 +18,8 @@ public static class EncouragementMessages {
     };
 }
 
-public class Score {
+public class Score
+{
     public int Misses = 0;
     public int Hits = 0;
 
@@ -39,21 +41,24 @@ public class Score {
     public int TimeEnd = 0;
 
     public double Accuracy => Hits + Misses > 0 ? Hits / (double)(Misses + Hits) * 100.0 : 100.0;
-    
+
     public byte[] Hash = [];
 
-    public string Serialize() {
+    public string Serialize()
+    {
         var mapHash = Global.GetMapHash(Global.SelectedMap ?? new BeatmapSet());
         var dirs = mapHash.Chunk(32).Select(x => new string(x)).ToList();
         dirs.Reverse();
         string last = dirs.Last();
 
         var parent = "Assets/Scores";
-        foreach(var d in dirs) {
+        foreach (var d in dirs)
+        {
             var toCreate = parent + "/" + d;
             Directory.CreateDirectory(toCreate);
             parent = toCreate;
-            if(d.Equals(last)) {
+            if (d.Equals(last))
+            {
                 var time = DateTime.Now.ToFileTime();
                 var file = File.Create(toCreate + "/" + time.ToString() + ".ss");
                 file.Write(BitConverter.GetBytes(Failed));

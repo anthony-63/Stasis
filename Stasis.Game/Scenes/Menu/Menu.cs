@@ -11,7 +11,8 @@ using Stasis.Game.Scenes.MapInfo;
 
 namespace Stasis.Game.Scenes.Menu;
 
-public class MenuScene : Scene {
+public class MenuScene : Scene
+{
     public UiRoot Root = new();
     public Frame MetaFrame;
     public ScrollContainer MapGrid;
@@ -26,40 +27,49 @@ public class MenuScene : Scene {
 
     public string LastSearch = "";
 
-    public void LoadMapButtons(GridContainer mapGrid) {
-        foreach(IBeatmapSet map in MapLoader.Maps) {
-            var testFrame = new Frame {
+    public void LoadMapButtons(GridContainer mapGrid)
+    {
+        foreach (IBeatmapSet map in MapLoader.Maps)
+        {
+            var testFrame = new Frame
+            {
                 Color = Raylib.ColorFromNormalized(new Vector4(0.1f, 0.1f, 0.1f, 1f)),
                 BorderWidth = 3,
                 // Roundness = 0.15f,
                 BorderColor = Color.White,
             };
 
-            var button = new TestMapButton(map, SelectMap) {
+            var button = new TestMapButton(map, SelectMap)
+            {
                 Size = UDim2.Zero,
                 Position = UDim2.Zero,
                 Anchor = UiElementAnchor.TopLeft,
                 NormalFrame = testFrame,
                 HoveringFrame = testFrame,
                 PressedFrame = testFrame,
-                Label = new Label {
+                Label = new Label
+                {
                     Visible = false,
                 },
             };
 
-            if(map.Cover.Length > 0) {
-                button.AddChild(new ImageFrame {
+            if (map.Cover.Length > 0)
+            {
+                button.AddChild(new ImageFrame
+                {
                     ImageData = map.Cover,
                     Size = UDim2.Fill,
                 });
-                button.AddChild(new Frame {
+                button.AddChild(new Frame
+                {
                     Size = UDim2.Fill,
                     Color = new Color(12, 12, 12, 200),
                 });
                 button.AddChild(button.Children.First());
                 button.Children.RemoveAt(0);
             }
-            button.AddChild(new Label {
+            button.AddChild(new Label
+            {
                 Size = new UDim2(0.9f, 0, 0.9f, 0),
                 Position = new UDim2(0.05f, 0, 0.05f, 0),
                 AlignmentX = TextAlignX.Left,
@@ -73,14 +83,17 @@ public class MenuScene : Scene {
         }
     }
 
-    public ScrollContainer MakeMapList() {
-        MapGrid = new ScrollContainer() {
+    public ScrollContainer MakeMapList()
+    {
+        MapGrid = new ScrollContainer()
+        {
             Size = new UDim2(1f, 0, 0.95f, 0),
             Position = new UDim2(0, 0, 0.05f, 0),
             ClipContents = true,
         };
 
-        MapList = new GridContainer() {
+        MapList = new GridContainer()
+        {
             Padding = 17,
             ItemsPerRow = 8,
             Size = UDim2.Fill,
@@ -94,32 +107,40 @@ public class MenuScene : Scene {
         return MapGrid;
     }
 
-    public void ReloadMapsAction() {
+    public void ReloadMapsAction()
+    {
         MapGrid.Scroll = 0;
-        foreach(TestMapButton button in MapList.Children) {
+        foreach (TestMapButton button in MapList.Children)
+        {
             button.Unload();
         }
         MapList.Children.Clear();
-        LoadMapButtons(MapList);            
+        LoadMapButtons(MapList);
     }
 
-    public TabContainerTab MakeSettingsTab(string name) {
-        var tab = new TabContainerTab() {
+    public TabContainerTab MakeSettingsTab(string name)
+    {
+        var tab = new TabContainerTab()
+        {
             Size = new UDim2(1, 0, 0.95f, 0),
             Position = new UDim2(0, 0, 0.05f, 0),
             Color = MainFrame.Color,
-            SwapTo = new Button() {
+            SwapTo = new Button()
+            {
                 Position = new UDim2(0, settingsTabButtonPlace, 0, 2),
                 Size = new UDim2(0, 200, 0.045f, 0),
-                NormalFrame = new Frame() {
+                NormalFrame = new Frame()
+                {
                     BorderWidth = 0.5f,
                     Color = new Color(22, 22, 22, 255),
                 },
-                HoveringFrame = new Frame() {
+                HoveringFrame = new Frame()
+                {
                     BorderWidth = 0.5f,
                     Color = new Color(32, 32, 32, 255),
                 },
-                Label = new Label() {
+                Label = new Label()
+                {
                     Size = UDim2.Fill,
                     AlignmentX = TextAlignX.Center,
                     AlignmentY = TextAlignY.Middle,
@@ -131,13 +152,15 @@ public class MenuScene : Scene {
             }
         };
 
-        var titleFrame = new Frame() {
+        var titleFrame = new Frame()
+        {
             Color = MainFrame.Color,
             BorderWidth = 0.5f,
             Size = new UDim2(1, -2.5f, 0, 50),
             Position = new UDim2(0, 0, 0, 0),
         };
-        var titleLabel = new Label() {
+        var titleLabel = new Label()
+        {
             AlignmentX = TextAlignX.Center,
             AlignmentY = TextAlignY.Top,
             FontSize = 48,
@@ -154,8 +177,10 @@ public class MenuScene : Scene {
         return tab;
     }
 
-    public Frame MakeSettingsContainerFrame() {
-        var frame = new Frame() {
+    public Frame MakeSettingsContainerFrame()
+    {
+        var frame = new Frame()
+        {
             Size = new UDim2(1, -2.5f, 1, -55),
             Position = new UDim2(0, 0, 0, 52.5f),
             Color = MainFrame.Color,
@@ -164,8 +189,10 @@ public class MenuScene : Scene {
         return frame;
     }
 
-    public void MakeSettingSpinbox(Frame parent, float defaultValue, string name, int y, SpinBox.ValueChangedEvent valueChanged) {
-        var label = new Label() {
+    public void MakeSettingSpinbox(Frame parent, float defaultValue, string name, int y, SpinBox.ValueChangedEvent valueChanged)
+    {
+        var label = new Label()
+        {
             Size = new UDim2(1, 0, 0, 1),
             Position = new UDim2(0, 10, 0, y),
             AlignmentX = TextAlignX.Left,
@@ -177,28 +204,33 @@ public class MenuScene : Scene {
         };
         label.UpdateAbsoluteValues(parent.AbsoluteSize, parent.AbsolutePosition);
 
-        var spinBox = new SpinBox() {
+        var spinBox = new SpinBox()
+        {
             Size = new UDim2(0, 100, 0, label.FontSize),
             Position = new UDim2(0, 250, 0, 0),
             Step = 0.01f,
             Anchor = UiElementAnchor.MiddleLeft,
-            NormalFrame = new Frame() {
+            NormalFrame = new Frame()
+            {
                 Color = new Color(9, 9, 9, 255),
                 BorderWidth = 0.5f,
                 Roundness = 0.5f,
             },
-            FocusedFrame = new Frame() {
+            FocusedFrame = new Frame()
+            {
                 Color = new Color(15, 15, 15, 255),
                 BorderWidth = 0.5f,
                 Roundness = 0.5f,
             },
-            Text = new Label() {
+            Text = new Label()
+            {
                 OneLine = true,
                 FontSize = 18,
                 Size = UDim2.Fill,
                 Font = Global.UIFont,
             },
-            Placeholder = new Label() {
+            Placeholder = new Label()
+            {
                 OneLine = true,
                 FontSize = 18,
                 Size = UDim2.Fill,
@@ -214,8 +246,10 @@ public class MenuScene : Scene {
         parent.AddChild(label);
     }
 
-    public void MakeSettingsToggle(Frame parent, bool defaultValue, string name, int y, Button.ButtonToggleEvent valueChanged) {
-        var label = new Label() {
+    public void MakeSettingsToggle(Frame parent, bool defaultValue, string name, int y, Button.ButtonToggleEvent valueChanged)
+    {
+        var label = new Label()
+        {
             Size = new UDim2(1, 0, 0, 1),
             Position = new UDim2(0, 10, 0, y),
             AlignmentX = TextAlignX.Left,
@@ -227,28 +261,33 @@ public class MenuScene : Scene {
         };
         label.UpdateAbsoluteValues(parent.AbsoluteSize, parent.AbsolutePosition);
 
-        var button = new Button() {
+        var button = new Button()
+        {
             Size = new UDim2(0, 100, 0, label.FontSize),
             Position = new UDim2(0, 250, 0, 0),
             Anchor = UiElementAnchor.MiddleLeft,
             ToggledValue = defaultValue,
             Toggle = true,
-            NormalFrame = new Frame() {
+            NormalFrame = new Frame()
+            {
                 Color = new Color(9, 9, 9, 255),
                 BorderWidth = 0.5f,
                 Roundness = 0.5f,
             },
-            HoveringFrame = new Frame() {
+            HoveringFrame = new Frame()
+            {
                 Color = new Color(16, 16, 16, 255),
                 BorderWidth = 0.5f,
                 Roundness = 0.5f,
             },
-            PressedFrame = new Frame() {
+            PressedFrame = new Frame()
+            {
                 Color = new Color(22, 22, 22, 255),
                 BorderWidth = 0.5f,
                 Roundness = 0.5f,
             },
-            Label = new Label() {
+            Label = new Label()
+            {
                 OneLine = true,
                 Size = UDim2.Fill,
                 FontSize = 18,
@@ -256,8 +295,9 @@ public class MenuScene : Scene {
                 Text = defaultValue ? "Enabled" : "Disabled",
             },
         };
-        button.Toggled += (b) => {
-            if(button.ToggledValue) button.Label.Text = "Enabled";
+        button.Toggled += (b) =>
+        {
+            if (button.ToggledValue) button.Label.Text = "Enabled";
             else button.Label.Text = "Disabled";
             valueChanged(b);
         };
@@ -267,7 +307,8 @@ public class MenuScene : Scene {
         parent.AddChild(label);
     }
 
-    public TabContainerTab MakeNoteSettings() {
+    public TabContainerTab MakeNoteSettings()
+    {
         var tab = MakeSettingsTab("Note Settings");
         var container = MakeSettingsContainerFrame();
         MakeSettingSpinbox(container, Global.Settings.Note.ApproachTime, "Approach Time", 20, UpdateApproachTime);
@@ -279,37 +320,44 @@ public class MenuScene : Scene {
         return tab;
     }
 
-    void SaveSettings() {
+    void SaveSettings()
+    {
         Global.Settings.Save("Assets/settings.toml");
     }
 
-    public void UpdateApproachTime(float value) {
+    public void UpdateApproachTime(float value)
+    {
         Global.Settings.Note.ApproachTime = value;
         SaveSettings();
     }
 
-    public void UpdateFadeIn(float value) {
+    public void UpdateFadeIn(float value)
+    {
         Global.Settings.Note.FadeIn = value;
         SaveSettings();
     }
 
-    public void UpdateHalfGhost(bool value) {
+    public void UpdateHalfGhost(bool value)
+    {
         Global.Settings.Note.HalfGhost = value;
         SaveSettings();
     }
 
-    public void UpdateApproachDistance(float value) {
+    public void UpdateApproachDistance(float value)
+    {
         Global.Settings.Note.ApproachDistance = value;
         SaveSettings();
     }
 
-    public void UpdatePushback(bool value) {
+    public void UpdatePushback(bool value)
+    {
         Global.Settings.Note.Pushback = value;
         SaveSettings();
     }
 
 
-    public TabContainerTab MakeCursorSettings() {
+    public TabContainerTab MakeCursorSettings()
+    {
         var tab = MakeSettingsTab("Cursor Settings");
         var container = MakeSettingsContainerFrame();
 
@@ -321,22 +369,26 @@ public class MenuScene : Scene {
         return tab;
     }
 
-    public void UpdateSensitivity(float value) {
+    public void UpdateSensitivity(float value)
+    {
         Global.Settings.Cursor.Sensitivity = value;
         SaveSettings();
     }
 
-    public void UpdateCursorScale(float value) {
+    public void UpdateCursorScale(float value)
+    {
         Global.Settings.Cursor.Scale = value;
         SaveSettings();
     }
 
-    public void UpdateClamped(bool value) {
+    public void UpdateClamped(bool value)
+    {
         Global.Settings.Cursor.Clamped = value;
         SaveSettings();
     }
 
-    public TabContainerTab MakeCameraSettings() {
+    public TabContainerTab MakeCameraSettings()
+    {
         var tab = MakeSettingsTab("Camera Settings");
         var container = MakeSettingsContainerFrame();
 
@@ -348,22 +400,26 @@ public class MenuScene : Scene {
         return tab;
     }
 
-    public void UpdateFOV(float value) {
+    public void UpdateFOV(float value)
+    {
         Global.Settings.Camera.FOV = value;
         SaveSettings();
     }
 
-    public void UpdateCameraParallax(float value) {
+    public void UpdateCameraParallax(float value)
+    {
         Global.Settings.Camera.CameraParallax = value;
         SaveSettings();
     }
 
-    public void UpdateGridParallax(float value) {
+    public void UpdateGridParallax(float value)
+    {
         Global.Settings.Camera.GridParallax = value;
         SaveSettings();
     }
 
-    public TabContainerTab MakeAudioSettings() {
+    public TabContainerTab MakeAudioSettings()
+    {
         var tab = MakeSettingsTab("Audio Settings");
         var container = MakeSettingsContainerFrame();
 
@@ -374,17 +430,20 @@ public class MenuScene : Scene {
         return tab;
     }
 
-    public void UpdateVolume(float value) {
+    public void UpdateVolume(float value)
+    {
         Global.Settings.Audio.Volume = value;
         SaveSettings();
     }
 
-    public void UpdateFXVolume(float value) {
+    public void UpdateFXVolume(float value)
+    {
         Global.Settings.Audio.FXVolume = value;
         SaveSettings();
     }
 
-    public TabContainerTab MakeMiscSettings() {
+    public TabContainerTab MakeMiscSettings()
+    {
         var tab = MakeSettingsTab("Miscellaneous");
         var container = MakeSettingsContainerFrame();
         MakeSettingsToggle(container, Global.Settings.Misc.EnableReplays, "Enable Replays", 20, UpdateEnableReplay);
@@ -392,12 +451,14 @@ public class MenuScene : Scene {
         return tab;
     }
 
-    public void UpdateEnableReplay(bool value) {
+    public void UpdateEnableReplay(bool value)
+    {
         Global.Settings.Cursor.Clamped = value;
         SaveSettings();
     }
 
-    public TabContainerTab MakeAdvancedSettings() {
+    public TabContainerTab MakeAdvancedSettings()
+    {
         var tab = MakeSettingsTab("Advanced(breakable)");
         var container = MakeSettingsContainerFrame();
         MakeSettingsToggle(container, Global.Settings.Advanced.ZSorting, "MultiMesh Z Sorting", 20, UpdateZSorting);
@@ -405,23 +466,29 @@ public class MenuScene : Scene {
         return tab;
     }
 
-    public void UpdateZSorting(bool value) {
+    public void UpdateZSorting(bool value)
+    {
         Global.Settings.Advanced.ZSorting = value;
         SaveSettings();
     }
 
-    public TabContainerTab MakeSettings() {
-        var frame = new TabContainerTab() {
+    public TabContainerTab MakeSettings()
+    {
+        var frame = new TabContainerTab()
+        {
             Size = new UDim2(0.95f, -5, 1f, 0),
             Position = new UDim2(0.05f, 5, 0, 0),
             Color = MainFrame.Color,
-            SwapTo = new Button() {
+            SwapTo = new Button()
+            {
                 Size = new UDim2(0.05f, 0, 0.082f, 0),
                 Position = new UDim2(0, 0, 0.082f, 0),
-                NormalFrame = new Frame() {
+                NormalFrame = new Frame()
+                {
                     Color = new Color(8, 8, 8, 255),
                 },
-                HoveringFrame = new Frame() {
+                HoveringFrame = new Frame()
+                {
                     Color = new Color(12, 12, 12, 255),
                 },
                 Children = [
@@ -433,7 +500,8 @@ public class MenuScene : Scene {
             },
         };
 
-        frame.AddChild(new TabContainer() {
+        frame.AddChild(new TabContainer()
+        {
             Tabs = [
                 MakeNoteSettings(),
                 MakeCursorSettings(),
@@ -448,24 +516,29 @@ public class MenuScene : Scene {
     }
 
 
-    #pragma warning disable CS8618
-    public MenuScene() {
-        MainFrame = new Frame() {
+#pragma warning disable CS8618
+    public MenuScene()
+    {
+        MainFrame = new Frame()
+        {
             Size = new UDim2(1f, 0, 1, 0),
             Color = new Color(12, 12, 12, 255),
         };
 
-        MetaFrame = new Frame() {
+        MetaFrame = new Frame()
+        {
             Color = Raylib.ColorFromNormalized(new Vector4(0.03f, 0.03f, 0.03f, 1f)),
             Size = new UDim2(1, 0, 0.07f, 0),
             Position = new UDim2(0, 0, -0.02f, 0),
             Roundness = 0.5f,
         };
 
-        ReloadMaps = new Button() {
+        ReloadMaps = new Button()
+        {
             Position = new UDim2(0.22f, 0, 0.42f, 0),
             Size = new UDim2(0.09f, 0, 0.4f, 0),
-            Label = new Label() {
+            Label = new Label()
+            {
                 Text = "Reload Maps",
                 Size = UDim2.Fill,
                 AlignmentX = TextAlignX.Center,
@@ -474,21 +547,24 @@ public class MenuScene : Scene {
                 OneLine = true,
             },
 
-            NormalFrame = new() {
+            NormalFrame = new()
+            {
                 Color = Color.DarkGray,
                 BorderWidth = 1f,
                 BorderColor = Color.Gray,
                 Roundness = 3f,
             },
 
-            PressedFrame = new() {
+            PressedFrame = new()
+            {
                 Color = new Color(120, 120, 120, 255),
                 BorderWidth = 1f,
                 BorderColor = Color.Gray,
                 Roundness = 3f,
             },
 
-            HoveringFrame = new() {
+            HoveringFrame = new()
+            {
                 Color = new Color(100, 100, 100, 255),
                 BorderWidth = 1f,
                 BorderColor = Color.Gray,
@@ -496,22 +572,26 @@ public class MenuScene : Scene {
             },
         };
 
-        SearchBox = new TextBox() {
+        SearchBox = new TextBox()
+        {
             Position = new UDim2(0.01f, 0, 0.42f, 0),
             Size = new UDim2(0.2f, 0, 0.4f, 0),
-            NormalFrame = new() {
+            NormalFrame = new()
+            {
                 Color = Color.DarkGray,
                 BorderWidth = 1f,
                 BorderColor = Color.Gray,
                 Roundness = 3f,
             },
-            FocusedFrame = new() {
+            FocusedFrame = new()
+            {
                 Color = new Color(100, 100, 100, 255),
                 BorderWidth = 1f,
                 BorderColor = Color.Gray,
                 Roundness = 3f,
             },
-            Placeholder = new() {
+            Placeholder = new()
+            {
                 AlignmentX = TextAlignX.Left,
                 AlignmentY = TextAlignY.Middle,
                 Position = new UDim2(0.04f, 0, 0, 0),
@@ -522,7 +602,8 @@ public class MenuScene : Scene {
                 TextColor = Color.Gray,
                 OneLine = true,
             },
-            Text = new() {
+            Text = new()
+            {
                 AlignmentX = TextAlignX.Left,
                 AlignmentY = TextAlignY.Middle,
                 Position = new UDim2(0.04f, 0, 0, 0),
@@ -543,11 +624,13 @@ public class MenuScene : Scene {
 
         MapGrid = MakeMapList();
 
-        var leftFrame = new Frame() {
+        var leftFrame = new Frame()
+        {
             Color = new Color(3, 3, 3, 255),
             Size = new UDim2(0.05f, 0, 1, 0),
         };
-        MainTabContainer = new TabContainer() {
+        MainTabContainer = new TabContainer()
+        {
             Tabs = [
                 new TabContainerTab() {
                     Size = new UDim2(0.95f, 0, 1f, 0),
@@ -583,9 +666,10 @@ public class MenuScene : Scene {
 
         SetRPC();
     }
-    #pragma warning restore CS8618
+#pragma warning restore CS8618
 
-    public void SetRPC() {
+    public void SetRPC()
+    {
         // Global.Discord.SetPresence(new DiscordRPC.RichPresence() {
         //     Details = "In Menu",
         //     State = "Listening to PLACEHOLDER",
@@ -593,7 +677,8 @@ public class MenuScene : Scene {
         // });
     }
 
-    public void SelectMap(IBeatmapSet map) {
+    public void SelectMap(IBeatmapSet map)
+    {
         Global.SelectedMap = map;
         Global.LoadedMenu = this;
         Global.Mods.StartFrom = 0;
@@ -601,19 +686,24 @@ public class MenuScene : Scene {
         Window?.SceneHandler.AddScene(new MapInfoScene());
     }
 
-    public override void Render() {
+    public override void Render()
+    {
         Global.BasicFPSLabel.Text = Raylib.GetFPS().ToString() + " FPS";
         Root.Render(Raylib.GetRenderWidth(), Raylib.GetRenderHeight());
     }
 
-    public override void Update(double dt) {
-        if(Raylib.IsKeyPressed(KeyboardKey.F2)) {
+    public override void Update(double dt)
+    {
+        if (Raylib.IsKeyPressed(KeyboardKey.F2))
+        {
             SelectMap(MapLoader.Maps[Global.Random.Next(MapLoader.Maps.Count)]);
         }
-        
-        if(Raylib.IsFileDropped()) {
+
+        if (Raylib.IsFileDropped())
+        {
             var files = Raylib.GetDroppedFiles();
-            foreach(string file in files) {
+            foreach (string file in files)
+            {
                 Logger.Info("Loading drag and dropped map: ", file);
                 var newPath = "Assets/Maps/" + Path.GetFileName(file);
                 File.Copy(file, newPath);
@@ -623,9 +713,11 @@ public class MenuScene : Scene {
         }
 
         Root.Update(dt);
-        if(LastSearch != SearchBox.Text.Text) MapGrid.Scroll = 0;
-        foreach(UiElement button in MapGrid.Children[0].Children) {
-            if(button is TestMapButton mapButton) {
+        if (LastSearch != SearchBox.Text.Text) MapGrid.Scroll = 0;
+        foreach (UiElement button in MapGrid.Children[0].Children)
+        {
+            if (button is TestMapButton mapButton)
+            {
                 button.IgnoreUpdate = MetaFrame.IsHovering();
                 button.Visible =
                     mapButton.Map.Title.Contains(SearchBox.Text.Text, StringComparison.CurrentCultureIgnoreCase) ||

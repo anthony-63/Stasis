@@ -6,10 +6,12 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class Misses : Label {
+public class Misses : Label
+{
     Label MissesValue;
 
-    public Misses() {
+    public Misses()
+    {
         OneLine = true;
 
         Size = new UDim2(0, 0, 1, 0);
@@ -23,7 +25,8 @@ public class Misses : Label {
         TextColor = Color.Maroon;
 
         Position = new UDim2(0.99f, 0, 0.485f, 0);
-        MissesValue = new Label {
+        MissesValue = new Label
+        {
             OneLine = true,
             Text = "0x",
             AlignmentX = AlignmentX,
@@ -38,11 +41,13 @@ public class Misses : Label {
         AddChild(MissesValue);
     }
 
-    public override void Render() {
+    public override void Render()
+    {
         base.Render();
     }
 
-    public void Update(Score score) {
+    public void Update(Score score)
+    {
         MissesValue.Text = score.Misses.ToString() + "x";
     }
 }

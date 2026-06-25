@@ -6,8 +6,10 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Loading;
 
-public static class LeaderboardLoader {
-    public class LeaderboardEntry {
+public static class LeaderboardLoader
+{
+    public class LeaderboardEntry
+    {
         public Score Score = new();
         public Mods Mods = new();
         public DateTime time;
@@ -18,8 +20,9 @@ public static class LeaderboardLoader {
         public Replay? Replay = null;
         public bool ReplayValid = false;
     }
-    
-    static LeaderboardEntry ReadEntry(string path) {
+
+    static LeaderboardEntry ReadEntry(string path)
+    {
         var filePath = Directory.GetFiles(path)[0];
         var hashComputer = File.Open(filePath, FileMode.Open);
         byte[] hash = SHA256.Create().ComputeHash(hashComputer);
@@ -28,13 +31,15 @@ public static class LeaderboardLoader {
         var entry = new LeaderboardEntry();
 
         var replayDir = Directory.GetDirectories(path);
-        if(replayDir.Length > 0) {
+        if (replayDir.Length > 0)
+        {
             entry.Replay = new Replay(Directory.GetFiles(replayDir[0])[0]);
             var replayHash = Util.GetSHA256(Global.SelectedMap?.Title + string.Concat(entry.Replay.Frames.Select(x => x.CursorPosition.X + x.CursorPosition.Y + x.Time) ?? []));
             entry.ReplayValid = entry.Replay.Hash.SequenceEqual(hash) && (Path.GetFileName(replayDir[0]) == replayHash);
         }
 
-        if(Path.GetFileName(path) != folderPath) {
+        if (Path.GetFileName(path) != folderPath)
+        {
             Logger.Warn("INVALID SCORE HASH: ", Path.GetFileName(path), " != ", folderPath);
             entry.Valid = false;
             return entry;
@@ -68,7 +73,8 @@ public static class LeaderboardLoader {
         return entry;
     }
 
-    public static List<LeaderboardEntry> LoadLeaderboardFromMap(IBeatmapSet map) {
+    public static List<LeaderboardEntry> LoadLeaderboardFromMap(IBeatmapSet map)
+    {
         var lb = new List<LeaderboardEntry>();
         var hash = Global.GetMapHash(map);
         var dirs = hash.Chunk(32).Select(x => new string(x)).ToList();
@@ -76,17 +82,22 @@ public static class LeaderboardLoader {
 
         var scoreExists = false;
         var parent = "Assets/Scores";
-        foreach(var dir in dirs) {
+        foreach (var dir in dirs)
+        {
             parent += "/" + dir;
             scoreExists = Directory.Exists(parent);
         }
-        if(!scoreExists) return lb;
+        if (!scoreExists) return lb;
 
         var files = Directory.GetDirectories(parent);
-        foreach(var path in files) {
-            try {
+        foreach (var path in files)
+        {
+            try
+            {
                 lb.Add(ReadEntry(path));
-            } catch(Exception e) {
+            }
+            catch (Exception e)
+            {
                 Logger.Warn("Error loading score: ", e);
             }
         }

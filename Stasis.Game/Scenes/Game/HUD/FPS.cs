@@ -6,10 +6,12 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class FPS : Label {
+public class FPS : Label
+{
     int MaxFPS = 0;
 
-    public FPS() {
+    public FPS()
+    {
         OneLine = true;
 
         Size = new UDim2(0, 0, 1, 0);
@@ -25,22 +27,29 @@ public class FPS : Label {
         Position = new UDim2(0.995f, 0, 0, 0);
     }
 
-    public void UpdatePos() {
+    public void UpdatePos()
+    {
         var pos = Position;
         pos.Y.Offset = Raylib.GetRenderHeight() - 60;
         Position = pos;
     }
 
-    public override void Update(double dt) {
+    public override void Update(double dt)
+    {
         var FPS = Raylib.GetFPS();
         Text = FPS.ToString() + " FPS";
         MaxFPS = Math.Max(MaxFPS, FPS);
 
-        if(FPS > MaxFPS / 2) {
+        if (FPS > MaxFPS / 2)
+        {
             TextColor = Color.Lime;
-        } else if(FPS > MaxFPS / 6) {
+        }
+        else if (FPS > MaxFPS / 6)
+        {
             TextColor = Color.Orange;
-        } else if(FPS > MaxFPS / 8) {
+        }
+        else if (FPS > MaxFPS / 8)
+        {
             TextColor = Color.Red;
         }
 

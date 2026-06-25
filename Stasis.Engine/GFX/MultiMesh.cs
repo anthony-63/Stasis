@@ -6,11 +6,13 @@ using Raylib_cs;
 
 namespace Stasis.Engine.GFX;
 
-public struct MultiMeshInstance {
-    
+public struct MultiMeshInstance
+{
+
 }
 
-public class MultiMesh {
+public class MultiMesh
+{
     const string _vs_shader = @"
 #version 430
 
@@ -59,7 +61,8 @@ void main() {
 
     bool ZSorting = true;
 
-    public MultiMesh(string meshPath, int maxInstanceCount, bool enableZSorting) {
+    public MultiMesh(string meshPath, int maxInstanceCount, bool enableZSorting)
+    {
         var model = Raylib.LoadModel(meshPath);
         Instances = new Matrix4x4[maxInstanceCount];
         Material = Raylib.LoadMaterialDefault();
@@ -69,31 +72,36 @@ void main() {
 
         Shader shader = Raylib.LoadShaderFromMemory(_vs_shader, _fs_shader);
 
-        unsafe {
+        unsafe
+        {
             shader.Locs[6] = Raylib.GetShaderLocation(shader, "mvp");
             shader.Locs[9] = Raylib.GetShaderLocationAttrib(shader, "instanceTransform");
         }
 
         Material.Shader = shader;
 
-        unsafe {
+        unsafe
+        {
             Material.Maps[0].Color = Color.White;
             BasicMaterial.Maps[0].Color = Color.White;
             Mesh = model.Meshes[0];
         }
     }
 
-    public void AddInstance(Matrix4x4 transform, Color color) {
+    public void AddInstance(Matrix4x4 transform, Color color)
+    {
         float final = (color.R << 16) | (color.G << 8) | color.B;
         Instances[Index++] = transform * Matrix4x4.CreateScale(final, color.A / 255f, 1f);
     }
 
-    int SortZDelegate(Matrix4x4 x, Matrix4x4 y) {
+    int SortZDelegate(Matrix4x4 x, Matrix4x4 y)
+    {
         return x.M34.CompareTo(y.M34);
     }
 
-    public void Render() {
-        if(ZSorting) Array.Sort(Instances, SortZDelegate);
+    public void Render()
+    {
+        if (ZSorting) Array.Sort(Instances, SortZDelegate);
         Raylib.DrawMeshInstanced(Mesh, Material, Instances, Index);
         Array.Clear(Instances);
         Index = 0;

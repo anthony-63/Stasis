@@ -16,9 +16,6 @@
         }
       },
       "Raylib-cs/6.1.1": {
-        "dependencies": {
-          "System.Numerics.Vectors": "4.5.0"
-        },
         "runtime": {
           "lib/net6.0/Raylib-cs.dll": {
             "assemblyVersion": "0.0.0.0",
@@ -53,7 +50,6 @@
           }
         }
       },
-      "System.Numerics.Vectors/4.5.0": {},
       "Tomlyn/0.18.0": {
         "runtime": {
           "lib/net8.0/Tomlyn.dll": {
@@ -67,7 +63,10 @@
           "Raylib-cs": "6.1.1"
         },
         "runtime": {
-          "Stasis.Engine.dll": {}
+          "Stasis.Engine.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }
@@ -84,13 +83,6 @@
       "sha512": "sha512-ty5RQoFK7bW4mTogwMf55Zh73DMJMvFLLJTarhmL1g7loxeLYoHTFufN7JagObdLHo2zB3wVrtEHVCXFoZ9TMg==",
       "path": "raylib-cs/6.1.1",
       "hashPath": "raylib-cs.6.1.1.nupkg.sha512"
-    },
-    "System.Numerics.Vectors/4.5.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-QQTlPTl06J/iiDbJCiepZ4H//BVraReU4O4EoRw1U02H5TLUIT7xn3GnDp9AXPSlJUDyFs4uWjWafNX6WrAojQ==",
-      "path": "system.numerics.vectors/4.5.0",
-      "hashPath": "system.numerics.vectors.4.5.0.nupkg.sha512"
     },
     "Tomlyn/0.18.0": {
       "type": "package",

@@ -4,14 +4,17 @@ using Raylib_cs;
 
 namespace Stasis.Engine.UI.Elements;
 
-public class ProgressBar : UiElement {
+public class ProgressBar : UiElement
+{
 
-    public Frame Background = new() {
+    public Frame Background = new()
+    {
         Size = new UDim2(1, 0, 1, 0),
         Color = Color.DarkGray,
     };
 
-    public Frame Foreground = new() {
+    public Frame Foreground = new()
+    {
         Size = new UDim2(1, 0, 1, 0),
         Color = Color.White,
     };
@@ -19,22 +22,26 @@ public class ProgressBar : UiElement {
     public float Value = 25f;
     public float MaxValue = 100f;
 
-    public override void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
+    public override void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition)
+    {
         base.UpdateAbsoluteValues(parentSize, parentPosition);
         Background.UpdateAbsoluteValues(AbsoluteSize, AbsolutePosition);
         Foreground.UpdateAbsoluteValues(Background.AbsoluteSize, Background.AbsolutePosition);
     }
 
-    void GetMaxYAllChildren(UiElement element, ref float max) {
-        foreach(UiElement child in element.Children) {
+    void GetMaxYAllChildren(UiElement element, ref float max)
+    {
+        foreach (UiElement child in element.Children)
+        {
             max = Math.Max(max, child.AbsolutePosition.Y - child.AbsoluteSize.Y * 3.5f);
-            if(child.Children.Count > 0) GetMaxYAllChildren(child, ref max);
+            if (child.Children.Count > 0) GetMaxYAllChildren(child, ref max);
         }
     }
 
-    public override void Update(double dt) {
-        if(!Visible) return;
-        
+    public override void Update(double dt)
+    {
+        if (!Visible) return;
+
         var val = Value / MaxValue;
         Foreground.Size.X.Scale = val;
 
@@ -44,7 +51,8 @@ public class ProgressBar : UiElement {
         base.Update(dt);
     }
 
-    public override void Render() {
+    public override void Render()
+    {
         Background.Render();
         Foreground.Render();
         base.Render();

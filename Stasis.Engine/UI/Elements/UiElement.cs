@@ -4,7 +4,8 @@ using Raylib_cs;
 
 namespace Stasis.Engine.UI.Elements;
 
-public class UiElement {
+public class UiElement
+{
     private Vector2 absoluteSize = Vector2.Zero;
     private Vector2 absolutePosition = Vector2.Zero;
 
@@ -29,14 +30,17 @@ public class UiElement {
 
     public UiRoot Root = new();
 
-    public virtual void Update(double dt) {
-        if(culled || IgnoreUpdate) return;
+    public virtual void Update(double dt)
+    {
+        if (culled || IgnoreUpdate) return;
         foreach (var element in Children) element.Update(dt);
     }
 
-    public virtual bool IsHovering() {
-        if(!visible || culled) return false;
-        return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle {
+    public virtual bool IsHovering()
+    {
+        if (!visible || culled) return false;
+        return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle
+        {
             X = AbsolutePosition.X,
             Y = AbsolutePosition.Y,
             Width = AbsoluteSize.X,
@@ -44,9 +48,11 @@ public class UiElement {
         });
     }
 
-    public virtual bool IsHovering(Vector2 position) {
-        if(!visible || culled) return false;
-        return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle {
+    public virtual bool IsHovering(Vector2 position)
+    {
+        if (!visible || culled) return false;
+        return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), new Rectangle
+        {
             X = position.X,
             Y = position.Y,
             Width = AbsoluteSize.X,
@@ -54,8 +60,9 @@ public class UiElement {
         });
     }
 
-    public virtual void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition) {
-        if(!visible) return;
+    public virtual void UpdateAbsoluteValues(Vector2 parentSize, Vector2 parentPosition)
+    {
+        if (!visible) return;
 
         absoluteSize = new Vector2(
             (parentSize.X * Size.X.Scale) + Size.X.Offset,
@@ -66,7 +73,8 @@ public class UiElement {
             (parentSize.Y * Position.Y.Scale) + Position.Y.Offset
         ), parentPosition);
 
-        switch(Anchor) {
+        switch (Anchor)
+        {
             case UiElementAnchor.TopLeft: break;
             case UiElementAnchor.TopMiddle: absolutePosition = Vector2.Subtract(absolutePosition, new Vector2(absoluteSize.X / 2f, 0f)); break;
             case UiElementAnchor.TopRight: absolutePosition = Vector2.Subtract(absolutePosition, new Vector2(absoluteSize.X, 0)); break;
@@ -77,44 +85,55 @@ public class UiElement {
             case UiElementAnchor.BottomMiddle: absolutePosition = Vector2.Subtract(absolutePosition, new Vector2(absoluteSize.X / 2f, absoluteSize.Y)); break;
             case UiElementAnchor.BottomRight: absolutePosition = Vector2.Subtract(absolutePosition, new Vector2(absoluteSize.X, absoluteSize.Y)); break;
         }
-        
+
         culled = (Raylib.GetRenderHeight() < absolutePosition.Y || absolutePosition.Y + absoluteSize.Y < 0) && this is not GridContainer && this is not ScrollContainer;
 
-        if(culled) return;
+        if (culled) return;
 
-        foreach (var element in Children) {
+        foreach (var element in Children)
+        {
             element.UpdateAbsoluteValues(absoluteSize, absolutePosition);
         }
     }
 
-    public virtual void Render() {
-        if(!visible || culled) return;
+    public virtual void Render()
+    {
+        if (!visible || culled) return;
         SetClipDim();
-        if(ClipContents) Raylib.BeginScissorMode((int)ScissorRect.X, (int)ScissorRect.Y, (int)ScissorRect.Width, (int)ScissorRect.Height);
+        if (ClipContents) Raylib.BeginScissorMode((int)ScissorRect.X, (int)ScissorRect.Y, (int)ScissorRect.Width, (int)ScissorRect.Height);
         foreach (var element in Children) element.Render();
-        if(ClipContents) Raylib.EndScissorMode();
+        if (ClipContents) Raylib.EndScissorMode();
     }
 
-    public virtual void SetAbsoluteValues(Vector2 position, Vector2 size) {
+    public virtual void SetAbsoluteValues(Vector2 position, Vector2 size)
+    {
         absolutePosition = position;
         absoluteSize = size;
-        foreach (var element in Children) {
+        foreach (var element in Children)
+        {
             element.UpdateAbsoluteValues(absoluteSize, absolutePosition);
         }
     }
-    
-    public virtual void SetClipDim() {
-        ScissorRect = new Rectangle() {
-            X = AbsolutePosition.X, Y = AbsolutePosition.Y, Width = AbsoluteSize.X, Height = AbsoluteSize.Y
+
+    public virtual void SetClipDim()
+    {
+        ScissorRect = new Rectangle()
+        {
+            X = AbsolutePosition.X,
+            Y = AbsolutePosition.Y,
+            Width = AbsoluteSize.X,
+            Height = AbsoluteSize.Y
         };
     }
 
-    public virtual void AddChild(UiElement child) {
+    public virtual void AddChild(UiElement child)
+    {
         Children.Add(child);
     }
 }
 
-public enum UiElementAnchor {
+public enum UiElementAnchor
+{
     TopLeft,
     TopMiddle,
     TopRight,

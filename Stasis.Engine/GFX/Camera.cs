@@ -3,22 +3,28 @@ using Raylib_cs;
 
 namespace Stasis.Engine.GFX;
 
-public class Camera {
+public class Camera
+{
     Camera3D RlCamera;
 
-    public ref Vector3 Position {
-        get {
+    public ref Vector3 Position
+    {
+        get
+        {
             return ref RlCamera.Position;
         }
     }
 
-    public ref Vector3 Target {
-        get {
+    public ref Vector3 Target
+    {
+        get
+        {
             return ref RlCamera.Target;
         }
     }
 
-    public Camera(Vector3 position, float fov) {
+    public Camera(Vector3 position, float fov)
+    {
         RlCamera = new Camera3D(
             position,
             new Vector3(0, 0, 0),
@@ -28,11 +34,13 @@ public class Camera {
         );
     }
 
-    public void Start() {
+    public void Start()
+    {
         Raylib.BeginMode3D(RlCamera);
     }
 
-    public void End() {
+    public void End()
+    {
         Raylib.EndMode3D();
     }
 }

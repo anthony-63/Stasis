@@ -317,7 +317,7 @@ namespace TinyTween
         /// </summary>
         private void UpdateValue()
         {
-            if(lerpFunc is not null && scaleFunc is not null)
+            if (lerpFunc is not null && scaleFunc is not null)
                 value = lerpFunc(start, end, scaleFunc(currentTime / duration));
         }
     }

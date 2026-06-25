@@ -10,17 +10,20 @@ using Stasis.Game.Scenes.Menu;
 
 namespace Stasis.Game.Scenes.Loading;
 
-public class LoadingScene : Scene {
-    public void Render(Window window) {}
+public class LoadingScene : Scene
+{
+    public void Render(Window window) { }
 
-    public void CreateDirectories() {
+    public void CreateDirectories()
+    {
         Directory.CreateDirectory("Assets/Scores");
         Directory.CreateDirectory("Assets/Maps");
-        if(!File.Exists("Assets/settings.toml")) Global.Settings.Save("Assets/settings.toml");
+        if (!File.Exists("Assets/settings.toml")) Global.Settings.Save("Assets/settings.toml");
         else Global.Settings = Settings.Load("Assets/settings.toml");
     }
 
-    public override void Update(double dt) {
+    public override void Update(double dt)
+    {
         CreateDirectories();
         Global.Settings = Settings.Load("Assets/settings.toml");
 

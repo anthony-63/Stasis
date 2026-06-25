@@ -2,7 +2,6 @@ using Raylib_cs;
 using Stasis.Content.Beatmaps;
 using Stasis.Content.Settings;
 using Stasis.Engine.UI;
-using Stasis.Engine.Discord;
 using Stasis.Engine.UI.Elements;
 using Stasis.Game.Scenes.Menu;
 using Stasis.Game.Scenes.Game.Player;
@@ -12,7 +11,8 @@ using Stasis.Content.Replays;
 
 namespace Stasis.Game;
 
-public static class Global {
+public static class Global
+{
     public static IBeatmapSet? SelectedMap;
 
     public static Settings Settings = new();
@@ -25,19 +25,21 @@ public static class Global {
     public static MenuScene? LoadedMenu = null;
     public static bool EnableDebugStats = false;
 
-    public static RPCClient Discord = new();
-
     public static Replay? Replay = null;
 
-    public static string GetMapHash(IBeatmapSet map) {
+    public static string GetMapHash(IBeatmapSet map)
+    {
         return Util.GetSHA256(map.Title + string.Concat(map.Difficulties[0].Notes.Select(x => x.X + x.Y + x.Time) ?? []));
     }
-    public static Random Random = new Random();
+    public static Random Random = new();
 
-    public static string GetAsset(string path, bool draw = true) {
-        if(!File.Exists(path)) {
+    public static string GetAsset(string path, bool draw = true)
+    {
+        if (!File.Exists(path))
+        {
             Logger.Info("Downloading ", path);
-            if(draw) {
+            if (draw)
+            {
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.Black);
                 Raylib.DrawTextEx(Raylib.LoadFontEx(UIFont, 50, [], 0), "Downloading " + path, new Vector2(20, 20), 50, 1, Color.Green);
@@ -53,18 +55,20 @@ public static class Global {
         return path;
     }
 
-    public static string GetModText(Mods mods, bool alwaysIncldueSpeed = false) {
+    public static string GetModText(Mods mods, bool alwaysIncldueSpeed = false)
+    {
         List<string> modList = [];
 
-        if(mods.Speed != 1f || alwaysIncldueSpeed) modList.Add(mods.Speed.ToString("0.00") + "x");
-        if(mods.NoFail) modList.Add("No Fail");
-        if(mods.VisualMap) modList.Add("Visual Mode");
-        if(Replay is not null) modList.Add("Replay");
+        if (mods.Speed != 1f || alwaysIncldueSpeed) modList.Add(mods.Speed.ToString("0.00") + "x");
+        if (mods.NoFail) modList.Add("No Fail");
+        if (mods.VisualMap) modList.Add("Visual Mode");
+        if (Replay is not null) modList.Add("Replay");
 
         return string.Join(", ", modList);
     }
 
-    public static Label BasicFPSLabel = new() {
+    public static Label BasicFPSLabel = new()
+    {
         TextColor = Color.Lime,
         FontSize = 32,
         Text = "0 FPS",

@@ -1,6 +1,7 @@
 namespace Stasis.Content.Beatmaps;
 
-public interface IBeatmapSet {
+public interface IBeatmapSet
+{
     ushort Version { get; set; }
     String Title { get; set; }
     String Artist { get; set; }
@@ -8,8 +9,8 @@ public interface IBeatmapSet {
 
     Beatmap[] Difficulties { get; set; }
 
-    byte[] AudioData { get; set;}
+    byte[] AudioData { get; set; }
     byte[] Cover { get; set; }
 
-   string Path { get; set; }
+    string Path { get; set; }
 }

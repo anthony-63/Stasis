@@ -6,10 +6,12 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class Accuracy : Label {
+public class Accuracy : Label
+{
     Label AccValue;
 
-    public Accuracy() {
+    public Accuracy()
+    {
         OneLine = true;
 
         Size = new UDim2(0, 0, 1, 0);
@@ -23,7 +25,8 @@ public class Accuracy : Label {
         TextColor = Color.Lime;
 
         Position = new UDim2(0.99f, 0, 0.375f, 0);
-        AccValue = new Label {
+        AccValue = new Label
+        {
             OneLine = true,
             Text = 100f.ToString("0.00") + "%",
             AlignmentX = AlignmentX,
@@ -38,7 +41,8 @@ public class Accuracy : Label {
         AddChild(AccValue);
     }
 
-    public void Update(Score score) {
+    public void Update(Score score)
+    {
         AccValue.Text = score.Accuracy.ToString("0.00") + "%";
     }
 }

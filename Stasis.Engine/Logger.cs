@@ -6,54 +6,67 @@ using Raylib_cs;
 
 namespace Stasis.Engine;
 
-public static class Logger {
+public static class Logger
+{
     public static string OutputFilePath = "";
-    public static Queue<string> OutputQueue = new(); 
-    public static void Init(string outputPath) {
+    public static Queue<string> OutputQueue = new();
+    public static void Init(string outputPath)
+    {
         // Raylib.SetTraceLogLevel(TraceLogLevel.None);
-        unsafe {
+        unsafe
+        {
             Raylib.SetTraceLogCallback(&RaylibLogger);
         }
-        if(File.Exists(outputPath)) File.Delete(outputPath);
-    
+        if (File.Exists(outputPath)) File.Delete(outputPath);
+
         OutputFilePath = outputPath;
         Info("Initialized Logger");
     }
 
     [UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvCdecl) })]
-    public static unsafe void RaylibLogger(int logLevel, sbyte* text, sbyte* args) {
+    public static unsafe void RaylibLogger(int logLevel, sbyte* text, sbyte* args)
+    {
         var message = Logging.GetLogMessage(new IntPtr(text), new IntPtr(args));
 
-        switch((TraceLogLevel)logLevel) {
+        switch ((TraceLogLevel)logLevel)
+        {
             case TraceLogLevel.All:
             case TraceLogLevel.Trace:
-            case TraceLogLevel.Debug: 
-            case TraceLogLevel.None: 
+            case TraceLogLevel.Debug:
+            case TraceLogLevel.None:
             case TraceLogLevel.Info: Info(message); break;
             case TraceLogLevel.Warning: Warn(message); break;
-            case TraceLogLevel.Error: 
+            case TraceLogLevel.Error:
             case TraceLogLevel.Fatal: Err(message); break;
         }
     }
- 
 
-    public static void Info(params object[] args) {
+
+    public static void Info(params object[] args)
+    {
         WriteToOut("INFO", args);
     }
 
-    public static void Warn(params object[] args) {
+    public static void Warn(params object[] args)
+    {
         WriteToOut("WARN", args);
     }
 
-    public static void Err(params object[] args) {
+    public static void Err(params object[] args)
+    {
         WriteToOut("ERROR", args);
     }
 
-    private static void StartQueueWriter() {
-        new Thread(() => {
-            try {
-                using(StreamWriter writer = File.AppendText(OutputFilePath)) {
-                    while(OutputQueue.Count > 0) {
+    private static void StartQueueWriter()
+    {
+        new Thread(() =>
+        {
+            try
+            {
+                using (StreamWriter writer = File.AppendText(OutputFilePath))
+                {
+                    while (OutputQueue.Count > 0)
+                    {
                         string txt = OutputQueue.Dequeue();
                         Console.Out.Write(txt);
                         Console.Out.Flush();
@@ -61,15 +74,18 @@ public static class Logger {
                         writer.Flush();
                     }
                 }
-            } catch {}
+            }
+            catch { }
         }).Start();
     }
 
-    private static void WriteToOut(string type, params object[] args) {
+    private static void WriteToOut(string type, params object[] args)
+    {
         string txt = "";
         string head = $"[{type} {DateTime.Now.ToString("HH:mm:ss")}] ";
         txt += head;
-        foreach(var arg in args) {
+        foreach (var arg in args)
+        {
             txt += arg;
         }
         txt += "\n";

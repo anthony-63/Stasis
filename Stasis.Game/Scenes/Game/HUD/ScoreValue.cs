@@ -7,8 +7,10 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class ScoreValue : Label {
-    public ScoreValue() {
+public class ScoreValue : Label
+{
+    public ScoreValue()
+    {
         OneLine = true;
 
         Size = new UDim2(0, 0, 1, 0);
@@ -24,17 +26,20 @@ public class ScoreValue : Label {
         Position = new UDim2(0.005f, 0, 0, 0);
     }
 
-    public override void Render() {
+    public override void Render()
+    {
         base.Render();
     }
 
-    public void UpdatePos() {
+    public void UpdatePos()
+    {
         var pos = Position;
         pos.Y.Offset = Raylib.GetRenderHeight() - 60;
         Position = pos;
     }
 
-    public void Update(Score score) {
+    public void Update(Score score)
+    {
         Text = score.ScoreValue.ToString();
         UpdatePos();
     }

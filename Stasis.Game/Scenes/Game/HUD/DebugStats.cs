@@ -8,9 +8,11 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class DebugStats : Label {
+public class DebugStats : Label
+{
 
-    public DebugStats() {
+    public DebugStats()
+    {
         Size = new UDim2(1f, 0, 1f, 0);
         Position = new UDim2(0, 15, 0, 15);
         AlignmentX = TextAlignX.Left;
@@ -20,14 +22,15 @@ public class DebugStats : Label {
         Font = Global.UIFont;
     }
 
-    public void Update(int allocatedInstances, int startProcess, float time, int visibleCount, float health, float healthStep, int replayFrames) {
+    public void Update(int allocatedInstances, int startProcess, float time, int visibleCount, float health, float healthStep, int replayFrames)
+    {
         Text =
         $"audio_time: {time}\n" +
         $"visible_note_count: {visibleCount}\n" +
         $"allocated_instances: {allocatedInstances}\n" +
         $"start_process: {startProcess}\n" +
-        $"health: {health}\n" + 
-        $"health_step: {healthStep}\n" + 
+        $"health: {health}\n" +
+        $"health_step: {healthStep}\n" +
         $"replay_frames: {replayFrames}";
     }
 }

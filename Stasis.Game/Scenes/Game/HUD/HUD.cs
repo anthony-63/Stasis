@@ -5,7 +5,8 @@ using Stasis.Game.Scenes.Game.Player;
 
 namespace Stasis.Game.Scenes.Game.HUD;
 
-public class HUDRoot: UiRoot {
+public class HUDRoot : UiRoot
+{
     public Timer Timer = new();
     public Accuracy Accuracy = new();
     public Misses Misses = new();
@@ -18,7 +19,8 @@ public class HUDRoot: UiRoot {
     public Health Health = new();
     public DebugStats DebugStats = new();
 
-    public HUDRoot() {
+    public HUDRoot()
+    {
         Timer.MaxValue = Global.SelectedMap?.Difficulties[0].Notes.Last().Time ?? 0f;
         AddChild(Accuracy);
         AddChild(Timer);
@@ -30,26 +32,28 @@ public class HUDRoot: UiRoot {
         AddChild(SongArtist);
         AddChild(Multiplier);
         AddChild(Health);
-        if(Global.EnableDebugStats) AddChild(DebugStats);
+        if (Global.EnableDebugStats) AddChild(DebugStats);
     }
 
-    public void Render() {
+    public void Render()
+    {
         // Timer.Render();
         base.Render(Raylib.GetRenderWidth(), Raylib.GetRenderHeight());
     }
 
     public void Update(
-        double dt, 
-        float currentTime, 
-        Score score, bool 
-        skippable, 
-        int allocatedInstances, 
+        double dt,
+        float currentTime,
+        Score score, bool
+        skippable,
+        int allocatedInstances,
         int startProcess,
         int visibleCount,
         float health,
         float healthStep,
         int replayFrames
-    ) {
+    )
+    {
         Timer.Update(currentTime, skippable);
         Health.Update(score);
         Accuracy.Update(score);
@@ -58,7 +62,7 @@ public class HUDRoot: UiRoot {
         ScoreValue.Update(score);
         Combo.Update(score);
         Multiplier.Update(score);
-        if(Global.EnableDebugStats) DebugStats.Update(allocatedInstances, startProcess, currentTime, visibleCount, health, healthStep, replayFrames);
+        if (Global.EnableDebugStats) DebugStats.Update(allocatedInstances, startProcess, currentTime, visibleCount, health, healthStep, replayFrames);
         base.Update(dt);
     }
 }

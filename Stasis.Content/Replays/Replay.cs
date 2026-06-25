@@ -4,30 +4,35 @@ using Stasis.Engine.UI.Elements;
 
 namespace Stasis.Content.Replays;
 
-public enum ReplayFrameMeta {
+public enum ReplayFrameMeta
+{
     NORMAL,
     FAILED,
     HIT,
     MISS,
 }
 
-public class ReplayFrame {
+public class ReplayFrame
+{
     public Vector2 CursorPosition;
     public float Time;
     public ReplayFrameMeta Meta;
 }
 
-public class Replay {
-    public List<ReplayFrame> Frames = new();
+public class Replay
+{
+    public List<ReplayFrame> Frames = [];
     public byte[] Hash = [];
 
-    public void Export(string path, byte[] scoreHash) {
-        if(!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
+    public void Export(string path, byte[] scoreHash)
+    {
+        if (!Directory.Exists(Path.GetDirectoryName(path))) Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
         using var stream = new FileStream(path, FileMode.CreateNew);
 
         stream.Write(BitConverter.GetBytes((long)Frames.Count));
         stream.Write(scoreHash);
-        foreach(ReplayFrame frame in Frames) {
+        foreach (ReplayFrame frame in Frames)
+        {
             stream.Write(BitConverter.GetBytes(frame.CursorPosition.X));
             stream.Write(BitConverter.GetBytes(frame.CursorPosition.Y));
             stream.Write(BitConverter.GetBytes(frame.Time));
@@ -35,7 +40,8 @@ public class Replay {
         }
     }
 
-    public ReplayFrame GetFrame(FileStream stream) {
+    public ReplayFrame GetFrame(FileStream stream)
+    {
         var dataBuffer4 = new byte[4];
 
         stream.Read(dataBuffer4);
@@ -48,33 +54,39 @@ public class Replay {
 
         stream.Read(dataBuffer4);
         var meta = BitConverter.ToInt32(dataBuffer4);
-        
-        return new ReplayFrame() {
+
+        return new ReplayFrame()
+        {
             CursorPosition = new Vector2(cursorX, cursorY),
             Time = time,
             Meta = (ReplayFrameMeta)meta,
         };
     }
 
-    public void SaveFrame(Vector2 cursorPosition, float time, bool failed) {
-        Frames.Add(new ReplayFrame() {
+    public void SaveFrame(Vector2 cursorPosition, float time, bool failed)
+    {
+        Frames.Add(new ReplayFrame()
+        {
             CursorPosition = cursorPosition,
             Time = time,
             Meta = failed ? ReplayFrameMeta.FAILED : ReplayFrameMeta.NORMAL,
         });
     }
 
-    public void SaveFrame(ReplayFrameMeta meta, float time) {
-        Frames.Add(new ReplayFrame() {
+    public void SaveFrame(ReplayFrameMeta meta, float time)
+    {
+        Frames.Add(new ReplayFrame()
+        {
             CursorPosition = new(),
             Time = time,
             Meta = meta,
         });
     }
 
-    public Replay() {}
+    public Replay() { }
 
-    public Replay(string path) {
+    public Replay(string path)
+    {
         using var stream = new FileStream(path, FileMode.Open);
         var dataBuffer8 = new byte[8];
         stream.Read(dataBuffer8);
@@ -83,7 +95,8 @@ public class Replay {
         stream.Read(Hash);
 
         Frames = [];
-        for(int i = 0; i < frameCount; i++) {
+        for (int i = 0; i < frameCount; i++)
+        {
             Frames.Add(GetFrame(stream));
         }
     }
